@@ -1,11 +1,11 @@
 import React from 'react';
-import CVSSCalculator from './components/CVSSCalculator';
+import IntegratedCVSSCalculator from './components/IntegratedCVSSCalculator';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <CVSSCalculator />
+      <IntegratedCVSSCalculator />
     </div>
   );
 }

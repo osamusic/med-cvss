@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { CVSSVector, CVSSScore } from '../types/cvss';
 import { cvssMetrics, metricDescriptions } from '../data/cvssMetrics';
 import { calculateCVSSScore, generateVectorString } from '../utils/cvssCalculator';
 import './CVSSCalculator.css';
 
 const CVSSCalculator: React.FC = () => {
-  const [vector, setVector] = useState<CVSSVector>({});
+  const location = useLocation();
+  const initialVector = location.state?.vector || {};
+  
+  const [vector, setVector] = useState<CVSSVector>(initialVector);
   const [score, setScore] = useState<CVSSScore>({
     baseScore: 0,
     temporalScore: 0,
@@ -47,6 +51,9 @@ const CVSSCalculator: React.FC = () => {
       <header className="calculator-header">
         <h1>Medical CVSS Calculator</h1>
         <p>CVSS v3.1 - Common Vulnerability Scoring System</p>
+        <Link to="/questionnaire" className="questionnaire-link">
+          ← Back to Questionnaire
+        </Link>
       </header>
 
       <div className="calculator-content">
