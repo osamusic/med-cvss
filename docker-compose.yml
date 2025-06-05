@@ -1,0 +1,36 @@
+
+services:
+  med-cvss-calculator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+
+  # Development service (optional)
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./med-cvss-calculator:/app/med-cvss-calculator
+      - /app/med-cvss-calculator/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm start
+    profiles:
+      - dev

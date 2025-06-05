@@ -1,5 +1,51 @@
 .App {
   min-height: 100vh;
   background: #f5f7fa;
-  padding: 20px 0;
+}
+
+.app-navigation {
+  background: #2c3e50;
+  color: white;
+  padding: 0 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.app-navigation h1 {
+  margin: 0;
+  padding: 20px 0 10px 0;
+  font-size: 1.8em;
+  font-weight: 600;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 0;
+}
+
+.nav-tabs button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-right: 2px;
+}
+
+.nav-tabs button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.nav-tabs button.active {
+  background: #3498db;
+  color: white;
+}
+
+.app-content {
+  padding: 20px;
 }
