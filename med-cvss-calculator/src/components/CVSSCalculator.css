@@ -15,6 +15,7 @@
   color: white;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .calculator-header h1 {
@@ -27,6 +28,24 @@
   margin: 0;
   font-size: 1.1rem;
   opacity: 0.9;
+}
+
+.questionnaire-link {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+.questionnaire-link:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateX(-5px);
 }
 
 .calculator-content {
