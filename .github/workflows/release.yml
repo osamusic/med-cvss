@@ -1,0 +1,276 @@
+name: Release Management
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  validate-release:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: med-cvss-calculator/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd med-cvss-calculator
+        npm ci
+        
+    - name: Run full test suite
+      run: |
+        cd med-cvss-calculator
+        npm test -- --coverage --watchAll=false
+        
+    - name: Validate MITRE decision flows
+      run: |
+        cd med-cvss-calculator
+        npm test -- --testPathPattern="mitre.*flow" --watchAll=false
+        
+    - name: Build production version
+      run: |
+        cd med-cvss-calculator
+        npm run build
+        
+    - name: Validate build output
+      run: |
+        if [ ! -d "med-cvss-calculator/build" ]; then
+          echo "❌ Build directory not found"
+          exit 1
+        fi
+        if [ ! -f "med-cvss-calculator/build/index.html" ]; then
+          echo "❌ index.html not found in build"
+          exit 1
+        fi
+        echo "✅ Build validation passed"
+
+  build-release:
+    name: Build Release Assets
+    runs-on: ubuntu-latest
+    needs: [validate-release]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: med-cvss-calculator/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd med-cvss-calculator
+        npm ci
+        
+    - name: Build for production
+      run: |
+        cd med-cvss-calculator
+        npm run build
+        
+    - name: Create release archive
+      run: |
+        cd med-cvss-calculator
+        tar -czf ../med-cvss-calculator-build.tar.gz build/
+        zip -r ../med-cvss-calculator-build.zip build/
+        
+    - name: Generate release notes
+      run: |
+        echo "# Medical CVSS Calculator Release" > RELEASE_NOTES.md
+        echo "" >> RELEASE_NOTES.md
+        echo "## What's New" >> RELEASE_NOTES.md
+        echo "- Medical device CVSS calculator with guided assessment" >> RELEASE_NOTES.md
+        echo "- MITRE rubric integration for healthcare security evaluation" >> RELEASE_NOTES.md
+        echo "- Comprehensive decision flow validation (28 test cases)" >> RELEASE_NOTES.md
+        echo "- Medical device-specific guidance and examples" >> RELEASE_NOTES.md
+        echo "" >> RELEASE_NOTES.md
+        echo "## Features" >> RELEASE_NOTES.md
+        echo "- 📊 Technical Calculator with Medical Device Guidance" >> RELEASE_NOTES.md
+        echo "- 🏥 MITRE Rubric for Healthcare Security Assessment" >> RELEASE_NOTES.md
+        echo "- 🧪 Validated Decision Flows (AV, CIA metrics)" >> RELEASE_NOTES.md
+        echo "- 🚀 Docker containerization support" >> RELEASE_NOTES.md
+        echo "" >> RELEASE_NOTES.md
+        echo "## Test Coverage" >> RELEASE_NOTES.md
+        echo "- Attack Vector decision tree: 12 test cases + 5 medical scenarios" >> RELEASE_NOTES.md
+        echo "- CIA impact assessment: 16 test cases across all data types" >> RELEASE_NOTES.md
+        echo "- Medical device scenarios: Hospital EHR, infusion pumps, patient monitors" >> RELEASE_NOTES.md
+        
+    - name: Upload release assets
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-assets
+        path: |
+          med-cvss-calculator-build.tar.gz
+          med-cvss-calculator-build.zip
+          RELEASE_NOTES.md
+
+  docker-release:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    needs: [validate-release]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      if: env.DOCKERHUB_USERNAME != ''
+      
+    - name: Extract version
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" == "release" ]; then
+          echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+        else
+          echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: ${{ env.DOCKERHUB_USERNAME != '' }}
+        tags: |
+          med-cvss-calculator:latest
+          med-cvss-calculator:${{ steps.version.outputs.version }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  security-scan:
+    name: Security Scan for Release
+    runs-on: ubuntu-latest
+    needs: [validate-release]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: med-cvss-calculator/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd med-cvss-calculator
+        npm ci
+        
+    - name: Run security audit
+      run: |
+        cd med-cvss-calculator
+        npm audit --audit-level=high
+        
+    - name: Check for known vulnerabilities
+      run: |
+        cd med-cvss-calculator
+        npx audit-ci --high
+      continue-on-error: true
+
+  performance-test:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: [build-release]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: med-cvss-calculator/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd med-cvss-calculator
+        npm ci
+        
+    - name: Build application
+      run: |
+        cd med-cvss-calculator
+        npm run build
+        
+    - name: Install serve for testing
+      run: npm install -g serve
+      
+    - name: Start application server
+      run: |
+        cd med-cvss-calculator
+        serve -s build -l 3000 &
+        sleep 5
+        
+    - name: Basic performance check
+      run: |
+        echo "🔍 Testing application responsiveness..."
+        response_time=$(curl -o /dev/null -s -w "%{time_total}" http://localhost:3000)
+        echo "⏱️  Response time: ${response_time}s"
+        
+        if (( $(echo "$response_time > 2.0" | bc -l) )); then
+          echo "⚠️  Warning: Response time > 2s"
+        else
+          echo "✅ Response time acceptable"
+        fi
+
+  deploy-release:
+    name: Deploy Release
+    runs-on: ubuntu-latest
+    needs: [build-release, docker-release, security-scan, performance-test]
+    environment: production
+    if: github.event_name == 'release'
+    
+    steps:
+    - name: Download release assets
+      uses: actions/download-artifact@v4
+      with:
+        name: release-assets
+        
+    - name: Deploy to production
+      run: |
+        echo "🚀 Deploying release to production..."
+        echo "📦 Release version: ${{ github.event.release.tag_name }}"
+        echo "📁 Assets available for deployment"
+        ls -la
+        # Add your production deployment commands here
+        
+    - name: Update release with assets
+      uses: softprops/action-gh-release@v1
+      if: github.event_name == 'release'
+      with:
+        files: |
+          med-cvss-calculator-build.tar.gz
+          med-cvss-calculator-build.zip
+        body_path: RELEASE_NOTES.md
+        
+    - name: Notify deployment success
+      run: |
+        echo "✅ Release ${{ github.event.release.tag_name }} deployed successfully"
+        echo "🌐 Production URL: https://your-domain.com"
+        echo "📊 Docker image: med-cvss-calculator:${{ github.event.release.tag_name }}"

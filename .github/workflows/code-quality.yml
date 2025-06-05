@@ -1,0 +1,298 @@
+name: Code Quality Checks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run quality checks daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  typescript-check:
+    name: TypeScript Type Checking
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: med-cvss-calculator/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd med-cvss-calculator
+        npm ci
+        
+    - name: Run TypeScript compiler
+      run: |
+        cd med-cvss-calculator
+        npx tsc --noEmit --skipLibCheck
+        
+    - name: Check for TypeScript errors
+      run: |
+        cd med-cvss-calculator
+        npm run build 2>&1 | tee build.log
+        if grep -q "TypeScript error" build.log; then
+          echo "❌ TypeScript errors found"
+          exit 1
+        else
+          echo "✅ No TypeScript errors"
+        fi
+
+  code-analysis:
+    name: Static Code Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for better analysis
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: med-cvss-calculator/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd med-cvss-calculator
+        npm ci
+        
+    - name: Run ESLint analysis
+      run: |
+        cd med-cvss-calculator
+        npx eslint src/ --ext .ts,.tsx --format json --output-file eslint-report.json || true
+        npx eslint src/ --ext .ts,.tsx --format unix
+        
+    - name: Upload ESLint report
+      uses: actions/upload-artifact@v4
+      with:
+        name: eslint-report
+        path: med-cvss-calculator/eslint-report.json
+
+  dependency-analysis:
+    name: Dependency Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: med-cvss-calculator/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd med-cvss-calculator
+        npm ci
+        
+    - name: Analyze bundle size
+      run: |
+        cd med-cvss-calculator
+        npm run build
+        
+        echo "📦 Bundle Analysis:"
+        echo "==================="
+        du -sh build/
+        echo ""
+        echo "📁 Build contents:"
+        ls -lah build/static/js/ | head -10
+        echo ""
+        echo "📊 Largest files:"
+        find build/ -type f -name "*.js" -o -name "*.css" | xargs ls -lah | sort -k5 -hr | head -5
+        
+    - name: Check for outdated dependencies
+      run: |
+        cd med-cvss-calculator
+        echo "🔍 Checking for outdated dependencies..."
+        npm outdated || true
+        
+    - name: Generate dependency tree
+      run: |
+        cd med-cvss-calculator
+        echo "🌳 Dependency tree:"
+        npm list --depth=2 || true
+
+  test-quality:
+    name: Test Quality Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: med-cvss-calculator/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd med-cvss-calculator
+        npm ci
+        
+    - name: Run tests with coverage
+      run: |
+        cd med-cvss-calculator
+        npm test -- --coverage --watchAll=false --coverageReporters=text,lcov,json
+        
+    - name: Analyze MITRE test coverage
+      run: |
+        cd med-cvss-calculator
+        echo "🧪 MITRE Decision Flow Test Analysis:"
+        echo "===================================="
+        npm test -- --testPathPattern="mitre.*flow" --watchAll=false --verbose | grep -E "(PASS|FAIL|✓|✕)" || true
+        
+    - name: Generate test report
+      run: |
+        cd med-cvss-calculator
+        echo "📊 Test Statistics:" > test-report.md
+        echo "==================" >> test-report.md
+        echo "" >> test-report.md
+        npm test -- --watchAll=false --silent --passWithNoTests 2>&1 | grep -E "(Tests:|Test Suites:)" >> test-report.md || true
+        
+    - name: Upload test report
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-report
+        path: med-cvss-calculator/test-report.md
+
+  accessibility-check:
+    name: Accessibility Testing
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: med-cvss-calculator/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd med-cvss-calculator
+        npm ci
+        
+    - name: Build application
+      run: |
+        cd med-cvss-calculator
+        npm run build
+        
+    - name: Install accessibility tools
+      run: |
+        npm install -g @axe-core/cli serve
+        
+    - name: Start application
+      run: |
+        cd med-cvss-calculator
+        serve -s build -l 3000 &
+        sleep 5
+        
+    - name: Run accessibility tests
+      run: |
+        echo "♿ Running accessibility tests..."
+        axe http://localhost:3000 --exit || true
+
+  security-analysis:
+    name: Security Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: med-cvss-calculator/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd med-cvss-calculator
+        npm ci
+        
+    - name: Run npm audit
+      run: |
+        cd med-cvss-calculator
+        echo "🔒 Security Audit Results:"
+        echo "=========================="
+        npm audit --format json > audit-report.json || true
+        npm audit || true
+        
+    - name: Check for sensitive data
+      run: |
+        echo "🔍 Scanning for sensitive data patterns..."
+        echo "======================================="
+        
+        # Check for potential secrets
+        if grep -r -i -E "(password|secret|key|token)" med-cvss-calculator/src/ --exclude-dir=node_modules; then
+          echo "⚠️  Potential sensitive data found in source"
+        else
+          echo "✅ No obvious sensitive data in source"
+        fi
+        
+        # Check for hardcoded URLs that might be sensitive
+        if grep -r -E "https?://[^/]*\.(com|org|net)" med-cvss-calculator/src/ --exclude-dir=node_modules; then
+          echo "ℹ️  External URLs found - review for sensitivity"
+        fi
+        
+    - name: Upload security report
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-audit
+        path: med-cvss-calculator/audit-report.json
+
+  quality-summary:
+    name: Quality Summary
+    runs-on: ubuntu-latest
+    needs: [typescript-check, code-analysis, dependency-analysis, test-quality, accessibility-check, security-analysis]
+    if: always()
+    
+    steps:
+    - name: Generate quality report
+      run: |
+        echo "# Code Quality Summary" > quality-summary.md
+        echo "=====================" >> quality-summary.md
+        echo "" >> quality-summary.md
+        echo "## Job Results" >> quality-summary.md
+        echo "- TypeScript Check: ${{ needs.typescript-check.result }}" >> quality-summary.md
+        echo "- Code Analysis: ${{ needs.code-analysis.result }}" >> quality-summary.md
+        echo "- Dependency Analysis: ${{ needs.dependency-analysis.result }}" >> quality-summary.md
+        echo "- Test Quality: ${{ needs.test-quality.result }}" >> quality-summary.md
+        echo "- Accessibility: ${{ needs.accessibility-check.result }}" >> quality-summary.md
+        echo "- Security Analysis: ${{ needs.security-analysis.result }}" >> quality-summary.md
+        echo "" >> quality-summary.md
+        echo "## Recommendations" >> quality-summary.md
+        echo "- 🔍 Review any failed checks above" >> quality-summary.md
+        echo "- 📊 Check coverage reports for test gaps" >> quality-summary.md
+        echo "- 🔒 Address security vulnerabilities if found" >> quality-summary.md
+        echo "- ♿ Fix accessibility issues if detected" >> quality-summary.md
+        echo "- 📦 Consider updating outdated dependencies" >> quality-summary.md
+        
+    - name: Upload quality summary
+      uses: actions/upload-artifact@v4
+      with:
+        name: quality-summary
+        path: quality-summary.md

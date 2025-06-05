@@ -91,7 +91,7 @@
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mitre-category.completed {
@@ -238,7 +238,7 @@
   align-items: flex-start;
 }
 
-.mitre-option-label input[type="radio"] {
+.mitre-option-label input[type='radio'] {
   display: none;
 }
 
@@ -379,34 +379,34 @@
   .mitre-cvss-rubric {
     padding: 15px;
   }
-  
+
   .mitre-header {
     padding: 20px 15px;
   }
-  
+
   .progress-stats {
     flex-direction: column;
     gap: 20px;
   }
-  
+
   .category-questions {
     padding: 20px 15px;
   }
-  
+
   .mitre-question {
     padding: 15px;
   }
-  
+
   .mitre-actions {
     flex-direction: column;
     text-align: center;
     padding: 20px 15px;
   }
-  
+
   .question-meta {
     flex-wrap: wrap;
   }
-  
+
   .mitre-option-content {
     padding: 10px 12px;
   }
