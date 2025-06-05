@@ -290,4 +290,274 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
     ],
   },
+  E: {
+    general: {
+      description:
+        'Exploit Code Maturity measures the likelihood of the vulnerability being attacked, based on the current state of exploit techniques and code availability.',
+      medicalDeviceContext:
+        'Consider the availability of medical device exploits, regulatory reporting requirements, and healthcare-specific attack tools.',
+      examples: [
+        'Published medical device exploits',
+        'Healthcare security research demonstrations',
+        'FDA safety communications',
+        'Medical device threat intelligence',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Exploit Code Maturity is not defined or is not applicable.',
+        medicalExample:
+          'No specific exploit assessment available, default scoring for medical device vulnerability assessments',
+      },
+      {
+        value: 'U',
+        guidance:
+          'No exploit code is available, or an exploit is theoretical with no proof of concept available.',
+        medicalExample:
+          'Theoretical medical device vulnerability, unpublished research findings, internal security assessments only',
+      },
+      {
+        value: 'P',
+        guidance:
+          'Proof-of-concept exploit code is available, or an attack demonstration is not practical for most systems.',
+        medicalExample:
+          'Medical device security research publications, controlled lab demonstrations, healthcare conference presentations',
+      },
+      {
+        value: 'F',
+        guidance:
+          'Functional exploit code is available that works in most situations where the vulnerability exists.',
+        medicalExample:
+          'Working medical device exploits in circulation, healthcare-specific attack tools, documented successful attacks',
+      },
+      {
+        value: 'H',
+        guidance:
+          'Functional autonomous code exists, or no exploit is required and details are widely available.',
+        medicalExample:
+          'Automated medical device attack tools, widely known healthcare vulnerabilities, active exploitation in healthcare facilities',
+      },
+    ],
+  },
+  RL: {
+    general: {
+      description:
+        'Remediation Level indicates the availability of patches, workarounds, or fixes for a vulnerability.',
+      medicalDeviceContext:
+        'Consider FDA approval requirements for medical device updates, clinical validation needs, and healthcare deployment timelines.',
+      examples: [
+        'FDA-approved device patches',
+        'Clinical workaround procedures',
+        'Manufacturer security updates',
+        'Compensating security controls',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Remediation Level is not defined or is not applicable.',
+        medicalExample:
+          'No remediation assessment available, default scoring for initial medical device vulnerability reporting',
+      },
+      {
+        value: 'O',
+        guidance: 'A complete vendor solution is available, either a vendor patch or an upgrade.',
+        medicalExample:
+          'FDA-approved medical device patch available, manufacturer security update released, validated device firmware upgrade',
+      },
+      {
+        value: 'T',
+        guidance:
+          'There is an official but temporary fix available, including temporary hotfixes or workarounds.',
+        medicalExample:
+          'Temporary clinical workaround approved, interim security controls in place, manufacturer advisory with temporary mitigation',
+      },
+      {
+        value: 'W',
+        guidance:
+          'There is an unofficial, non-vendor solution available, such as a workaround or mitigation created by users.',
+        medicalExample:
+          'Healthcare facility-developed workarounds, clinical procedure modifications, network isolation measures, third-party security controls',
+      },
+      {
+        value: 'U',
+        guidance: 'There is either no solution available or it is impossible to apply.',
+        medicalExample:
+          'No patch available for legacy medical devices, FDA approval pending for updates, end-of-life medical equipment',
+      },
+    ],
+  },
+  RC: {
+    general: {
+      description:
+        'Report Confidence measures the degree of confidence in the existence of the vulnerability and credibility of the known technical details.',
+      medicalDeviceContext:
+        'Consider medical device security research validation, FDA alerts, manufacturer confirmations, and healthcare ISAC reports.',
+      examples: [
+        'FDA safety communications',
+        'Manufacturer security advisories',
+        'Healthcare security research papers',
+        'Clinical incident reports',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Report Confidence is not defined or is not applicable.',
+        medicalExample:
+          'No confidence assessment available, default scoring for medical device vulnerability tracking',
+      },
+      {
+        value: 'U',
+        guidance:
+          'There are reports of impacts that indicate a vulnerability is present, but the cause is unknown.',
+        medicalExample:
+          'Unexplained medical device behaviors reported, unconfirmed clinical incidents, anecdotal healthcare security concerns',
+      },
+      {
+        value: 'R',
+        guidance:
+          'Significant details are published, but researchers either do not have full confidence or do not have access to source code.',
+        medicalExample:
+          'Medical device security research with partial validation, third-party healthcare security assessments, clinical testing results',
+      },
+      {
+        value: 'C',
+        guidance:
+          'Detailed reports exist, or functional reproduction is possible, or the vulnerability is confirmed by the vendor.',
+        medicalExample:
+          'Manufacturer-confirmed vulnerability, FDA-validated security issue, peer-reviewed medical device research, reproducible clinical testing',
+      },
+    ],
+  },
+  CR: {
+    general: {
+      description:
+        'Confidentiality Requirement represents the criticality of maintaining the confidentiality of the affected IT asset.',
+      medicalDeviceContext:
+        'Consider HIPAA requirements, patient privacy regulations, medical record confidentiality, and healthcare data protection standards.',
+      examples: [
+        'Patient health information (PHI) protection',
+        'Medical record privacy requirements',
+        'Clinical trial data confidentiality',
+        'Healthcare compliance mandates',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Confidentiality Requirement is not defined or is not applicable.',
+        medicalExample:
+          'Default environmental scoring, no specific confidentiality assessment for this medical system',
+      },
+      {
+        value: 'L',
+        guidance:
+          'Loss of confidentiality is likely to have only a limited adverse effect on the organization.',
+        medicalExample:
+          'Non-patient device telemetry data, aggregated healthcare statistics, publicly available clinical protocols',
+      },
+      {
+        value: 'M',
+        guidance:
+          'Loss of confidentiality is likely to have a serious adverse effect on the organization.',
+        medicalExample:
+          'Limited patient demographics, clinical scheduling information, non-critical medical device configurations',
+      },
+      {
+        value: 'H',
+        guidance:
+          'Loss of confidentiality is likely to have a catastrophic adverse effect on the organization.',
+        medicalExample:
+          'Protected health information (PHI), complete medical records, clinical trial data, sensitive diagnostic results',
+      },
+    ],
+  },
+  IR: {
+    general: {
+      description:
+        'Integrity Requirement represents the criticality of maintaining the trustworthiness and correctness of the affected IT asset.',
+      medicalDeviceContext:
+        'Consider the impact on clinical decision-making, treatment accuracy, medical data reliability, and patient safety if data is modified.',
+      examples: [
+        'Treatment protocol integrity',
+        'Medical dosage accuracy',
+        'Diagnostic data reliability',
+        'Clinical decision support integrity',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Integrity Requirement is not defined or is not applicable.',
+        medicalExample:
+          'Default environmental scoring, no specific integrity assessment for this medical system',
+      },
+      {
+        value: 'L',
+        guidance:
+          'Loss of integrity is likely to have only a limited adverse effect on the organization.',
+        medicalExample:
+          'Non-clinical administrative data, medical device logs, healthcare facility schedules, reference documentation',
+      },
+      {
+        value: 'M',
+        guidance:
+          'Loss of integrity is likely to have a serious adverse effect on the organization.',
+        medicalExample:
+          'Clinical notes accuracy, medical billing information, device calibration data, quality metrics',
+      },
+      {
+        value: 'H',
+        guidance:
+          'Loss of integrity is likely to have a catastrophic adverse effect on the organization.',
+        medicalExample:
+          'Medication dosages, treatment protocols, diagnostic results, surgical parameters, life-support settings',
+      },
+    ],
+  },
+  AR: {
+    general: {
+      description:
+        'Availability Requirement represents the criticality of the affected IT asset to the user organization in terms of availability.',
+      medicalDeviceContext:
+        'Consider the impact on patient care continuity, emergency medical services, life-critical systems, and healthcare operations.',
+      examples: [
+        'Life-support system availability',
+        'Emergency department operations',
+        'Critical care monitoring uptime',
+        'Surgical equipment readiness',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Availability Requirement is not defined or is not applicable.',
+        medicalExample:
+          'Default environmental scoring, no specific availability assessment for this medical system',
+      },
+      {
+        value: 'L',
+        guidance:
+          'Loss of availability is likely to have only a limited adverse effect on the organization.',
+        medicalExample:
+          'Administrative healthcare systems, non-critical medical reference systems, elective procedure scheduling, training equipment',
+      },
+      {
+        value: 'M',
+        guidance:
+          'Loss of availability is likely to have a serious adverse effect on the organization.',
+        medicalExample:
+          'Standard patient monitoring, routine diagnostic equipment, clinical documentation systems, pharmacy systems',
+      },
+      {
+        value: 'H',
+        guidance:
+          'Loss of availability is likely to have a catastrophic adverse effect on the organization.',
+        medicalExample:
+          'Life-support systems, emergency medical equipment, critical care monitors, surgical devices, emergency department systems',
+      },
+    ],
+  },
 };
