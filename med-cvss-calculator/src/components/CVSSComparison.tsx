@@ -59,7 +59,6 @@ const CVSSComparisonComponent: React.FC<CVSSComparisonProps> = ({ initialVector 
       setShowEditor(false);
       setEditingScenario(null);
     } catch (error) {
-      console.error('Failed to save scenario:', error);
       alert('Failed to save scenario. Please try again.');
     }
   };
@@ -73,7 +72,6 @@ const CVSSComparisonComponent: React.FC<CVSSComparisonProps> = ({ initialVector 
           setSelectedScenario('');
         }
       } catch (error) {
-        console.error('Failed to delete scenario:', error);
         alert('Failed to delete scenario. Please try again.');
       }
     }

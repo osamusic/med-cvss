@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { RemediationScenario } from '../types/cvss';
 import { medicalDeviceRemediationScenarios } from '../data/remediationGuidance';
 import {
@@ -48,14 +48,13 @@ export function useCustomScenarios(
     try {
       return createStorageProvider(storageType, currentUserId);
     } catch (err) {
-      console.error('Failed to create storage provider:', err);
       // Fallback to localStorage
       return createStorageProvider('localStorage');
     }
   }, [storageType, currentUserId]);
 
   // Load scenarios from storage
-  const loadScenarios = async () => {
+  const loadScenarios = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -64,16 +63,15 @@ export function useCustomScenarios(
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load scenarios';
       setError(errorMessage);
-      console.error('Failed to load scenarios:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [storageProvider]);
 
   // Load scenarios when provider changes
   useEffect(() => {
     loadScenarios();
-  }, [storageProvider]);
+  }, [storageProvider, loadScenarios]);
 
   const addScenario = async (
     scenario: Omit<CustomScenario, 'id' | 'createdAt' | 'updatedAt' | 'isCustom'>

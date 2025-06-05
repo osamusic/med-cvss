@@ -41,7 +41,7 @@ export class LocalStorageProvider implements ScenarioStorageProvider {
         }
       }
     } catch (error) {
-      console.error('Failed to load scenarios from localStorage:', error);
+      // Failed to load scenarios from localStorage
     }
     return [];
   }
@@ -117,7 +117,6 @@ export class LocalStorageProvider implements ScenarioStorageProvider {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(scenarios));
     } catch (error) {
-      console.error('Failed to save scenarios to localStorage:', error);
       throw error;
     }
   }
@@ -157,7 +156,6 @@ export class FirebaseStorageProvider implements ScenarioStorageProvider {
 
       return scenarios;
     } catch (error) {
-      console.error('Failed to load scenarios from Firebase:', error);
       throw error;
     }
   }
@@ -182,7 +180,6 @@ export class FirebaseStorageProvider implements ScenarioStorageProvider {
         isCustom: true,
       };
     } catch (error) {
-      console.error('Failed to add scenario to Firebase:', error);
       throw error;
     }
   }
@@ -210,7 +207,6 @@ export class FirebaseStorageProvider implements ScenarioStorageProvider {
 
       return updatedScenario;
     } catch (error) {
-      console.error('Failed to update scenario in Firebase:', error);
       throw error;
     }
   }
@@ -219,7 +215,6 @@ export class FirebaseStorageProvider implements ScenarioStorageProvider {
     try {
       await deleteDoc(doc(db, this.collectionName, id));
     } catch (error) {
-      console.error('Failed to delete scenario from Firebase:', error);
       throw error;
     }
   }
@@ -236,7 +231,6 @@ export class FirebaseStorageProvider implements ScenarioStorageProvider {
 
       return newScenarios;
     } catch (error) {
-      console.error('Failed to import scenarios to Firebase:', error);
       throw error;
     }
   }
@@ -249,7 +243,6 @@ export class FirebaseStorageProvider implements ScenarioStorageProvider {
         await this.deleteScenario(scenario.id);
       }
     } catch (error) {
-      console.error('Failed to clear scenarios from Firebase:', error);
       throw error;
     }
   }

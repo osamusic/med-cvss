@@ -1,4 +1,4 @@
-import { CVSSVector, CVSSScore, CVSSComparison, MetricChange } from '../types/cvss';
+import { CVSSVector, CVSSComparison, MetricChange } from '../types/cvss';
 import { calculateCVSSScore } from './cvssCalculator';
 import { cvssMetrics } from '../data/cvssMetrics';
 
