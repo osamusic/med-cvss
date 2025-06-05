@@ -265,7 +265,6 @@ export const CVSSQuestionnaire: React.FC = () => {
                                   }
                                 }}
                                 className="edit-input"
-                                autoFocus
                               />
                             ) : (
                               <span 
