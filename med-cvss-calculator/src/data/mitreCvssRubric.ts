@@ -862,82 +862,137 @@ export const calculateMitreVector = (answers: MitreRubricAnswers): { [key: strin
   }
   
   // Confidentiality Impact - Extended Logic
-  let XCH = false; // Any High or Unknown
-  let hasConfidentialityAnswers = false;
+  const confidentialityImpacts: { [key: string]: 'H' | 'L' | 'N' | undefined } = {};
   
-  const confidentialityQuestions = ['XCP', 'XCD', 'XCT', 'XCW', 'XCS', 'XCO'];
-  confidentialityQuestions.forEach(qId => {
-    const answer = answers[qId];
-    if (answer) {
-      hasConfidentialityAnswers = true;
-      if (answer === 'yes' || answer === 'unknown') {
-        // Special handling for XCP - check XCPM scale
-        if (qId === 'XCP' && answer === 'yes' && answers.XCPM) {
-          if (answers.XCPM === 'yes' || answers.XCPM === 'unknown') {
-            XCH = true;
-          }
-          // If XCPM is 'no', we don't set XCH, effectively making it Low
-        } else {
-          XCH = true;
-        }
+  // Q1.C (XCP) - PHI/PII data
+  if (answers.XCP) {
+    if (answers.XCP === 'yes') {
+      // Check scale with Q1.1.C (XCPM)
+      if (answers.XCPM) {
+        confidentialityImpacts.XCP = (answers.XCPM === 'yes' || answers.XCPM === 'unknown') ? 'H' : 'L';
+      } else {
+        confidentialityImpacts.XCP = 'H'; // Default to High if scale not answered
+      }
+    } else if (answers.XCP === 'no') {
+      confidentialityImpacts.XCP = 'N';
+    } else if (answers.XCP === 'unknown') {
+      confidentialityImpacts.XCP = 'H';
+    }
+  }
+  
+  // Q2.C to Q6.C - Other categories
+  const otherConfidentialityQuestions = [
+    { id: 'XCD', description: 'diagnosis/monitoring' },
+    { id: 'XCT', description: 'therapy delivery' },
+    { id: 'XCW', description: 'clinical workflow' },
+    { id: 'XCS', description: 'private system' },
+    { id: 'XCO', description: 'other critical' }
+  ];
+  
+  otherConfidentialityQuestions.forEach(q => {
+    if (answers[q.id]) {
+      if (answers[q.id] === 'yes' || answers[q.id] === 'unknown') {
+        confidentialityImpacts[q.id] = 'H';
+      } else if (answers[q.id] === 'no') {
+        confidentialityImpacts[q.id] = 'N';
       }
     }
   });
   
+  // Extended questions Q7 & Q8 logic
+  const impacts = Object.values(confidentialityImpacts).filter(v => v !== undefined);
+  const XCH = impacts.some(impact => impact === 'H'); // Any High?
+  const XCL = impacts.some(impact => impact === 'L'); // Any Low?
+  
+  // Final Confidentiality Impact determination
   if (XCH) {
     vector.C = 'H';
-  } else if (hasConfidentialityAnswers) {
-    // If we have answers but none are High, then it's Low
+  } else if (XCL) {
     vector.C = 'L';
+  } else if (impacts.length > 0) {
+    vector.C = 'N';
   } else {
+    // No answers provided - default to None
     vector.C = 'N';
   }
   
   // Integrity Impact - Extended Logic
-  let XIH = false; // Any High or Unknown
-  let hasIntegrityAnswers = false;
+  const integrityImpacts: { [key: string]: 'H' | 'L' | 'N' | undefined } = {};
   
-  const integrityQuestions = ['XIP', 'XID', 'XIT', 'XIW', 'XIS', 'XIO'];
-  integrityQuestions.forEach(qId => {
-    const answer = answers[qId];
-    if (answer) {
-      hasIntegrityAnswers = true;
-      if (answer === 'yes' || answer === 'unknown') {
-        XIH = true;
+  // Q1.I to Q6.I - All integrity questions
+  const integrityQuestions = [
+    { id: 'XIP', description: 'PHI/PII' },
+    { id: 'XID', description: 'diagnosis/monitoring' },
+    { id: 'XIT', description: 'therapy delivery' },
+    { id: 'XIW', description: 'clinical workflow' },
+    { id: 'XIS', description: 'private system' },
+    { id: 'XIO', description: 'other critical' }
+  ];
+  
+  integrityQuestions.forEach(q => {
+    if (answers[q.id]) {
+      if (answers[q.id] === 'yes' || answers[q.id] === 'unknown') {
+        integrityImpacts[q.id] = 'H';
+      } else if (answers[q.id] === 'no') {
+        integrityImpacts[q.id] = 'N';
       }
     }
   });
   
+  // Extended questions Q9 & Q10 logic
+  const integrityImpactValues = Object.values(integrityImpacts).filter(v => v !== undefined);
+  const XIH = integrityImpactValues.some(impact => impact === 'H'); // Any High?
+  const XIL = integrityImpactValues.some(impact => impact === 'L'); // Any Low?
+  
+  // Final Integrity Impact determination
   if (XIH) {
     vector.I = 'H';
-  } else if (hasIntegrityAnswers) {
-    // If we have answers but none are High, then it's Low
+  } else if (XIL) {
     vector.I = 'L';
+  } else if (integrityImpactValues.length > 0) {
+    vector.I = 'N';
   } else {
+    // No answers provided - default to None
     vector.I = 'N';
   }
   
   // Availability Impact - Extended Logic
-  let XAH = false; // Any High or Unknown
-  let hasAvailabilityAnswers = false;
+  const availabilityImpacts: { [key: string]: 'H' | 'L' | 'N' | undefined } = {};
   
-  const availabilityQuestions = ['XAP', 'XAD', 'XAT', 'XAW', 'XAS', 'XAO'];
-  availabilityQuestions.forEach(qId => {
-    const answer = answers[qId];
-    if (answer) {
-      hasAvailabilityAnswers = true;
-      if (answer === 'yes' || answer === 'unknown') {
-        XAH = true;
+  // Q1.A to Q6.A - All availability questions
+  const availabilityQuestions = [
+    { id: 'XAP', description: 'PHI/PII' },
+    { id: 'XAD', description: 'diagnosis/monitoring' },
+    { id: 'XAT', description: 'therapy delivery' },
+    { id: 'XAW', description: 'clinical workflow' },
+    { id: 'XAS', description: 'private system' },
+    { id: 'XAO', description: 'other critical' }
+  ];
+  
+  availabilityQuestions.forEach(q => {
+    if (answers[q.id]) {
+      if (answers[q.id] === 'yes' || answers[q.id] === 'unknown') {
+        availabilityImpacts[q.id] = 'H';
+      } else if (answers[q.id] === 'no') {
+        availabilityImpacts[q.id] = 'N';
       }
     }
   });
   
+  // Extended questions Q11 & Q12 logic
+  const availabilityImpactValues = Object.values(availabilityImpacts).filter(v => v !== undefined);
+  const XAH = availabilityImpactValues.some(impact => impact === 'H'); // Any High?
+  const XAL = availabilityImpactValues.some(impact => impact === 'L'); // Any Low?
+  
+  // Final Availability Impact determination
   if (XAH) {
     vector.A = 'H';
-  } else if (hasAvailabilityAnswers) {
-    // If we have answers but none are High, then it's Low
+  } else if (XAL) {
     vector.A = 'L';
+  } else if (availabilityImpactValues.length > 0) {
+    vector.A = 'N';
   } else {
+    // No answers provided - default to None
     vector.A = 'N';
   }
   
