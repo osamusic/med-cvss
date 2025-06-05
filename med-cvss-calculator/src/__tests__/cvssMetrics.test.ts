@@ -3,10 +3,9 @@ import { cvssMetrics, metricDescriptions } from '../data/cvssMetrics';
 describe('CVSS Metrics Data Tests', () => {
   describe('cvssMetrics structure', () => {
     test('has correct number of metric groups', () => {
-      expect(cvssMetrics).toHaveLength(3);
+      expect(cvssMetrics).toHaveLength(2);
       expect(cvssMetrics[0].name).toBe('Base Score Metrics');
       expect(cvssMetrics[1].name).toBe('Temporal Score Metrics');
-      expect(cvssMetrics[2].name).toBe('Environmental Score Metrics');
     });
 
     test('base score metrics have all required metrics', () => {
@@ -28,17 +27,6 @@ describe('CVSS Metrics Data Tests', () => {
         expect(temporalMetrics).toHaveProperty(metric);
         expect(Array.isArray(temporalMetrics[metric])).toBe(true);
         expect(temporalMetrics[metric].length).toBeGreaterThan(0);
-      });
-    });
-
-    test('environmental score metrics have all required metrics', () => {
-      const environmentalMetrics = cvssMetrics[2].metrics;
-      const expectedMetrics = ['CR', 'IR', 'AR'];
-
-      expectedMetrics.forEach((metric) => {
-        expect(environmentalMetrics).toHaveProperty(metric);
-        expect(Array.isArray(environmentalMetrics[metric])).toBe(true);
-        expect(environmentalMetrics[metric].length).toBeGreaterThan(0);
       });
     });
 
@@ -112,16 +100,6 @@ describe('CVSS Metrics Data Tests', () => {
       });
     });
 
-    test('has descriptions for all environmental metrics', () => {
-      const environmentalMetrics = ['CR', 'IR', 'AR'];
-
-      environmentalMetrics.forEach((metric) => {
-        expect(metricDescriptions).toHaveProperty(metric);
-        expect(typeof metricDescriptions[metric]).toBe('string');
-        expect(metricDescriptions[metric].length).toBeGreaterThan(0);
-      });
-    });
-
     test('metric descriptions are meaningful', () => {
       expect(metricDescriptions.AV).toContain('Attack Vector');
       expect(metricDescriptions.AC).toContain('Attack Complexity');
@@ -180,19 +158,6 @@ describe('CVSS Metrics Data Tests', () => {
 
       temporalMetrics.forEach((metric) => {
         const options = cvssMetrics[1].metrics[metric];
-        const notDefinedOption = options.find((opt) => opt.value === 'X');
-
-        expect(notDefinedOption).toBeDefined();
-        expect(notDefinedOption?.label).toContain('Not Defined');
-        expect(notDefinedOption?.score).toBe(1);
-      });
-    });
-
-    test('environmental metrics include "Not Defined" option with score 1.0', () => {
-      const environmentalMetrics = ['CR', 'IR', 'AR'];
-
-      environmentalMetrics.forEach((metric) => {
-        const options = cvssMetrics[2].metrics[metric];
         const notDefinedOption = options.find((opt) => opt.value === 'X');
 
         expect(notDefinedOption).toBeDefined();

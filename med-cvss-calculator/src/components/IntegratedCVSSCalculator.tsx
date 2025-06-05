@@ -14,7 +14,6 @@ const IntegratedCVSSCalculator: React.FC = () => {
   const [score, setScore] = useState<CVSSScore>({
     baseScore: 0,
     temporalScore: 0,
-    environmentalScore: 0,
     overallScore: 0,
     severity: 'None',
   });
@@ -179,12 +178,6 @@ const IntegratedCVSSCalculator: React.FC = () => {
                 <div className='score-item'>
                   <span className='score-label'>Temporal Score:</span>
                   <span className='score-value'>{score.temporalScore.toFixed(1)}</span>
-                </div>
-              )}
-              {score.environmentalScore > 0 && (
-                <div className='score-item'>
-                  <span className='score-label'>Environmental Score:</span>
-                  <span className='score-value'>{score.environmentalScore.toFixed(1)}</span>
                 </div>
               )}
               <div className='score-item overall'>

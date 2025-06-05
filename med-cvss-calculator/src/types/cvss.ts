@@ -14,7 +14,6 @@ export interface CVSSMetricGroup {
 export interface CVSSScore {
   baseScore: number;
   temporalScore: number;
-  environmentalScore: number;
   overallScore: number;
   severity: string;
 }
@@ -33,19 +32,6 @@ export interface CVSSVector {
   E?: string; // Exploit Code Maturity
   RL?: string; // Remediation Level
   RC?: string; // Report Confidence
-
-  // Environmental Metrics
-  CR?: string; // Confidentiality Requirement
-  IR?: string; // Integrity Requirement
-  AR?: string; // Availability Requirement
-  MAV?: string; // Modified Attack Vector
-  MAC?: string; // Modified Attack Complexity
-  MPR?: string; // Modified Privileges Required
-  MUI?: string; // Modified User Interaction
-  MS?: string; // Modified Scope
-  MC?: string; // Modified Confidentiality
-  MI?: string; // Modified Integrity
-  MA?: string; // Modified Availability
 }
 
 export interface CVSSComparison {
