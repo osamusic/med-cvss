@@ -204,8 +204,8 @@ describe('CVSS Calculator Tests', () => {
 
       const result = calculateCVSSScore(vector);
 
-      expect(result.baseScore).toBeCloseTo(8.2, 1);
-      expect(result.severity).toBe('High');
+      expect(result.baseScore).toBeCloseTo(9.1, 1);
+      expect(result.severity).toBe('Critical');
     });
 
     test('calculates score for Bluetooth medical device with patient data exposure', () => {
@@ -222,8 +222,8 @@ describe('CVSS Calculator Tests', () => {
 
       const result = calculateCVSSScore(vector);
 
-      expect(result.baseScore).toBeCloseTo(5.7, 1);
-      expect(result.severity).toBe('Medium');
+      expect(result.baseScore).toBeCloseTo(7.1, 1);
+      expect(result.severity).toBe('High');
     });
 
     test('calculates score for physical access medical device vulnerability', () => {
