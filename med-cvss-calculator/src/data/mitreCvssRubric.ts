@@ -32,14 +32,17 @@ export const mitreRubricQuestions: MitreQuestion[] = [
       { 
         value: "yes", 
         label: "Yes - Can utilize network/communication protocol",
-        nextQuestion: "XAVT",
-        cvssValue: "N"
+        nextQuestion: "XAVT"
       },
       { 
         value: "no", 
         label: "No - Cannot use network/communication protocol",
-        nextQuestion: "XAVP",
-        cvssValue: "P"
+        nextQuestion: "XAVP"
+      },
+      { 
+        value: "unknown", 
+        label: "Unknown - Uncertain about network/communication protocol usage",
+        cvssValue: "N"
       }
     ]
   },
@@ -54,14 +57,17 @@ export const mitreRubricQuestions: MitreQuestion[] = [
       { 
         value: "yes", 
         label: "Yes - Uses OSI layer 3/4 protocols (IP, TCP/IP, UDP)",
-        nextQuestion: "XAVW",
         cvssValue: "N"
       },
       { 
         value: "no", 
         label: "No - Does not use OSI layer 3/4 protocols",
-        nextQuestion: "XAVW",
-        cvssValue: "A"
+        nextQuestion: "XAVW"
+      },
+      { 
+        value: "unknown", 
+        label: "Unknown - Uncertain about OSI layer protocols",
+        cvssValue: "N"
       }
     ]
   },
@@ -97,12 +103,17 @@ export const mitreRubricQuestions: MitreQuestion[] = [
       { 
         value: "yes", 
         label: "Yes - Range is 10 feet or less",
-        cvssValue: "A"
+        cvssValue: "L"
       },
       { 
         value: "no", 
         label: "No - Range is greater than 10 feet",
-        cvssValue: "N"
+        cvssValue: "A"
+      },
+      { 
+        value: "unknown", 
+        label: "Unknown - Uncertain about range",
+        cvssValue: "A"
       }
     ]
   },
@@ -779,36 +790,43 @@ export const mitreRubricQuestions: MitreQuestion[] = [
 export const calculateMitreVector = (answers: MitreRubricAnswers): { [key: string]: string } => {
   const vector: { [key: string]: string } = {};
   
-  // Attack Vector - Extended Medical Device Logic
+  // Attack Vector - Extended Medical Device Logic based on MITRE decision tree
   if (answers.XAVN === 'yes') {
-    // Can use network/communication protocol
+    // Q1 = Yes: Can use network/communication protocol → Q2
     if (answers.XAVT === 'yes') {
-      // Uses OSI layer 3/4 protocols
+      // Q2 = Yes: Uses OSI layer 3/4 protocols → AV = Network (N)
+      vector.AV = 'N';
+    } else if (answers.XAVT === 'no') {
+      // Q2 = No: Does not use OSI layer 3/4 protocols → Q3
       if (answers.XAVW === 'yes') {
-        // Wireless communication
-        vector.AV = answers.XAVR === 'yes' ? 'A' : 'N'; // Range ≤10ft = A, >10ft = N
+        // Q3 = Yes: Wireless communication → Q4
+        if (answers.XAVR === 'yes') {
+          // Q4 = Yes: Range ≤10ft → AV = Local (L)
+          vector.AV = 'L';
+        } else {
+          // Q4 = No/Unknown: Range >10ft → AV = Adjacent (A)
+          vector.AV = 'A';
+        }
       } else {
-        // Not wireless
-        vector.AV = 'L';
+        // Q3 = No/Unknown: Not wireless → AV = Adjacent (A)
+        vector.AV = 'A';
       }
     } else {
-      // Does not use OSI layer 3/4 protocols
-      if (answers.XAVW === 'yes') {
-        // Wireless but not IP-based
-        vector.AV = 'A';
-      } else {
-        vector.AV = 'L';
-      }
+      // Q2 = Unknown → AV = Network (N)
+      vector.AV = 'N';
     }
-  } else {
-    // Cannot use network/communication protocol
+  } else if (answers.XAVN === 'no') {
+    // Q1 = No: Cannot use network/communication protocol → Q5
     if (answers.XAVP === 'yes') {
-      // Physical contact required
+      // Q5 = Yes: Physical contact required → AV = Physical (P)
       vector.AV = 'P';
     } else {
-      // No physical contact required
+      // Q5 = No/Unknown: No physical contact required → AV = Local (L)
       vector.AV = 'L';
     }
+  } else {
+    // Q1 = Unknown → AV = Network (N)
+    vector.AV = 'N';
   }
   
   // Attack Complexity
