@@ -1,4 +1,53 @@
-# Getting Started with Create React App
+# Medical Device CVSS Calculator
+
+A React TypeScript application that adapts the standard CVSS v3.1 vulnerability scoring system for medical device security assessment. The application provides both a guided questionnaire interface for non-technical users and a technical calculator interface for cybersecurity professionals.
+
+## ✨ Features
+
+- **CVSS v3.1 Calculator**: Full implementation of CVSS v3.1 specification
+- **Before/After Comparison**: Evaluate risk reduction after implementing remediation measures
+- **Medical Device Scenarios**: Pre-built scenarios for healthcare environments
+- **Custom Scenarios**: Create, edit, and manage your own remediation scenarios
+- **Data Persistence**: Choose between localStorage or Firebase cloud storage
+- **Export/Import**: Share scenarios between teams and environments
+- **User Authentication**: Secure user-specific data with Firebase Auth
+
+## 🏥 Medical Device Focus
+
+Designed specifically for healthcare environments with:
+- Patient data protection scenarios
+- Medical device availability considerations
+- Healthcare integrity impact assessments
+- Device-specific vulnerability examples (infusion pumps, Bluetooth devices, etc.)
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 16+ and npm
+- Firebase project (optional, for cloud storage)
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. **For Local Storage Only** (Skip Firebase setup):
+   ```bash
+   npm start
+   ```
+
+4. **For Firebase Cloud Storage**:
+   - Follow the [Firebase Setup Guide](./FIREBASE_SETUP.md)
+   - Copy `.env.example` to `.env.local`
+   - Add your Firebase configuration
+   - Start the application:
+     ```bash
+     npm start
+     ```
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -44,3 +93,98 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## 🏗️ Architecture
+
+### Component Structure
+- **CVSSCalculator**: Technical CVSS metric selection interface with real-time calculation
+- **CVSSComparison**: Before/after evaluation with custom scenario management
+- **ScenarioEditor**: Modal interface for creating and editing scenarios
+- **Authentication**: Firebase Auth integration for secure user sessions
+
+### Data Flow
+1. Questionnaire collects user responses and maps to CVSS metrics
+2. Navigation state passes selected values to calculator
+3. Calculator performs real-time CVSS v3.1 calculations
+4. Results display score, severity rating, and vector string
+5. Custom scenarios are stored locally or in Firebase Firestore
+
+### Key Technologies
+- **React 18** with TypeScript
+- **Firebase**: Authentication and Firestore database
+- **CVSS v3.1**: Full specification implementation
+- **CSS Modules**: Component-scoped styling
+
+## 🔧 Configuration
+
+### Storage Options
+
+**Local Storage** (Default):
+```typescript
+const scenarioManager = useCustomScenarios('localStorage');
+```
+
+**Firebase Cloud Storage**:
+```typescript
+const scenarioManager = useCustomScenarios('firebase', user?.uid);
+```
+
+### Environment Variables
+
+See `.env.example` for all available configuration options.
+
+## 📊 CVSS Implementation
+
+The application implements the full CVSS v3.1 specification including:
+- **Base Metrics**: Attack Vector, Attack Complexity, Privileges Required, User Interaction, Scope, C/I/A Impact
+- **Temporal Metrics**: Exploit Code Maturity, Remediation Level, Report Confidence
+- **Environmental Metrics**: Modified Base metrics and C/I/A Requirements
+
+## 🧪 Testing
+
+Run the test suite:
+```bash
+npm test
+```
+
+The project includes comprehensive tests for:
+- CVSS calculation algorithms
+- Medical device scenario validation
+- Before/after comparison logic
+- Data import/export functionality
+
+## 🚀 Deployment
+
+### Firebase Hosting
+```bash
+npm run build
+firebase deploy
+```
+
+### Other Platforms
+The built application can be deployed to any static hosting platform (Vercel, Netlify, etc.).
+
+## 🔒 Security
+
+- Firebase Authentication for user management
+- Firestore security rules for data isolation
+- No sensitive medical data stored (only CVSS metrics)
+- HTTPS enforcement in production
+
+## 📚 Documentation
+
+- [Firebase Setup Guide](./FIREBASE_SETUP.md) - Complete Firebase configuration
+- [TEST_SUMMARY.md](./TEST_SUMMARY.md) - Testing overview
+- Component documentation in source files
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Add tests for new functionality
+4. Ensure all tests pass
+5. Submit a pull request
+
+## 📄 License
+
+This project is intended for educational and professional use in healthcare cybersecurity.

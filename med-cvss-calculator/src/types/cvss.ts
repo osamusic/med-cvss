@@ -47,3 +47,30 @@ export interface CVSSVector {
   MI?: string; // Modified Integrity
   MA?: string; // Modified Availability
 }
+
+export interface CVSSComparison {
+  before: CVSSVector;
+  after: CVSSVector;
+  beforeScore: CVSSScore;
+  afterScore: CVSSScore;
+  remediationActions: string[];
+  metricChanges: MetricChange[];
+}
+
+export interface MetricChange {
+  metric: string;
+  metricName: string;
+  before: string;
+  beforeLabel: string;
+  after: string;
+  afterLabel: string;
+  comment: string;
+}
+
+export interface RemediationScenario {
+  title: string;
+  description: string;
+  before: CVSSVector;
+  after: CVSSVector;
+  remediationActions: string[];
+}
