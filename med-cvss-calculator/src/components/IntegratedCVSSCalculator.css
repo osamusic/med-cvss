@@ -41,6 +41,86 @@
   background: white;
 }
 
+/* Guidance styles for Technical Calculator */
+.metric-with-guidance {
+  margin-bottom: 30px;
+  border: 1px solid #e1e8ed;
+  border-radius: 8px;
+  background: white;
+  padding: 20px;
+}
+
+.metric-header h3 {
+  color: #2c3e50;
+  margin: 0 0 15px 0;
+  font-size: 1.3em;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 8px;
+}
+
+.metric-guidance {
+  background: #f8f9fa;
+  border-left: 4px solid #3498db;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.guidance-section {
+  margin-bottom: 15px;
+}
+
+.guidance-section:last-child {
+  margin-bottom: 0;
+}
+
+.guidance-section h4 {
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.guidance-section p {
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+  color: #34495e;
+}
+
+.guidance-section ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #34495e;
+}
+
+.guidance-section li {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.metric-option-wrapper {
+  margin-bottom: 15px;
+}
+
+.option-guidance {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 0.9em;
+}
+
+.option-guidance-text {
+  margin-bottom: 8px;
+  color: #856404;
+}
+
+.option-medical-example {
+  color: #856404;
+  font-style: italic;
+}
+
 .tab-button {
   padding: 12px 20px;
   border: none;
