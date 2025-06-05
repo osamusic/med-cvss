@@ -69,29 +69,6 @@ export const cvssMetrics: CVSSMetricGroup[] = [
       ],
     },
   },
-  {
-    name: 'Environmental Score Metrics',
-    metrics: {
-      CR: [
-        { value: 'X', label: 'Not Defined', score: 1 },
-        { value: 'L', label: 'Low', score: 0.5 },
-        { value: 'M', label: 'Medium', score: 1 },
-        { value: 'H', label: 'High', score: 1.5 },
-      ],
-      IR: [
-        { value: 'X', label: 'Not Defined', score: 1 },
-        { value: 'L', label: 'Low', score: 0.5 },
-        { value: 'M', label: 'Medium', score: 1 },
-        { value: 'H', label: 'High', score: 1.5 },
-      ],
-      AR: [
-        { value: 'X', label: 'Not Defined', score: 1 },
-        { value: 'L', label: 'Low', score: 0.5 },
-        { value: 'M', label: 'Medium', score: 1 },
-        { value: 'H', label: 'High', score: 1.5 },
-      ],
-    },
-  },
 ];
 
 export const metricDescriptions: { [key: string]: string } = {
@@ -106,7 +83,4 @@ export const metricDescriptions: { [key: string]: string } = {
   E: 'Exploit Code Maturity',
   RL: 'Remediation Level',
   RC: 'Report Confidence',
-  CR: 'Confidentiality Requirement',
-  IR: 'Integrity Requirement',
-  AR: 'Availability Requirement',
 };

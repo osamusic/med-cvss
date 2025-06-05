@@ -88,27 +88,6 @@ describe('CVSS Calculator Tests', () => {
       expect(result.temporalScore).toBeGreaterThan(0);
       expect(result.temporalScore).toBeLessThan(result.baseScore);
     });
-
-    test('calculates environmental score when environmental metrics provided', () => {
-      const vector: CVSSVector = {
-        AV: 'N',
-        AC: 'L',
-        PR: 'N',
-        UI: 'N',
-        S: 'C',
-        C: 'H',
-        I: 'H',
-        A: 'H',
-        CR: 'H', // High confidentiality requirement
-        IR: 'H', // High integrity requirement
-        AR: 'H', // High availability requirement
-      };
-
-      const result = calculateCVSSScore(vector);
-
-      expect(result.baseScore).toBeCloseTo(10.0, 1);
-      expect(result.environmentalScore).toBeGreaterThan(0);
-    });
   });
 
   describe('generateVectorString', () => {
@@ -147,26 +126,6 @@ describe('CVSS Calculator Tests', () => {
       const result = generateVectorString(vector);
 
       expect(result).toBe('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H/E:F/RL:O/RC:C');
-    });
-
-    test('generates correct CVSS vector string with environmental metrics', () => {
-      const vector: CVSSVector = {
-        AV: 'N',
-        AC: 'L',
-        PR: 'N',
-        UI: 'N',
-        S: 'C',
-        C: 'H',
-        I: 'H',
-        A: 'H',
-        CR: 'H',
-        IR: 'H',
-        AR: 'H',
-      };
-
-      const result = generateVectorString(vector);
-
-      expect(result).toBe('CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H/CR:H/IR:H/AR:H');
     });
 
     test('handles partial vector', () => {

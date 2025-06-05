@@ -4,15 +4,13 @@ import { cvssMetrics } from '../data/cvssMetrics';
 export function calculateCVSSScore(vector: CVSSVector): CVSSScore {
   const baseScore = calculateBaseScore(vector);
   const temporalScore = calculateTemporalScore(baseScore, vector);
-  const environmentalScore = calculateEnvironmentalScore(baseScore, vector);
 
-  const overallScore = environmentalScore || temporalScore || baseScore;
+  const overallScore = temporalScore || baseScore;
   const severity = getSeverityRating(overallScore);
 
   return {
     baseScore,
     temporalScore,
-    environmentalScore,
     overallScore,
     severity,
   };
@@ -77,71 +75,6 @@ function calculateTemporalScore(baseScore: number, vector: CVSSVector): number {
 
   const temporalScore = baseScore * E * RL * RC;
   return roundUp(temporalScore);
-}
-
-function calculateEnvironmentalScore(_baseScore: number, vector: CVSSVector): number {
-  const CR = getMetricScore('CR', vector.CR || 'X');
-  const IR = getMetricScore('IR', vector.IR || 'X');
-  const AR = getMetricScore('AR', vector.AR || 'X');
-
-  if (!vector.CR && !vector.IR && !vector.AR) {
-    return 0;
-  }
-
-  const C = getMetricScore('C', vector.C || 'N');
-  const I = getMetricScore('I', vector.I || 'N');
-  const A = getMetricScore('A', vector.A || 'N');
-
-  const modifiedImpact = Math.min(1 - (1 - C * CR) * (1 - I * IR) * (1 - A * AR), 0.915);
-
-  const AV = getMetricScore('AV', vector.AV || 'N');
-  const AC = getMetricScore('AC', vector.AC || 'L');
-  const PR = getMetricScore('PR', vector.PR || 'N');
-  const UI = getMetricScore('UI', vector.UI || 'N');
-  const S = vector.S || 'U';
-
-  // Adjust PR based on Scope
-  const adjustedPR = S === 'C' ? (PR === 0.62 ? 0.68 : PR === 0.27 ? 0.5 : PR) : PR;
-
-  const modifiedExploitability = 8.22 * AV * AC * adjustedPR * UI;
-
-  let modifiedImpactScore: number;
-  if (vector.S === 'U') {
-    modifiedImpactScore = 6.42 * modifiedImpact;
-  } else {
-    modifiedImpactScore =
-      7.52 * (modifiedImpact - 0.029) - 3.25 * Math.pow(modifiedImpact - 0.02, 15);
-  }
-
-  if (modifiedImpactScore <= 0) {
-    return 0;
-  }
-
-  let environmentalScore: number;
-  if (vector.S === 'U') {
-    environmentalScore = roundUp(
-      Math.min(
-        (modifiedImpactScore + modifiedExploitability) *
-          getMetricScore('E', vector.E || 'X') *
-          getMetricScore('RL', vector.RL || 'X') *
-          getMetricScore('RC', vector.RC || 'X'),
-        10
-      )
-    );
-  } else {
-    environmentalScore = roundUp(
-      Math.min(
-        1.08 *
-          (modifiedImpactScore + modifiedExploitability) *
-          getMetricScore('E', vector.E || 'X') *
-          getMetricScore('RL', vector.RL || 'X') *
-          getMetricScore('RC', vector.RC || 'X'),
-        10
-      )
-    );
-  }
-
-  return environmentalScore;
 }
 
 function roundUp(value: number): number {
