@@ -93,24 +93,45 @@ export const MitreCVSSRubric: React.FC<MitreCVSSRubricProps> = ({ onVectorChange
     categories.forEach(category => {
       const categoryQuestions = mitreRubricQuestions.filter(q => q.category === category);
       
-      // Always show the first question of each category
-      if (categoryQuestions.length > 0) {
-        visible.push(categoryQuestions[0]);
-        
-        // Show subsequent questions based on flowchart logic
-        let currentQ = categoryQuestions[0];
-        while (currentQ && answers[currentQ.id]) {
-          const nextQId = getNextQuestion(currentQ.id, answers[currentQ.id]);
-          if (nextQId) {
-            const nextQ = mitreRubricQuestions.find(q => q.id === nextQId);
-            if (nextQ && nextQ.category === category) {
-              visible.push(nextQ);
-              currentQ = nextQ;
+      // For CIA Impact categories, show all questions in parallel
+      if (category.includes('Impact')) {
+        // For Confidentiality Impact, show all C questions except XCPM (which depends on XCP)
+        if (category === 'Confidentiality Impact') {
+          categoryQuestions.forEach(q => {
+            if (q.id === 'XCPM') {
+              // Only show XCPM if XCP is answered 'yes'
+              if (answers.XCP === 'yes') {
+                visible.push(q);
+              }
+            } else {
+              // Show all other C questions
+              visible.push(q);
+            }
+          });
+        } else {
+          // For Integrity and Availability Impact, show all questions
+          visible.push(...categoryQuestions);
+        }
+      } else {
+        // For non-CIA categories, use flowchart logic
+        if (categoryQuestions.length > 0) {
+          visible.push(categoryQuestions[0]);
+          
+          // Show subsequent questions based on flowchart logic
+          let currentQ = categoryQuestions[0];
+          while (currentQ && answers[currentQ.id]) {
+            const nextQId = getNextQuestion(currentQ.id, answers[currentQ.id]);
+            if (nextQId) {
+              const nextQ = mitreRubricQuestions.find(q => q.id === nextQId);
+              if (nextQ && nextQ.category === category) {
+                visible.push(nextQ);
+                currentQ = nextQ;
+              } else {
+                break;
+              }
             } else {
               break;
             }
-          } else {
-            break;
           }
         }
       }
@@ -224,7 +245,9 @@ export const MitreCVSSRubric: React.FC<MitreCVSSRubricProps> = ({ onVectorChange
       </div>
 
       <div className="mitre-content">
-        {Object.entries(questionsByCategory).map(([category, questions]) => {
+        {/* Debug: Show all expected categories */}
+        {['Attack Vector', 'Attack Complexity', 'Privileges Required', 'User Interaction', 'Scope', 'Confidentiality Impact', 'Integrity Impact', 'Availability Impact'].map(category => {
+          const questions = questionsByCategory[category] || [];
           const isCompleted = completedCategories.has(category);
           const hasQuestions = questions.length > 0;
           
@@ -238,9 +261,13 @@ export const MitreCVSSRubric: React.FC<MitreCVSSRubricProps> = ({ onVectorChange
                 </h3>
               </div>
               
-              {hasQuestions && (
+              {hasQuestions ? (
                 <div className="category-questions">
                   {questions.map(renderQuestion)}
+                </div>
+              ) : (
+                <div className="category-questions">
+                  <p style={{padding: '20px', color: '#999', fontStyle: 'italic'}}>No questions available for this category</p>
                 </div>
               )}
             </div>
