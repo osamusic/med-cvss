@@ -131,7 +131,7 @@ const saveCustomQuestions = (questions: MetricQuestions) => {
 type ViewMode = 'questionnaire' | 'calculator' | 'rubric';
 
 const IntegratedCVSSCalculator: React.FC = () => {
-  const [viewMode, setViewMode] = useState<ViewMode>('questionnaire');
+  const [viewMode, setViewMode] = useState<ViewMode>('rubric');
   const [vector, setVector] = useState<CVSSVector>({});
   const [score, setScore] = useState<CVSSScore>({
     baseScore: 0,
