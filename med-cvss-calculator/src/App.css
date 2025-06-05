@@ -7,7 +7,7 @@
   background: #2c3e50;
   color: white;
   padding: 0 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .app-navigation h1 {
@@ -24,7 +24,7 @@
 }
 
 .nav-tabs button {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -38,7 +38,7 @@
 }
 
 .nav-tabs button:hover {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .nav-tabs button.active {

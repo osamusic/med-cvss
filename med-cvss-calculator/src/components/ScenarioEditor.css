@@ -255,29 +255,29 @@
   .scenario-editor-overlay {
     padding: 10px;
   }
-  
+
   .scenario-editor-modal {
     max-height: 95vh;
   }
-  
+
   .vector-editors {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .scenario-editor-header {
     padding: 15px 20px;
   }
-  
+
   .scenario-editor-content {
     padding: 20px;
   }
-  
+
   .scenario-editor-footer {
     padding: 15px 20px;
     flex-direction: column-reverse;
   }
-  
+
   .cancel-button,
   .save-button {
     width: 100%;

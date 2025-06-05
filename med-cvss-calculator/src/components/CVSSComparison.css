@@ -328,21 +328,21 @@
   .vector-forms {
     grid-template-columns: 1fr;
   }
-  
+
   .score-summary {
     flex-direction: column;
     gap: 20px;
   }
-  
+
   .score-arrow {
     transform: rotate(90deg);
     margin: 10px 0;
   }
-  
+
   .scenario-buttons {
     flex-direction: column;
   }
-  
+
   .scenario-buttons button {
     width: 100%;
   }
@@ -465,7 +465,7 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .scenario-actions {
     justify-content: center;
     margin-top: 8px;

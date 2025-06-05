@@ -1,14 +1,32 @@
-import { compareVectors, calculateRiskReduction, generateComparisonReport } from '../utils/cvssComparison';
+import {
+  compareVectors,
+  calculateRiskReduction,
+  generateComparisonReport,
+} from '../utils/cvssComparison';
 import { CVSSVector } from '../types/cvss';
 
 describe('CVSS Comparison Tests', () => {
   describe('compareVectors', () => {
     test('compares before and after vectors correctly', () => {
       const before: CVSSVector = {
-        AV: 'N', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'H', A: 'H'
+        AV: 'N',
+        AC: 'L',
+        PR: 'N',
+        UI: 'N',
+        S: 'U',
+        C: 'H',
+        I: 'H',
+        A: 'H',
       };
       const after: CVSSVector = {
-        AV: 'L', AC: 'L', PR: 'H', UI: 'N', S: 'U', C: 'L', I: 'L', A: 'L'
+        AV: 'L',
+        AC: 'L',
+        PR: 'H',
+        UI: 'N',
+        S: 'U',
+        C: 'L',
+        I: 'L',
+        A: 'L',
       };
       const remediationActions = ['Network segmentation', 'Authentication required'];
 
@@ -23,22 +41,26 @@ describe('CVSS Comparison Tests', () => {
 
     test('identifies metric changes correctly', () => {
       const before: CVSSVector = {
-        AV: 'N', AC: 'L', PR: 'N'
+        AV: 'N',
+        AC: 'L',
+        PR: 'N',
       };
       const after: CVSSVector = {
-        AV: 'L', AC: 'L', PR: 'H'
+        AV: 'L',
+        AC: 'L',
+        PR: 'H',
       };
 
       const comparison = compareVectors(before, after);
-      
+
       expect(comparison.metricChanges).toHaveLength(2);
-      
-      const avChange = comparison.metricChanges.find(c => c.metric === 'AV');
+
+      const avChange = comparison.metricChanges.find((c) => c.metric === 'AV');
       expect(avChange).toBeDefined();
       expect(avChange?.before).toBe('N');
       expect(avChange?.after).toBe('L');
-      
-      const prChange = comparison.metricChanges.find(c => c.metric === 'PR');
+
+      const prChange = comparison.metricChanges.find((c) => c.metric === 'PR');
       expect(prChange).toBeDefined();
       expect(prChange?.before).toBe('N');
       expect(prChange?.after).toBe('H');
@@ -46,11 +68,18 @@ describe('CVSS Comparison Tests', () => {
 
     test('handles identical vectors', () => {
       const vector: CVSSVector = {
-        AV: 'N', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'H', A: 'H'
+        AV: 'N',
+        AC: 'L',
+        PR: 'N',
+        UI: 'N',
+        S: 'U',
+        C: 'H',
+        I: 'H',
+        A: 'H',
       };
 
       const comparison = compareVectors(vector, vector);
-      
+
       expect(comparison.metricChanges).toHaveLength(0);
       expect(comparison.beforeScore.baseScore).toBe(comparison.afterScore.baseScore);
     });
@@ -59,7 +88,7 @@ describe('CVSS Comparison Tests', () => {
   describe('calculateRiskReduction', () => {
     test('calculates significant risk reduction correctly', () => {
       const result = calculateRiskReduction(9.0, 2.0);
-      
+
       expect(result.scoreReduction).toBeCloseTo(7.0, 1);
       expect(result.percentageReduction).toBeCloseTo(77.8, 1);
       expect(result.riskCategory).toBe('Significant Risk Reduction');
@@ -67,7 +96,7 @@ describe('CVSS Comparison Tests', () => {
 
     test('calculates moderate risk reduction correctly', () => {
       const result = calculateRiskReduction(8.0, 4.0);
-      
+
       expect(result.scoreReduction).toBeCloseTo(4.0, 1);
       expect(result.percentageReduction).toBe(50.0);
       expect(result.riskCategory).toBe('Moderate Risk Reduction');
@@ -75,7 +104,7 @@ describe('CVSS Comparison Tests', () => {
 
     test('calculates minor risk reduction correctly', () => {
       const result = calculateRiskReduction(6.0, 5.0);
-      
+
       expect(result.scoreReduction).toBeCloseTo(1.0, 1);
       expect(result.percentageReduction).toBeCloseTo(16.7, 1);
       expect(result.riskCategory).toBe('Minor Risk Reduction');
@@ -83,7 +112,7 @@ describe('CVSS Comparison Tests', () => {
 
     test('identifies no change', () => {
       const result = calculateRiskReduction(7.0, 7.0);
-      
+
       expect(result.scoreReduction).toBe(0);
       expect(result.percentageReduction).toBe(0);
       expect(result.riskCategory).toBe('No Change');
@@ -91,7 +120,7 @@ describe('CVSS Comparison Tests', () => {
 
     test('identifies risk increase', () => {
       const result = calculateRiskReduction(5.0, 7.0);
-      
+
       expect(result.scoreReduction).toBe(-2.0);
       expect(result.percentageReduction).toBe(-40.0);
       expect(result.riskCategory).toBe('Risk Increase');
@@ -99,7 +128,7 @@ describe('CVSS Comparison Tests', () => {
 
     test('handles zero baseline score', () => {
       const result = calculateRiskReduction(0, 0);
-      
+
       expect(result.scoreReduction).toBe(0);
       expect(result.percentageReduction).toBe(0);
       expect(result.riskCategory).toBe('No Change');
@@ -109,10 +138,24 @@ describe('CVSS Comparison Tests', () => {
   describe('generateComparisonReport', () => {
     test('generates comprehensive report', () => {
       const before: CVSSVector = {
-        AV: 'N', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'H', A: 'H'
+        AV: 'N',
+        AC: 'L',
+        PR: 'N',
+        UI: 'N',
+        S: 'U',
+        C: 'H',
+        I: 'H',
+        A: 'H',
       };
       const after: CVSSVector = {
-        AV: 'L', AC: 'L', PR: 'H', UI: 'N', S: 'U', C: 'L', I: 'L', A: 'L'
+        AV: 'L',
+        AC: 'L',
+        PR: 'H',
+        UI: 'N',
+        S: 'U',
+        C: 'L',
+        I: 'L',
+        A: 'L',
       };
       const remediationActions = ['Network segmentation implemented', 'Authentication required'];
 
@@ -146,32 +189,60 @@ describe('CVSS Comparison Tests', () => {
   describe('Medical Device Remediation Scenarios', () => {
     test('network-connected device remediation reduces score', () => {
       const before: CVSSVector = {
-        AV: 'N', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'N', I: 'H', A: 'H'
+        AV: 'N',
+        AC: 'L',
+        PR: 'N',
+        UI: 'N',
+        S: 'U',
+        C: 'N',
+        I: 'H',
+        A: 'H',
       };
       const after: CVSSVector = {
-        AV: 'L', AC: 'L', PR: 'H', UI: 'N', S: 'U', C: 'N', I: 'L', A: 'L'
+        AV: 'L',
+        AC: 'L',
+        PR: 'H',
+        UI: 'N',
+        S: 'U',
+        C: 'N',
+        I: 'L',
+        A: 'L',
       };
 
       const comparison = compareVectors(before, after);
-      
+
       expect(comparison.beforeScore.baseScore).toBeGreaterThan(comparison.afterScore.baseScore);
-      expect(comparison.metricChanges.some(c => c.metric === 'AV')).toBe(true);
-      expect(comparison.metricChanges.some(c => c.metric === 'PR')).toBe(true);
+      expect(comparison.metricChanges.some((c) => c.metric === 'AV')).toBe(true);
+      expect(comparison.metricChanges.some((c) => c.metric === 'PR')).toBe(true);
     });
 
     test('bluetooth device encryption reduces confidentiality impact', () => {
       const before: CVSSVector = {
-        AV: 'A', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'L', A: 'N'
+        AV: 'A',
+        AC: 'L',
+        PR: 'N',
+        UI: 'N',
+        S: 'U',
+        C: 'H',
+        I: 'L',
+        A: 'N',
       };
       const after: CVSSVector = {
-        AV: 'A', AC: 'H', PR: 'L', UI: 'R', S: 'U', C: 'L', I: 'L', A: 'N'
+        AV: 'A',
+        AC: 'H',
+        PR: 'L',
+        UI: 'R',
+        S: 'U',
+        C: 'L',
+        I: 'L',
+        A: 'N',
       };
 
       const comparison = compareVectors(before, after);
-      
+
       expect(comparison.beforeScore.baseScore).toBeGreaterThan(comparison.afterScore.baseScore);
-      
-      const cChange = comparison.metricChanges.find(c => c.metric === 'C');
+
+      const cChange = comparison.metricChanges.find((c) => c.metric === 'C');
       expect(cChange).toBeDefined();
       expect(cChange?.before).toBe('H');
       expect(cChange?.after).toBe('L');
@@ -179,14 +250,28 @@ describe('CVSS Comparison Tests', () => {
 
     test('physical access restrictions improve security posture', () => {
       const before: CVSSVector = {
-        AV: 'P', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'H', A: 'L'
+        AV: 'P',
+        AC: 'L',
+        PR: 'N',
+        UI: 'N',
+        S: 'U',
+        C: 'H',
+        I: 'H',
+        A: 'L',
       };
       const after: CVSSVector = {
-        AV: 'P', AC: 'H', PR: 'H', UI: 'R', S: 'U', C: 'L', I: 'L', A: 'N'
+        AV: 'P',
+        AC: 'H',
+        PR: 'H',
+        UI: 'R',
+        S: 'U',
+        C: 'L',
+        I: 'L',
+        A: 'N',
       };
 
       const comparison = compareVectors(before, after);
-      
+
       expect(comparison.beforeScore.baseScore).toBeGreaterThan(comparison.afterScore.baseScore);
       expect(comparison.metricChanges.length).toBeGreaterThan(0);
     });
