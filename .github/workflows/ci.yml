@@ -29,7 +29,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd med-cvss-calculator
-        npm ci
+        npm ci --legacy-peer-deps
         
     - name: Run TypeScript type check
       run: |
@@ -70,7 +70,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd med-cvss-calculator
-        npm ci
+        npm ci --legacy-peer-deps
         
     - name: Run ESLint
       run: |
@@ -101,7 +101,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd med-cvss-calculator
-        npm ci
+        npm ci --legacy-peer-deps
         
     - name: Build for production
       run: |
@@ -133,7 +133,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd med-cvss-calculator
-        npm ci
+        npm ci --legacy-peer-deps
         
     - name: Run npm audit
       run: |
@@ -163,7 +163,7 @@ jobs:
         
     - name: Test Docker image
       run: |
-        docker run --rm -d -p 3000:3000 --name test-container med-cvss-calculator:latest
+        docker run --rm -d -p 3000:80 --name test-container med-cvss-calculator:latest
         sleep 10
         curl -f http://localhost:3000 || exit 1
         docker stop test-container
