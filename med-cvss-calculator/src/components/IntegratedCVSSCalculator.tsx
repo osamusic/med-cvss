@@ -259,91 +259,111 @@ const IntegratedCVSSCalculator: React.FC = () => {
   const renderCalculator = () => (
     <div className='calculator-content'>
       <div className='metrics-section'>
-        {getCurrentMetrics().map((group) => (
-          <div key={group.name} className='metric-group'>
-            <h2>{group.name}</h2>
-            {Object.entries(group.metrics).map(([metricKey, options]) => {
-              const guidance = medicalDeviceGuidance[metricKey];
-              const descriptions = getCurrentDescriptions();
-              return (
-                <div key={metricKey} className='metric-with-guidance'>
-                  <div className='metric-header'>
-                    <h3>
-                      {descriptions[metricKey]} ({metricKey})
-                    </h3>
-                    <div className='toggle-guidance-container'>
-                      <span className='guidance-label'>Description</span>
-                      <button
-                        className='toggle-description-btn'
-                        onClick={() => toggleMetricDescription(metricKey)}
-                        aria-label={
-                          collapsedMetrics.has(metricKey)
-                            ? 'Expand description'
-                            : 'Collapse description'
-                        }
-                      >
-                        {collapsedMetrics.has(metricKey) ? '▼' : '▲'}
-                      </button>
-                    </div>
+        {getCurrentMetrics().map((group) => {
+          // For CVSS v4.0, identify Supplemental Metrics group
+          const isSupplementalGroup = group.name === 'Supplemental Metrics';
+
+          return (
+            <div key={group.name} className='metric-group'>
+              <div className='metric-group-header'>
+                <h2>{group.name}</h2>
+                {isSupplementalGroup && (
+                  <div className='supplemental-note'>
+                    <p>
+                      <em>
+                        Optional metrics for additional context. These do not affect the CVSS score
+                        but provide valuable supplemental information for vulnerability assessment.
+                      </em>
+                    </p>
                   </div>
-
-                  {guidance && !collapsedMetrics.has(metricKey) && (
-                    <div className='metric-guidance'>
-                      <div className='guidance-section'>
-                        <h4>Description</h4>
-                        <p>{guidance.general.description}</p>
-                      </div>
-
-                      <div className='guidance-section'>
-                        <h4>Medical Device Context</h4>
-                        <p>{guidance.general.medicalDeviceContext}</p>
-                      </div>
-
-                      <div className='guidance-section'>
-                        <h4>Examples</h4>
-                        <ul>
-                          {guidance.general.examples.map((example, index) => (
-                            <li key={index}>{example}</li>
-                          ))}
-                        </ul>
+                )}
+              </div>
+              {Object.entries(group.metrics).map(([metricKey, options]) => {
+                const guidance = medicalDeviceGuidance[metricKey];
+                const descriptions = getCurrentDescriptions();
+                return (
+                  <div key={metricKey} className='metric-with-guidance'>
+                    <div className='metric-header'>
+                      <h3>
+                        {descriptions[metricKey]} ({metricKey})
+                        {isSupplementalGroup && (
+                          <span className='supplemental-badge'>Supplemental</span>
+                        )}
+                      </h3>
+                      <div className='toggle-guidance-container'>
+                        <span className='guidance-label'>Description</span>
+                        <button
+                          className='toggle-description-btn'
+                          onClick={() => toggleMetricDescription(metricKey)}
+                          aria-label={
+                            collapsedMetrics.has(metricKey)
+                              ? 'Expand description'
+                              : 'Collapse description'
+                          }
+                        >
+                          {collapsedMetrics.has(metricKey) ? '▼' : '▲'}
+                        </button>
                       </div>
                     </div>
-                  )}
 
-                  <div className='metric-options'>
-                    {options.map((option) => {
-                      const optionGuidance = guidance?.options.find(
-                        (og) => og.value === option.value
-                      );
-                      return (
-                        <div key={option.value} className='metric-option-wrapper'>
-                          <button
-                            className={`metric-option ${(vector as any)[metricKey] === option.value ? 'selected' : ''}`}
-                            onClick={() => handleMetricChange(metricKey, option.value)}
-                          >
-                            <span className='option-value'>{option.value}</span>
-                            <span className='option-label'>{option.label}</span>
-                          </button>
-
-                          {optionGuidance && (
-                            <div className='option-guidance'>
-                              <div className='option-guidance-text'>
-                                <strong>Guidance:</strong> {optionGuidance.guidance}
-                              </div>
-                              <div className='option-medical-example'>
-                                <strong>Medical Example:</strong> {optionGuidance.medicalExample}
-                              </div>
-                            </div>
-                          )}
+                    {guidance && !collapsedMetrics.has(metricKey) && (
+                      <div className='metric-guidance'>
+                        <div className='guidance-section'>
+                          <h4>Description</h4>
+                          <p>{guidance.general.description}</p>
                         </div>
-                      );
-                    })}
+
+                        <div className='guidance-section'>
+                          <h4>Medical Device Context</h4>
+                          <p>{guidance.general.medicalDeviceContext}</p>
+                        </div>
+
+                        <div className='guidance-section'>
+                          <h4>Examples</h4>
+                          <ul>
+                            {guidance.general.examples.map((example, index) => (
+                              <li key={index}>{example}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className='metric-options'>
+                      {options.map((option) => {
+                        const optionGuidance = guidance?.options.find(
+                          (og) => og.value === option.value
+                        );
+                        return (
+                          <div key={option.value} className='metric-option-wrapper'>
+                            <button
+                              className={`metric-option ${(vector as any)[metricKey] === option.value ? 'selected' : ''} ${isSupplementalGroup ? 'supplemental-option' : ''}`}
+                              onClick={() => handleMetricChange(metricKey, option.value)}
+                            >
+                              <span className='option-value'>{option.value}</span>
+                              <span className='option-label'>{option.label}</span>
+                            </button>
+
+                            {optionGuidance && (
+                              <div className='option-guidance'>
+                                <div className='option-guidance-text'>
+                                  <strong>Guidance:</strong> {optionGuidance.guidance}
+                                </div>
+                                <div className='option-medical-example'>
+                                  <strong>Medical Example:</strong> {optionGuidance.medicalExample}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        ))}
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

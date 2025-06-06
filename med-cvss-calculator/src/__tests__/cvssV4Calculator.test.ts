@@ -280,4 +280,112 @@ describe('CVSS v4.0 Calculator', () => {
       expect(result.severity).toMatch(/Low|Medium|High/);
     });
   });
+
+  describe('Supplemental Metrics', () => {
+    test('generates correct vector string with supplemental metrics', () => {
+      const vector: CVSSV4Vector = {
+        AV: 'N',
+        AC: 'L',
+        AT: 'N',
+        PR: 'N',
+        UI: 'N',
+        VC: 'H',
+        VI: 'H',
+        VA: 'H',
+        SC: 'N',
+        SI: 'N',
+        SA: 'N',
+        S: 'P', // Safety: Present
+        AU: 'Y', // Automatable: Yes
+        R: 'U', // Recovery: User
+        V: 'C', // Value Density: Concentrated
+        RE: 'H', // Response Effort: High
+        U: 'Red', // Provider Urgency: Red
+      };
+
+      const vectorString = generateV4VectorString(vector);
+
+      expect(vectorString).toContain('CVSS:4.0');
+      expect(vectorString).toContain('S:P');
+      expect(vectorString).toContain('AU:Y');
+      expect(vectorString).toContain('R:U');
+      expect(vectorString).toContain('V:C');
+      expect(vectorString).toContain('RE:H');
+      expect(vectorString).toContain('U:Red');
+    });
+
+    test('excludes supplemental metrics when set to Not Defined', () => {
+      const vector: CVSSV4Vector = {
+        AV: 'N',
+        AC: 'L',
+        AT: 'N',
+        PR: 'N',
+        UI: 'N',
+        VC: 'H',
+        VI: 'H',
+        VA: 'H',
+        SC: 'N',
+        SI: 'N',
+        SA: 'N',
+        S: 'X', // Safety: Not Defined
+        AU: 'X', // Automatable: Not Defined
+        R: 'X', // Recovery: Not Defined
+      };
+
+      const vectorString = generateV4VectorString(vector);
+
+      expect(vectorString).toContain('CVSS:4.0');
+      expect(vectorString).not.toContain('S:X');
+      expect(vectorString).not.toContain('AU:X');
+      expect(vectorString).not.toContain('R:X');
+    });
+
+    test('parses vector string with supplemental metrics correctly', () => {
+      const vectorString =
+        'CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/S:P/AU:Y/R:U/V:C/RE:H/U:Red';
+
+      const result = parseV4VectorString(vectorString);
+
+      expect(result.S).toBe('P');
+      expect(result.AU).toBe('Y');
+      expect(result.R).toBe('U');
+      expect(result.V).toBe('C');
+      expect(result.RE).toBe('H');
+      expect(result.U).toBe('Red');
+    });
+
+    test('supplemental metrics do not affect base score calculation', () => {
+      const baseVector: CVSSV4Vector = {
+        AV: 'N',
+        AC: 'L',
+        AT: 'N',
+        PR: 'N',
+        UI: 'N',
+        VC: 'H',
+        VI: 'H',
+        VA: 'H',
+        SC: 'N',
+        SI: 'N',
+        SA: 'N',
+      };
+
+      const vectorWithSupplemental: CVSSV4Vector = {
+        ...baseVector,
+        S: 'P',
+        AU: 'Y',
+        R: 'U',
+        V: 'C',
+        RE: 'H',
+        U: 'Red',
+      };
+
+      const baseResult = calculateCVSSV4Score(baseVector);
+      const supplementalResult = calculateCVSSV4Score(vectorWithSupplemental);
+
+      // Supplemental metrics should not affect the base score
+      expect(supplementalResult.baseScore).toBe(baseResult.baseScore);
+      expect(supplementalResult.overallScore).toBe(baseResult.overallScore);
+      expect(supplementalResult.severity).toBe(baseResult.severity);
+    });
+  });
 });

@@ -1,10 +1,10 @@
 # Medical Device CVSS Calculator
 
-A React TypeScript application that adapts the standard CVSS v3.1 vulnerability scoring system for medical device security assessment. The application provides both a guided questionnaire interface for non-technical users and a technical calculator interface for cybersecurity professionals.
+A React TypeScript application that implements both CVSS v3.1 and v4.0 vulnerability scoring systems for medical device security assessment. The application provides both a guided questionnaire interface for non-technical users and a technical calculator interface for cybersecurity professionals.
 
 ## ✨ Features
 
-- **CVSS v3.1 Calculator**: Full implementation of CVSS v3.1 specification
+- **CVSS v3.1 & v4.0 Calculator**: Full implementation of both CVSS specifications
 - **Before/After Comparison**: Evaluate risk reduction after implementing remediation measures
 - **Medical Device Scenarios**: Pre-built scenarios for healthcare environments
 - **Custom Scenarios**: Create, edit, and manage your own remediation scenarios
@@ -135,10 +135,18 @@ See `.env.example` for all available configuration options.
 
 ## 📊 CVSS Implementation
 
-The application implements the full CVSS v3.1 specification including:
+The application implements both CVSS v3.1 and v4.0 specifications:
+
+**CVSS v3.1 Features:**
 - **Base Metrics**: Attack Vector, Attack Complexity, Privileges Required, User Interaction, Scope, C/I/A Impact
 - **Temporal Metrics**: Exploit Code Maturity, Remediation Level, Report Confidence
 - **Environmental Metrics**: Modified Base metrics and C/I/A Requirements
+
+**CVSS v4.0 Features:**
+- **Base Metrics**: Attack Vector, Attack Complexity, Attack Requirements, Privileges Required, User Interaction, Vulnerable/Subsequent System Impact
+- **Threat Metrics**: Exploit Maturity
+- **Environmental Metrics**: Modified metrics and C/I/A Requirements
+- **Supplemental Metrics**: Safety, Automatable, Recovery, Value Density, Vulnerability Response Effort, Provider Urgency
 
 ## 🧪 Testing
 
@@ -188,3 +196,13 @@ The built application can be deployed to any static hosting platform (Vercel, Ne
 ## 📄 License
 
 This project is intended for educational and professional use in healthcare cybersecurity.
+
+### Third-Party Components
+
+This project incorporates code from the RedHat CVSS v4.0 Calculator:
+- **Source**: [RedHat CVSS v4.0 Calculator](https://github.com/RedHatProductSecurity/cvss-v4-calculator)
+- **Copyright**: FIRST.ORG, Inc., Red Hat, and contributors
+- **License**: BSD-2-Clause
+- **Components**: CVSS v4.0 scoring algorithm and lookup tables in `src/utils/cvssV4Official.ts`
+
+The original BSD-2-Clause license text is included in the source file header.
