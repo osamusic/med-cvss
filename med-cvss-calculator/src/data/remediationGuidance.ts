@@ -98,6 +98,7 @@ export const medicalDeviceRemediationScenarios = [
   {
     title: 'Network-Connected Medical Device Remediation Example',
     description: 'Network isolation of infusion pump',
+    version: '3.1' as const,
     before: {
       AV: 'N',
       AC: 'L',
@@ -127,6 +128,7 @@ export const medicalDeviceRemediationScenarios = [
   {
     title: 'Patient Data Exposure Risk Remediation Example',
     description: 'Data encryption for Bluetooth medical device',
+    version: '3.1' as const,
     before: {
       AV: 'A',
       AC: 'L',
@@ -156,6 +158,7 @@ export const medicalDeviceRemediationScenarios = [
   {
     title: 'Physical Access Control Remediation Example',
     description: 'Physical access restrictions for medical devices',
+    version: '3.1' as const,
     before: {
       AV: 'P',
       AC: 'L',

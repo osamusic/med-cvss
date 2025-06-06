@@ -12,6 +12,7 @@ export function compareVectors(
   const metricChanges = generateMetricChanges(before, after);
 
   return {
+    version: '3.1',
     before,
     after,
     beforeScore,

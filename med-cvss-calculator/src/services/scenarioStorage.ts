@@ -145,6 +145,7 @@ export class FirebaseStorageProvider implements ScenarioStorageProvider {
           id: doc.id,
           title: data.title,
           description: data.description,
+          version: data.version || '3.1',
           before: data.before,
           after: data.after,
           remediationActions: data.remediationActions,

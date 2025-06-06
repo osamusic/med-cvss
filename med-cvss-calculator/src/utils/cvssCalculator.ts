@@ -1,5 +1,10 @@
-import { CVSSVector, CVSSScore } from '../types/cvss';
+import { CVSSVector, CVSSScore, CVSSV4Vector, CVSSVersion } from '../types/cvss';
 import { cvssMetrics } from '../data/cvssMetrics';
+import {
+  calculateCVSSV4Score,
+  generateV4VectorString,
+  parseV4VectorString,
+} from './cvssV4Calculator';
 
 export function calculateCVSSScore(vector: CVSSVector): CVSSScore {
   const baseScore = calculateBaseScore(vector);
@@ -99,4 +104,72 @@ export function generateVectorString(vector: CVSSVector): string {
   });
 
   return parts.join('/');
+}
+
+// Universal functions that work with both CVSS versions
+export function calculateUniversalCVSSScore(
+  vector: CVSSVector | CVSSV4Vector,
+  version: CVSSVersion
+): CVSSScore {
+  if (version === '4.0') {
+    return calculateCVSSV4Score(vector as CVSSV4Vector);
+  } else {
+    return calculateCVSSScore(vector as CVSSVector);
+  }
+}
+
+export function generateUniversalVectorString(
+  vector: CVSSVector | CVSSV4Vector,
+  version: CVSSVersion
+): string {
+  if (version === '4.0') {
+    return generateV4VectorString(vector as CVSSV4Vector);
+  } else {
+    return generateVectorString(vector as CVSSVector);
+  }
+}
+
+export function parseVectorString(vectorString: string): {
+  vector: CVSSVector | CVSSV4Vector;
+  version: CVSSVersion;
+} {
+  if (vectorString.startsWith('CVSS:4.0/')) {
+    return {
+      vector: parseV4VectorString(vectorString),
+      version: '4.0',
+    };
+  } else if (vectorString.startsWith('CVSS:3.1/')) {
+    return {
+      vector: parseV31VectorString(vectorString),
+      version: '3.1',
+    };
+  } else {
+    // Default to 3.1 for backward compatibility
+    return {
+      vector: parseV31VectorString(vectorString),
+      version: '3.1',
+    };
+  }
+}
+
+function parseV31VectorString(vectorString: string): CVSSVector {
+  const vector: CVSSVector = {};
+
+  const parts = vectorString.replace('CVSS:3.1/', '').split('/');
+
+  parts.forEach((part) => {
+    const [key, value] = part.split(':');
+    if (key && value) {
+      (vector as any)[key] = value;
+    }
+  });
+
+  return vector;
+}
+
+export function detectCVSSVersion(vectorString: string): CVSSVersion {
+  if (vectorString.startsWith('CVSS:4.0')) {
+    return '4.0';
+  }
+  return '3.1'; // Default to 3.1
 }
