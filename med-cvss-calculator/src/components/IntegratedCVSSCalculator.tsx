@@ -18,6 +18,9 @@ const IntegratedCVSSCalculator: React.FC = () => {
     severity: 'None',
   });
   const [vectorString, setVectorString] = useState<string>('CVSS:3.1');
+  const [collapsedMetrics, setCollapsedMetrics] = useState<Set<string>>(
+    new Set(Object.keys(metricDescriptions))
+  );
 
   useEffect(() => {
     const calculatedScore = calculateCVSSScore(vector);
@@ -96,6 +99,18 @@ const IntegratedCVSSCalculator: React.FC = () => {
     setVector({});
   };
 
+  const toggleMetricDescription = (metricKey: string) => {
+    setCollapsedMetrics((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(metricKey)) {
+        newSet.delete(metricKey);
+      } else {
+        newSet.add(metricKey);
+      }
+      return newSet;
+    });
+  };
+
   const renderCalculator = () => (
     <div className='calculator-content'>
       <div className='metrics-section'>
@@ -110,9 +125,23 @@ const IntegratedCVSSCalculator: React.FC = () => {
                     <h3>
                       {metricDescriptions[metricKey]} ({metricKey})
                     </h3>
+                    <div className='toggle-guidance-container'>
+                      <span className='guidance-label'>Description</span>
+                      <button
+                        className='toggle-description-btn'
+                        onClick={() => toggleMetricDescription(metricKey)}
+                        aria-label={
+                          collapsedMetrics.has(metricKey)
+                            ? 'Expand description'
+                            : 'Collapse description'
+                        }
+                      >
+                        {collapsedMetrics.has(metricKey) ? '▼' : '▲'}
+                      </button>
+                    </div>
                   </div>
 
-                  {guidance && (
+                  {guidance && !collapsedMetrics.has(metricKey) && (
                     <div className='metric-guidance'>
                       <div className='guidance-section'>
                         <h4>Description</h4>
