@@ -326,8 +326,7 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
       {
         value: 'U',
-        guidance:
-          'No reliable exploit exists or the vulnerability has not been reported publicly.',
+        guidance: 'No reliable exploit exists or the vulnerability has not been reported publicly.',
         medicalExample:
           'Theoretical medical device vulnerability, unpublished research findings, internal security assessments only',
       },
@@ -340,8 +339,7 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
       {
         value: 'A',
-        guidance:
-          'Attacks have been reported against this vulnerability in the wild.',
+        guidance: 'Attacks have been reported against this vulnerability in the wild.',
         medicalExample:
           'Documented attacks on medical devices in clinical environments, healthcare security incidents, active exploitation in healthcare facilities',
       },
@@ -917,8 +915,7 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
       {
         value: 'U',
-        guidance:
-          'Manual user intervention is required to recover the system after an attack.',
+        guidance: 'Manual user intervention is required to recover the system after an attack.',
         medicalExample:
           'Manual medical device restart procedures, clinical staff intervention required, device reconfiguration needed, manual patient data recovery',
       },
@@ -953,15 +950,13 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
       {
         value: 'D',
-        guidance:
-          'The system has limited resources, with diffuse value distribution.',
+        guidance: 'The system has limited resources, with diffuse value distribution.',
         medicalExample:
           'Individual medical devices with limited data, single-patient monitoring systems, isolated diagnostic equipment, standalone medical workstations',
       },
       {
         value: 'C',
-        guidance:
-          'The system is rich in resources, with concentrated high-value targets.',
+        guidance: 'The system is rich in resources, with concentrated high-value targets.',
         medicalExample:
           'Hospital-wide EHR systems, centralized medical device management platforms, comprehensive patient databases, critical healthcare infrastructure hubs',
       },
@@ -1032,29 +1027,25 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
       {
         value: 'Clear',
-        guidance:
-          'Informational only with no specific urgency for remediation.',
+        guidance: 'Informational only with no specific urgency for remediation.',
         medicalExample:
           'General medical device security awareness, non-critical informational updates, routine security notifications, educational advisories',
       },
       {
         value: 'Green',
-        guidance:
-          'Reduced urgency for remediation with standard timelines.',
+        guidance: 'Reduced urgency for remediation with standard timelines.',
         medicalExample:
           'Non-critical medical device updates, routine maintenance window patches, low-risk security improvements, standard clinical scheduling',
       },
       {
         value: 'Amber',
-        guidance:
-          'Moderate urgency requiring timely but not emergency response.',
+        guidance: 'Moderate urgency requiring timely but not emergency response.',
         medicalExample:
           'Important medical device security updates, clinical workflow considerations, coordinated maintenance scheduling, elevated priority patches',
       },
       {
         value: 'Red',
-        guidance:
-          'Highest urgency requiring immediate attention and emergency response.',
+        guidance: 'Highest urgency requiring immediate attention and emergency response.',
         medicalExample:
           'Critical patient safety vulnerabilities, immediate medical device shutdown required, emergency clinical protocol activation, urgent FDA safety alerts',
       },
@@ -1157,7 +1148,8 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
     options: [
       {
         value: 'X',
-        guidance: 'The environmental impact is not defined, use original Attack Requirements value.',
+        guidance:
+          'The environmental impact is not defined, use original Attack Requirements value.',
         medicalExample:
           'Default environmental scoring, no specific workflow modifications in this clinical environment',
       },
@@ -1191,7 +1183,8 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
     options: [
       {
         value: 'X',
-        guidance: 'The environmental impact is not defined, use original Privileges Required value.',
+        guidance:
+          'The environmental impact is not defined, use original Privileges Required value.',
         medicalExample:
           'Default environmental scoring, no specific privilege modifications in this healthcare facility',
       },
@@ -1271,7 +1264,8 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
     options: [
       {
         value: 'X',
-        guidance: 'The environmental impact is not defined, use original Vulnerable System Confidentiality value.',
+        guidance:
+          'The environmental impact is not defined, use original Vulnerable System Confidentiality value.',
         medicalExample:
           'Default environmental scoring, no specific confidentiality modifications for this medical device',
       },
@@ -1311,7 +1305,8 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
     options: [
       {
         value: 'X',
-        guidance: 'The environmental impact is not defined, use original Vulnerable System Integrity value.',
+        guidance:
+          'The environmental impact is not defined, use original Vulnerable System Integrity value.',
         medicalExample:
           'Default environmental scoring, no specific integrity modifications for this medical device',
       },
@@ -1351,7 +1346,8 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
     options: [
       {
         value: 'X',
-        guidance: 'The environmental impact is not defined, use original Vulnerable System Availability value.',
+        guidance:
+          'The environmental impact is not defined, use original Vulnerable System Availability value.',
         medicalExample:
           'Default environmental scoring, no specific availability modifications for this medical device',
       },
@@ -1391,7 +1387,8 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
     options: [
       {
         value: 'X',
-        guidance: 'The environmental impact is not defined, use original Subsequent System Confidentiality value.',
+        guidance:
+          'The environmental impact is not defined, use original Subsequent System Confidentiality value.',
         medicalExample:
           'Default environmental scoring, no specific network modifications in this healthcare environment',
       },
@@ -1431,7 +1428,8 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
     options: [
       {
         value: 'X',
-        guidance: 'The environmental impact is not defined, use original Subsequent System Integrity value.',
+        guidance:
+          'The environmental impact is not defined, use original Subsequent System Integrity value.',
         medicalExample:
           'Default environmental scoring, no specific integration modifications in this healthcare environment',
       },
@@ -1471,7 +1469,8 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
     options: [
       {
         value: 'X',
-        guidance: 'The environmental impact is not defined, use original Subsequent System Availability value.',
+        guidance:
+          'The environmental impact is not defined, use original Subsequent System Availability value.',
         medicalExample:
           'Default environmental scoring, no specific dependency modifications in this healthcare environment',
       },
