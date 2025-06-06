@@ -26,6 +26,9 @@ const IntegratedCVSSCalculator: React.FC = () => {
   const [collapsedMetrics, setCollapsedMetrics] = useState<Set<string>>(
     new Set(Object.keys(version === '3.1' ? metricDescriptions : cvssV4MetricDescriptions))
   );
+  const [collapsedIndividualMetrics, setCollapsedIndividualMetrics] = useState<Set<string>>(
+    new Set()
+  );
 
   useEffect(() => {
     const calculatedScore = calculateUniversalCVSSScore(vector, version);
@@ -252,6 +255,18 @@ const IntegratedCVSSCalculator: React.FC = () => {
     });
   };
 
+  const toggleIndividualMetric = (metricKey: string) => {
+    setCollapsedIndividualMetrics((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(metricKey)) {
+        newSet.delete(metricKey);
+      } else {
+        newSet.add(metricKey);
+      }
+      return newSet;
+    });
+  };
+
   const getCurrentMetrics = () => (version === '3.1' ? cvssMetrics : cvssV4Metrics);
   const getCurrentDescriptions = () =>
     version === '3.1' ? metricDescriptions : cvssV4MetricDescriptions;
@@ -281,8 +296,15 @@ const IntegratedCVSSCalculator: React.FC = () => {
               {Object.entries(group.metrics).map(([metricKey, options]) => {
                 const guidance = medicalDeviceGuidance[metricKey];
                 const descriptions = getCurrentDescriptions();
+                const isMetricCollapsed = collapsedIndividualMetrics.has(metricKey);
+                const selectedValue = (vector as any)[metricKey];
+                const selectedOption = options.find((option) => option.value === selectedValue);
+
                 return (
-                  <div key={metricKey} className='metric-with-guidance'>
+                  <div
+                    key={metricKey}
+                    className={`metric-with-guidance ${isMetricCollapsed ? 'metric-collapsed' : ''}`}
+                  >
                     <div className='metric-header'>
                       <h3>
                         {descriptions[metricKey]} ({metricKey})
@@ -290,74 +312,100 @@ const IntegratedCVSSCalculator: React.FC = () => {
                           <span className='supplemental-badge'>Supplemental</span>
                         )}
                       </h3>
-                      <div className='toggle-guidance-container'>
-                        <span className='guidance-label'>Description</span>
+                      <div className='metric-controls'>
                         <button
-                          className='toggle-description-btn'
-                          onClick={() => toggleMetricDescription(metricKey)}
-                          aria-label={
-                            collapsedMetrics.has(metricKey)
-                              ? 'Expand description'
-                              : 'Collapse description'
-                          }
+                          className='toggle-metric-btn'
+                          onClick={() => toggleIndividualMetric(metricKey)}
+                          aria-label={isMetricCollapsed ? 'Expand metric' : 'Collapse metric'}
+                          title={isMetricCollapsed ? 'Expand metric' : 'Collapse metric'}
                         >
-                          {collapsedMetrics.has(metricKey) ? '▼' : '▲'}
+                          {isMetricCollapsed ? '▶' : '▼'}
                         </button>
+                        {!isMetricCollapsed && (
+                          <div className='toggle-guidance-container'>
+                            <span className='guidance-label'>Description</span>
+                            <button
+                              className='toggle-description-btn'
+                              onClick={() => toggleMetricDescription(metricKey)}
+                              aria-label={
+                                collapsedMetrics.has(metricKey)
+                                  ? 'Expand description'
+                                  : 'Collapse description'
+                              }
+                            >
+                              {collapsedMetrics.has(metricKey) ? '▼' : '▲'}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {guidance && !collapsedMetrics.has(metricKey) && (
-                      <div className='metric-guidance'>
-                        <div className='guidance-section'>
-                          <h4>Description</h4>
-                          <p>{guidance.general.description}</p>
-                        </div>
-
-                        <div className='guidance-section'>
-                          <h4>Medical Device Context</h4>
-                          <p>{guidance.general.medicalDeviceContext}</p>
-                        </div>
-
-                        <div className='guidance-section'>
-                          <h4>Examples</h4>
-                          <ul>
-                            {guidance.general.examples.map((example, index) => (
-                              <li key={index}>{example}</li>
-                            ))}
-                          </ul>
-                        </div>
+                    {isMetricCollapsed && selectedOption && (
+                      <div className='metric-collapsed-display'>
+                        <span className='selected-value-display'>
+                          <span className='selected-option-value'>{selectedOption.value}</span>
+                          <span className='selected-option-label'>{selectedOption.label}</span>
+                        </span>
                       </div>
                     )}
 
-                    <div className='metric-options'>
-                      {options.map((option) => {
-                        const optionGuidance = guidance?.options.find(
-                          (og) => og.value === option.value
-                        );
-                        return (
-                          <div key={option.value} className='metric-option-wrapper'>
-                            <button
-                              className={`metric-option ${(vector as any)[metricKey] === option.value ? 'selected' : ''} ${isSupplementalGroup ? 'supplemental-option' : ''}`}
-                              onClick={() => handleMetricChange(metricKey, option.value)}
-                            >
-                              <span className='option-value'>{option.value}</span>
-                              <span className='option-label'>{option.label}</span>
-                            </button>
+                    {!isMetricCollapsed && (
+                      <>
+                        {guidance && !collapsedMetrics.has(metricKey) && (
+                          <div className='metric-guidance'>
+                            <div className='guidance-section'>
+                              <h4>Description</h4>
+                              <p>{guidance.general.description}</p>
+                            </div>
 
-                            {optionGuidance && (
-                              <div className='option-guidance'>
-                                <div className='option-guidance-text'>
-                                  <strong>Guidance:</strong> {optionGuidance.guidance}
-                                </div>
-                                <div className='option-medical-example'>
-                                  <strong>Medical Example:</strong> {optionGuidance.medicalExample}
-                                </div>
-                              </div>
-                            )}
+                            <div className='guidance-section'>
+                              <h4>Medical Device Context</h4>
+                              <p>{guidance.general.medicalDeviceContext}</p>
+                            </div>
+
+                            <div className='guidance-section'>
+                              <h4>Examples</h4>
+                              <ul>
+                                {guidance.general.examples.map((example, index) => (
+                                  <li key={index}>{example}</li>
+                                ))}
+                              </ul>
+                            </div>
                           </div>
-                        );
-                      })}
-                    </div>
+                        )}
+
+                        <div className='metric-options'>
+                          {options.map((option) => {
+                            const optionGuidance = guidance?.options.find(
+                              (og) => og.value === option.value
+                            );
+                            return (
+                              <div key={option.value} className='metric-option-wrapper'>
+                                <button
+                                  className={`metric-option ${(vector as any)[metricKey] === option.value ? 'selected' : ''} ${isSupplementalGroup ? 'supplemental-option' : ''}`}
+                                  onClick={() => handleMetricChange(metricKey, option.value)}
+                                >
+                                  <span className='option-value'>{option.value}</span>
+                                  <span className='option-label'>{option.label}</span>
+                                </button>
+
+                                {optionGuidance && (
+                                  <div className='option-guidance'>
+                                    <div className='option-guidance-text'>
+                                      <strong>Guidance:</strong> {optionGuidance.guidance}
+                                    </div>
+                                    <div className='option-medical-example'>
+                                      <strong>Medical Example:</strong>{' '}
+                                      {optionGuidance.medicalExample}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
                   </div>
                 );
               })}
