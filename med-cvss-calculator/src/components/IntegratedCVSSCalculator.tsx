@@ -89,6 +89,11 @@ const IntegratedCVSSCalculator: React.FC = () => {
       description: 'User interaction required attack',
       vector: { AV: 'N', AC: 'L', PR: 'N', UI: 'R', S: 'U', C: 'L', I: 'L', A: 'N' },
     },
+    {
+      name: 'USB Memory Attack',
+      description: 'Malicious USB device with physical access',
+      vector: { AV: 'L', AC: 'L', PR: 'N', UI: 'R', S: 'C', C: 'H', I: 'H', A: 'L' },
+    },
   ];
 
   const applyQuickPreset = (preset: (typeof quickPresets)[0]) => {
