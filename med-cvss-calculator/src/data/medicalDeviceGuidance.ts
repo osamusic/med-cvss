@@ -816,7 +816,7 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
     ],
   },
   // CVSS v4.0 Supplemental Metrics (Optional)
-  S: {
+  Safety: {
     general: {
       description:
         'Safety describes the potential for physical harm or threats to human life or safety resulting from exploitation of the vulnerability.',
@@ -852,7 +852,7 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
     ],
   },
-  AU: {
+  Automatable: {
     general: {
       description:
         'Automatable captures whether attackers can reliably automate all four steps of the attack kill chain for this vulnerability.',
@@ -888,7 +888,7 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
     ],
   },
-  R: {
+  Recovery: {
     general: {
       description:
         'Recovery describes the resilience of a system to recover services in terms of performance and availability after an attack.',
@@ -931,7 +931,7 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
     ],
   },
-  V: {
+  ValueDensity: {
     general: {
       description:
         'Value Density describes the resources that attackers will gain control over with a single exploitation event.',
@@ -967,7 +967,7 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
     ],
   },
-  RE: {
+  ResponseEffort: {
     general: {
       description:
         'Vulnerability Response Effort describes how difficult it is for consumers to provide an initial response to the vulnerability impact.',
@@ -1010,7 +1010,7 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
     ],
   },
-  U: {
+  ProviderUrgency: {
     general: {
       description:
         'Provider Urgency is a pass-through metric allowing vendors to provide supplemental severity ratings for vulnerability remediation urgency.',
