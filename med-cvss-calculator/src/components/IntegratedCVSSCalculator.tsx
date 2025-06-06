@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { CVSSVector, CVSSScore } from '../types/cvss';
+import { CVSSVector, CVSSScore, CVSSV4Vector, CVSSVersion } from '../types/cvss';
 import { cvssMetrics, metricDescriptions } from '../data/cvssMetrics';
-import { calculateCVSSScore, generateVectorString } from '../utils/cvssCalculator';
+import { cvssV4Metrics, cvssV4MetricDescriptions } from '../data/cvssV4Metrics';
+import {
+  calculateUniversalCVSSScore,
+  generateUniversalVectorString,
+} from '../utils/cvssCalculator';
 import { MitreCVSSRubric } from './MitreCVSSRubric';
 import { medicalDeviceGuidance } from '../data/medicalDeviceGuidance';
 import './IntegratedCVSSCalculator.css';
@@ -10,7 +14,8 @@ type ViewMode = 'calculator' | 'rubric';
 
 const IntegratedCVSSCalculator: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('calculator');
-  const [vector, setVector] = useState<CVSSVector>({});
+  const [version, setVersion] = useState<CVSSVersion>('3.1');
+  const [vector, setVector] = useState<CVSSVector | CVSSV4Vector>({});
   const [score, setScore] = useState<CVSSScore>({
     baseScore: 0,
     temporalScore: 0,
@@ -19,14 +24,27 @@ const IntegratedCVSSCalculator: React.FC = () => {
   });
   const [vectorString, setVectorString] = useState<string>('CVSS:3.1');
   const [collapsedMetrics, setCollapsedMetrics] = useState<Set<string>>(
-    new Set(Object.keys(metricDescriptions))
+    new Set(Object.keys(version === '3.1' ? metricDescriptions : cvssV4MetricDescriptions))
   );
 
   useEffect(() => {
-    const calculatedScore = calculateCVSSScore(vector);
+    const calculatedScore = calculateUniversalCVSSScore(vector, version);
     setScore(calculatedScore);
-    setVectorString(generateVectorString(vector));
-  }, [vector]);
+    setVectorString(generateUniversalVectorString(vector, version));
+  }, [vector, version]);
+
+  useEffect(() => {
+    // Reset vector and update collapsed metrics when version changes
+    setVector({});
+    setCollapsedMetrics(
+      new Set(Object.keys(version === '3.1' ? metricDescriptions : cvssV4MetricDescriptions))
+    );
+
+    // Switch to calculator mode if we're in rubric mode and switching to v4.0
+    if (version === '4.0' && viewMode === 'rubric') {
+      setViewMode('calculator');
+    }
+  }, [version, viewMode]);
 
   const handleMetricChange = (metric: string, value: string) => {
     setVector((prev) => ({
@@ -58,45 +76,163 @@ const IntegratedCVSSCalculator: React.FC = () => {
   };
 
   const allRequiredMetricsSelected = (): boolean => {
-    const requiredMetrics = ['AV', 'AC', 'PR', 'UI', 'S', 'C', 'I', 'A'];
-    return requiredMetrics.every((metric) => vector[metric as keyof CVSSVector]);
+    if (version === '3.1') {
+      const requiredMetrics = ['AV', 'AC', 'PR', 'UI', 'S', 'C', 'I', 'A'];
+      return requiredMetrics.every((metric) => (vector as CVSSVector)[metric as keyof CVSSVector]);
+    } else {
+      // CVSS v4.0 base metrics
+      const requiredMetrics = ['AV', 'AC', 'AT', 'PR', 'UI', 'VC', 'VI', 'VA', 'SC', 'SI', 'SA'];
+      return requiredMetrics.every(
+        (metric) => (vector as CVSSV4Vector)[metric as keyof CVSSV4Vector]
+      );
+    }
   };
 
   // Quick selection presets for common medical device scenarios
-  const quickPresets = [
-    {
-      name: 'Critical Network Attack',
-      description: 'Remote network exploitation with high impact',
-      vector: { AV: 'N', AC: 'L', PR: 'N', UI: 'N', S: 'C', C: 'H', I: 'H', A: 'H' },
-    },
-    {
-      name: 'Local Admin Compromise',
-      description: 'Local access with admin privileges needed',
-      vector: { AV: 'L', AC: 'L', PR: 'H', UI: 'N', S: 'U', C: 'H', I: 'H', A: 'H' },
-    },
-    {
-      name: 'Adjacent Network Attack',
-      description: 'WiFi/Bluetooth proximity-based attack',
-      vector: { AV: 'A', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'L', A: 'L' },
-    },
-    {
-      name: 'Physical Access Attack',
-      description: 'Physical device access required',
-      vector: { AV: 'P', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'H', A: 'N' },
-    },
-    {
-      name: 'Social Engineering',
-      description: 'User interaction required attack',
-      vector: { AV: 'N', AC: 'L', PR: 'N', UI: 'R', S: 'U', C: 'L', I: 'L', A: 'N' },
-    },
-    {
-      name: 'USB Memory Attack',
-      description: 'Malicious USB device with physical access',
-      vector: { AV: 'L', AC: 'L', PR: 'N', UI: 'R', S: 'C', C: 'H', I: 'H', A: 'L' },
-    },
-  ];
+  const getQuickPresets = () => {
+    if (version === '3.1') {
+      return [
+        {
+          name: 'Critical Network Attack',
+          description: 'Remote network exploitation with high impact',
+          vector: { AV: 'N', AC: 'L', PR: 'N', UI: 'N', S: 'C', C: 'H', I: 'H', A: 'H' },
+        },
+        {
+          name: 'Local Admin Compromise',
+          description: 'Local access with admin privileges needed',
+          vector: { AV: 'L', AC: 'L', PR: 'H', UI: 'N', S: 'U', C: 'H', I: 'H', A: 'H' },
+        },
+        {
+          name: 'Adjacent Network Attack',
+          description: 'WiFi/Bluetooth proximity-based attack',
+          vector: { AV: 'A', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'L', A: 'L' },
+        },
+        {
+          name: 'Physical Access Attack',
+          description: 'Physical device access required',
+          vector: { AV: 'P', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'H', A: 'N' },
+        },
+        {
+          name: 'Social Engineering',
+          description: 'User interaction required attack',
+          vector: { AV: 'N', AC: 'L', PR: 'N', UI: 'R', S: 'U', C: 'L', I: 'L', A: 'N' },
+        },
+        {
+          name: 'USB Memory Attack',
+          description: 'Malicious USB device with physical access',
+          vector: { AV: 'L', AC: 'L', PR: 'N', UI: 'R', S: 'C', C: 'H', I: 'H', A: 'L' },
+        },
+      ];
+    } else {
+      // CVSS v4.0 presets
+      return [
+        {
+          name: 'Critical Network Attack',
+          description: 'Remote network exploitation with high impact',
+          vector: {
+            AV: 'N',
+            AC: 'L',
+            AT: 'N',
+            PR: 'N',
+            UI: 'N',
+            VC: 'H',
+            VI: 'H',
+            VA: 'H',
+            SC: 'H',
+            SI: 'H',
+            SA: 'H',
+          },
+        },
+        {
+          name: 'Local Admin Compromise',
+          description: 'Local access with admin privileges needed',
+          vector: {
+            AV: 'L',
+            AC: 'L',
+            AT: 'N',
+            PR: 'H',
+            UI: 'N',
+            VC: 'H',
+            VI: 'H',
+            VA: 'H',
+            SC: 'N',
+            SI: 'N',
+            SA: 'N',
+          },
+        },
+        {
+          name: 'Adjacent Network Attack',
+          description: 'WiFi/Bluetooth proximity-based attack',
+          vector: {
+            AV: 'A',
+            AC: 'L',
+            AT: 'N',
+            PR: 'N',
+            UI: 'N',
+            VC: 'H',
+            VI: 'L',
+            VA: 'L',
+            SC: 'N',
+            SI: 'N',
+            SA: 'N',
+          },
+        },
+        {
+          name: 'Physical Access Attack',
+          description: 'Physical device access required',
+          vector: {
+            AV: 'P',
+            AC: 'L',
+            AT: 'N',
+            PR: 'N',
+            UI: 'N',
+            VC: 'H',
+            VI: 'H',
+            VA: 'N',
+            SC: 'N',
+            SI: 'N',
+            SA: 'N',
+          },
+        },
+        {
+          name: 'Social Engineering',
+          description: 'User interaction required attack',
+          vector: {
+            AV: 'N',
+            AC: 'L',
+            AT: 'N',
+            PR: 'N',
+            UI: 'A',
+            VC: 'L',
+            VI: 'L',
+            VA: 'N',
+            SC: 'N',
+            SI: 'N',
+            SA: 'N',
+          },
+        },
+        {
+          name: 'USB Memory Attack',
+          description: 'Malicious USB device with physical access',
+          vector: {
+            AV: 'L',
+            AC: 'L',
+            AT: 'N',
+            PR: 'N',
+            UI: 'P',
+            VC: 'H',
+            VI: 'H',
+            VA: 'L',
+            SC: 'L',
+            SI: 'L',
+            SA: 'N',
+          },
+        },
+      ];
+    }
+  };
 
-  const applyQuickPreset = (preset: (typeof quickPresets)[0]) => {
+  const applyQuickPreset = (preset: ReturnType<typeof getQuickPresets>[0]) => {
     setVector(preset.vector);
   };
 
@@ -116,19 +252,24 @@ const IntegratedCVSSCalculator: React.FC = () => {
     });
   };
 
+  const getCurrentMetrics = () => (version === '3.1' ? cvssMetrics : cvssV4Metrics);
+  const getCurrentDescriptions = () =>
+    version === '3.1' ? metricDescriptions : cvssV4MetricDescriptions;
+
   const renderCalculator = () => (
     <div className='calculator-content'>
       <div className='metrics-section'>
-        {cvssMetrics.map((group) => (
+        {getCurrentMetrics().map((group) => (
           <div key={group.name} className='metric-group'>
             <h2>{group.name}</h2>
             {Object.entries(group.metrics).map(([metricKey, options]) => {
               const guidance = medicalDeviceGuidance[metricKey];
+              const descriptions = getCurrentDescriptions();
               return (
                 <div key={metricKey} className='metric-with-guidance'>
                   <div className='metric-header'>
                     <h3>
-                      {metricDescriptions[metricKey]} ({metricKey})
+                      {descriptions[metricKey]} ({metricKey})
                     </h3>
                     <div className='toggle-guidance-container'>
                       <span className='guidance-label'>Description</span>
@@ -177,7 +318,7 @@ const IntegratedCVSSCalculator: React.FC = () => {
                       return (
                         <div key={option.value} className='metric-option-wrapper'>
                           <button
-                            className={`metric-option ${vector[metricKey as keyof CVSSVector] === option.value ? 'selected' : ''}`}
+                            className={`metric-option ${(vector as any)[metricKey] === option.value ? 'selected' : ''}`}
                             onClick={() => handleMetricChange(metricKey, option.value)}
                           >
                             <span className='option-value'>{option.value}</span>
@@ -211,7 +352,20 @@ const IntegratedCVSSCalculator: React.FC = () => {
     <div className='cvss-calculator'>
       <header className='calculator-header'>
         <h1>Medical CVSS Calculator</h1>
-        <p>CVSS v3.1 - Common Vulnerability Scoring System</p>
+        <p>CVSS v{version} - Common Vulnerability Scoring System</p>
+
+        <div className='version-selector'>
+          <label htmlFor='cvss-version'>CVSS Version:</label>
+          <select
+            id='cvss-version'
+            value={version}
+            onChange={(e) => setVersion(e.target.value as CVSSVersion)}
+            className='version-select'
+          >
+            <option value='3.1'>CVSS v3.1</option>
+            <option value='4.0'>CVSS v4.0</option>
+          </select>
+        </div>
 
         <div className='view-tabs'>
           <button
@@ -221,10 +375,11 @@ const IntegratedCVSSCalculator: React.FC = () => {
             Technical Calculator with Guide
           </button>
           <button
-            className={`tab-button ${viewMode === 'rubric' ? 'active' : ''}`}
-            onClick={() => setViewMode('rubric')}
+            className={`tab-button ${viewMode === 'rubric' ? 'active' : ''} ${version === '4.0' ? 'disabled' : ''}`}
+            onClick={() => version === '3.1' && setViewMode('rubric')}
+            disabled={version === '4.0'}
           >
-            MITRE Rubric
+            MITRE Rubric {version === '4.0' ? '(v3.1 only)' : ''}
           </button>
         </div>
       </header>
@@ -237,7 +392,7 @@ const IntegratedCVSSCalculator: React.FC = () => {
           </div>
 
           <div className='quick-presets'>
-            {quickPresets.map((preset, index) => (
+            {getQuickPresets().map((preset, index) => (
               <button
                 key={index}
                 className='preset-button'
@@ -259,7 +414,8 @@ const IntegratedCVSSCalculator: React.FC = () => {
                 <span className='status-complete'>✓ All base metrics selected</span>
               ) : (
                 <span className='status-incomplete'>
-                  {Object.keys(vector).length}/8 base metrics selected
+                  {Object.keys(vector).length}/{version === '3.1' ? '8' : '11'} base metrics
+                  selected
                 </span>
               )}
             </div>
@@ -283,10 +439,22 @@ const IntegratedCVSSCalculator: React.FC = () => {
                 <span className='score-label'>Base Score:</span>
                 <span className='score-value'>{score.baseScore.toFixed(1)}</span>
               </div>
-              {score.temporalScore > 0 && (
+              {version === '3.1' && score.temporalScore && score.temporalScore > 0 && (
                 <div className='score-item'>
                   <span className='score-label'>Temporal Score:</span>
                   <span className='score-value'>{score.temporalScore.toFixed(1)}</span>
+                </div>
+              )}
+              {version === '4.0' && score.threatScore && score.threatScore > 0 && (
+                <div className='score-item'>
+                  <span className='score-label'>Threat Score:</span>
+                  <span className='score-value'>{score.threatScore.toFixed(1)}</span>
+                </div>
+              )}
+              {version === '4.0' && score.environmentalScore && score.environmentalScore > 0 && (
+                <div className='score-item'>
+                  <span className='score-label'>Environmental Score:</span>
+                  <span className='score-value'>{score.environmentalScore.toFixed(1)}</span>
                 </div>
               )}
               <div className='score-item overall'>
@@ -318,8 +486,9 @@ const IntegratedCVSSCalculator: React.FC = () => {
 
           {viewMode === 'calculator' && !allRequiredMetricsSelected() && (
             <div className='completion-hint'>
-              Please select options for all Base Score metrics (AV, AC, PR, UI, S, C, I, A) to see
-              results
+              {version === '3.1'
+                ? 'Please select options for all Base Score metrics (AV, AC, PR, UI, S, C, I, A) to see results'
+                : 'Please select options for all Base Score metrics (AV, AC, AT, PR, UI, VC, VI, VA, SC, SI, SA) to see results'}
             </div>
           )}
 

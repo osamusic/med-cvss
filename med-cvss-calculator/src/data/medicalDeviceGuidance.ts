@@ -560,4 +560,238 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
       },
     ],
   },
+  // CVSS v4.0 specific metrics
+  AT: {
+    general: {
+      description:
+        'Attack Requirements captures the additional deployment and execution conditions or variables of the vulnerable system that enable the attack.',
+      medicalDeviceContext:
+        'Consider special medical device configurations, clinical workflow dependencies, and timing requirements for exploitation.',
+      examples: [
+        'Device-specific clinical modes',
+        'Medical procedure timing dependencies',
+        'Patient state requirements',
+        'Clinical authentication contexts',
+      ],
+    },
+    options: [
+      {
+        value: 'N',
+        guidance: 'There are no conditions that must be met for successful exploitation.',
+        medicalExample:
+          'Medical device vulnerability exploitable in any operational state, no specific clinical context required',
+      },
+      {
+        value: 'P',
+        guidance:
+          'The successful attack depends on the evasion or circumvention of security-enhancing conditions or requires race conditions.',
+        medicalExample:
+          'Exploitation requires specific clinical workflow timing, device in maintenance mode, during patient procedure, or specific medical protocol execution',
+      },
+    ],
+  },
+  VC: {
+    general: {
+      description:
+        'Vulnerable System Confidentiality Impact measures the impact to the confidentiality of the information managed by the vulnerable system.',
+      medicalDeviceContext:
+        'Consider patient privacy on the directly compromised medical device, device-specific medical data, and local patient information.',
+      examples: [
+        'Patient data on the device',
+        'Medical device logs and telemetry',
+        'Device configuration and settings',
+        'Local clinical observations',
+      ],
+    },
+    options: [
+      {
+        value: 'N',
+        guidance: 'There is no loss of confidentiality within the vulnerable system.',
+        medicalExample:
+          'Device status information only, no patient data on the vulnerable medical device, anonymized telemetry',
+      },
+      {
+        value: 'L',
+        guidance: 'There is some loss of confidentiality.',
+        medicalExample:
+          'Limited patient identifiers on device, partial medical readings, device usage patterns, non-sensitive clinical data',
+      },
+      {
+        value: 'H',
+        guidance: 'There is total loss of confidentiality within the vulnerable system.',
+        medicalExample:
+          'Complete patient medical data on device, full access to device-stored PHI, medical images and diagnostic data on the system',
+      },
+    ],
+  },
+  VI: {
+    general: {
+      description:
+        'Vulnerable System Integrity Impact measures the impact to integrity of the vulnerable system.',
+      medicalDeviceContext:
+        'Consider the impact on medical device data accuracy, device configuration integrity, and clinical data reliability on the affected system.',
+      examples: [
+        'Device configuration tampering',
+        'Medical data modification on device',
+        'Calibration data alteration',
+        'Device operational parameters',
+      ],
+    },
+    options: [
+      {
+        value: 'N',
+        guidance: 'There is no loss of integrity within the vulnerable system.',
+        medicalExample:
+          'Medical device data remains unmodified, read-only access to device information, no configuration changes possible',
+      },
+      {
+        value: 'L',
+        guidance: 'Modification of data is possible, but with limited control over consequences.',
+        medicalExample:
+          'Minor device configuration changes, limited medical data modification, non-critical parameter adjustments',
+      },
+      {
+        value: 'H',
+        guidance: 'There is total loss of integrity within the vulnerable system.',
+        medicalExample:
+          'Complete control over device settings, medical data falsification, critical parameter modification, calibration tampering',
+      },
+    ],
+  },
+  VA: {
+    general: {
+      description:
+        'Vulnerable System Availability Impact measures the impact to the availability of the vulnerable system.',
+      medicalDeviceContext:
+        'Consider the impact on the specific medical device functionality, clinical workflow disruption, and patient care delivery.',
+      examples: [
+        'Medical device operational disruption',
+        'Clinical workflow interruption',
+        'Patient monitoring gaps',
+        'Treatment delivery interference',
+      ],
+    },
+    options: [
+      {
+        value: 'N',
+        guidance: 'There is no impact to availability within the vulnerable system.',
+        medicalExample:
+          'Medical device remains fully operational, no clinical workflow disruption, all functions available',
+      },
+      {
+        value: 'L',
+        guidance: 'Performance is reduced or there are interruptions in resource availability.',
+        medicalExample:
+          'Reduced device performance, intermittent functionality, delayed medical readings, non-critical feature unavailable',
+      },
+      {
+        value: 'H',
+        guidance: 'There is total loss of availability within the vulnerable system.',
+        medicalExample:
+          'Complete device shutdown, medical equipment failure, total loss of clinical functionality, patient monitoring unavailable',
+      },
+    ],
+  },
+  SC: {
+    general: {
+      description:
+        'Subsequent System Confidentiality Impact measures the impact to the confidentiality of information managed by other systems.',
+      medicalDeviceContext:
+        'Consider impact on other medical systems, hospital networks, electronic health records, and connected healthcare infrastructure.',
+      examples: [
+        'Hospital network data exposure',
+        'Electronic health record access',
+        'Connected medical device data',
+        'Healthcare system integration points',
+      ],
+    },
+    options: [
+      {
+        value: 'N',
+        guidance: 'There is no loss of confidentiality in subsequent systems.',
+        medicalExample:
+          'Isolated medical device with no network connectivity, no impact on other healthcare systems, segmented clinical network',
+      },
+      {
+        value: 'L',
+        guidance: 'There is some loss of confidentiality in subsequent systems.',
+        medicalExample:
+          'Limited access to connected medical devices, partial network data exposure, restricted healthcare system access',
+      },
+      {
+        value: 'H',
+        guidance: 'There is total loss of confidentiality in subsequent systems.',
+        medicalExample:
+          'Full hospital network compromise, complete EHR system access, widespread medical device data exposure, healthcare infrastructure breach',
+      },
+    ],
+  },
+  SI: {
+    general: {
+      description:
+        'Subsequent System Integrity Impact measures the impact to the integrity of information managed by other systems.',
+      medicalDeviceContext:
+        'Consider impact on other medical systems, treatment protocols across devices, and healthcare data consistency.',
+      examples: [
+        'Cross-system medical data integrity',
+        'Treatment protocol consistency',
+        'Healthcare database modifications',
+        'Clinical decision support corruption',
+      ],
+    },
+    options: [
+      {
+        value: 'N',
+        guidance: 'There is no loss of integrity in subsequent systems.',
+        medicalExample:
+          'No impact on other healthcare systems, isolated device modification only, network segmentation prevents spread',
+      },
+      {
+        value: 'L',
+        guidance: 'Modification of data is possible in subsequent systems with limited control.',
+        medicalExample:
+          'Limited changes to connected medical devices, minor healthcare database modifications, restricted protocol alterations',
+      },
+      {
+        value: 'H',
+        guidance: 'There is total loss of integrity in subsequent systems.',
+        medicalExample:
+          'Widespread medical system manipulation, critical treatment protocol tampering, healthcare database corruption, clinical decision support compromise',
+      },
+    ],
+  },
+  SA: {
+    general: {
+      description:
+        'Subsequent System Availability Impact measures the impact to the availability of other systems.',
+      medicalDeviceContext:
+        'Consider impact on hospital operations, connected medical devices, emergency systems, and overall healthcare delivery.',
+      examples: [
+        'Hospital-wide system outages',
+        'Connected medical device failures',
+        'Emergency system disruptions',
+        'Healthcare network unavailability',
+      ],
+    },
+    options: [
+      {
+        value: 'N',
+        guidance: 'There is no impact to availability in subsequent systems.',
+        medicalExample:
+          'No impact on other healthcare systems, isolated device only, redundant systems maintain operations',
+      },
+      {
+        value: 'L',
+        guidance: 'Performance is reduced or there are interruptions in subsequent systems.',
+        medicalExample:
+          'Reduced performance of connected medical devices, intermittent healthcare system availability, partial network degradation',
+      },
+      {
+        value: 'H',
+        guidance: 'There is total loss of availability in subsequent systems.',
+        medicalExample:
+          'Hospital-wide system failures, emergency equipment unavailable, complete healthcare network outage, critical care system shutdown',
+      },
+    ],
+  },
 };

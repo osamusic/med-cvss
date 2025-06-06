@@ -54,6 +54,7 @@ const ScenarioEditor: React.FC<ScenarioEditorProps> = ({ isOpen, scenario, onSav
     onSave({
       title: title.trim(),
       description: description.trim(),
+      version: '3.1',
       before: beforeVector,
       after: afterVector,
       remediationActions: filteredActions,
