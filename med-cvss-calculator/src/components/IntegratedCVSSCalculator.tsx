@@ -522,19 +522,19 @@ const IntegratedCVSSCalculator: React.FC = () => {
                 <span className='score-label'>Base Score:</span>
                 <span className='score-value'>{score.baseScore.toFixed(1)}</span>
               </div>
-              {version === '3.1' && score.temporalScore && score.temporalScore > 0 && (
+              {version === '3.1' && score.temporalScore != null && score.temporalScore > 0 && (
                 <div className='score-item'>
                   <span className='score-label'>Temporal Score:</span>
                   <span className='score-value'>{score.temporalScore.toFixed(1)}</span>
                 </div>
               )}
-              {version === '4.0' && score.threatScore && score.threatScore > 0 && (
+              {version === '4.0' && score.threatScore != null && score.threatScore > 0 && (
                 <div className='score-item'>
                   <span className='score-label'>Threat Score:</span>
                   <span className='score-value'>{score.threatScore.toFixed(1)}</span>
                 </div>
               )}
-              {version === '4.0' && score.environmentalScore && score.environmentalScore > 0 && (
+              {version === '4.0' && score.environmentalScore != null && score.environmentalScore > 0 && (
                 <div className='score-item'>
                   <span className='score-label'>Environmental Score:</span>
                   <span className='score-value'>{score.environmentalScore.toFixed(1)}</span>
