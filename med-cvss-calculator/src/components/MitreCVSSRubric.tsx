@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { CVSSVector } from '../types/cvss';
 import {
   mitreRubricQuestions,
@@ -96,7 +96,7 @@ export const MitreCVSSRubric: React.FC<MitreCVSSRubricProps> = ({ onVectorChange
     saveMitreAnswers({});
   };
 
-  const getVisibleQuestions = (): MitreQuestion[] => {
+  const getVisibleQuestions = useCallback((): MitreQuestion[] => {
     const visible: MitreQuestion[] = [];
     const categories = [
       'Attack Vector',
@@ -157,20 +157,27 @@ export const MitreCVSSRubric: React.FC<MitreCVSSRubricProps> = ({ onVectorChange
     });
 
     return visible;
-  };
+  }, [answers]);
 
-  const getProgressStats = () => {
+  const getProgressStats = useCallback(() => {
     const visibleQuestions = getVisibleQuestions();
     const answeredCount = visibleQuestions.filter((q) => answers[q.id]).length;
     return { answered: answeredCount, total: visibleQuestions.length };
-  };
+  }, [getVisibleQuestions, answers]);
 
-  const renderQuestion = (question: MitreQuestion) => {
+  const renderQuestion = (
+    question: MitreQuestion,
+    categoryIndex: number,
+    questionIndex: number
+  ) => {
     const currentAnswer = answers[question.id];
     const isAnswered = Boolean(currentAnswer);
 
     return (
-      <div key={question.id} className={`mitre-question ${isAnswered ? 'answered' : ''}`}>
+      <div
+        key={`${question.category}-${question.id}-${categoryIndex}-${questionIndex}`}
+        className={`mitre-question ${isAnswered ? 'answered' : ''}`}
+      >
         <div className='question-header'>
           <div className='question-meta'>
             <span className='question-id'>{question.id}</span>
@@ -223,21 +230,23 @@ export const MitreCVSSRubric: React.FC<MitreCVSSRubricProps> = ({ onVectorChange
     );
   };
 
-  const visibleQuestions = getVisibleQuestions();
-  const stats = getProgressStats();
+  const visibleQuestions = useMemo(() => getVisibleQuestions(), [getVisibleQuestions]);
+  const stats = useMemo(() => getProgressStats(), [getProgressStats]);
   const progress = Math.round((stats.answered / stats.total) * 100);
 
   // Group questions by category
-  const questionsByCategory = visibleQuestions.reduce(
-    (acc, question) => {
-      if (!acc[question.category]) {
-        acc[question.category] = [];
-      }
-      acc[question.category].push(question);
-      return acc;
-    },
-    {} as { [category: string]: MitreQuestion[] }
-  );
+  const questionsByCategory = useMemo(() => {
+    return visibleQuestions.reduce(
+      (acc, question) => {
+        if (!acc[question.category]) {
+          acc[question.category] = [];
+        }
+        acc[question.category].push(question);
+        return acc;
+      },
+      {} as { [category: string]: MitreQuestion[] }
+    );
+  }, [visibleQuestions]);
 
   return (
     <div className='mitre-cvss-rubric'>
@@ -267,7 +276,7 @@ export const MitreCVSSRubric: React.FC<MitreCVSSRubricProps> = ({ onVectorChange
         </div>
       </div>
 
-      <div className='mitre-content'>
+      <div className='mitre-content' key={`mitre-content-${Object.keys(answers).length}`}>
         {/* Debug: Show all expected categories */}
         {[
           'Attack Vector',
@@ -278,13 +287,16 @@ export const MitreCVSSRubric: React.FC<MitreCVSSRubricProps> = ({ onVectorChange
           'Confidentiality Impact',
           'Integrity Impact',
           'Availability Impact',
-        ].map((category) => {
+        ].map((category, categoryIndex) => {
           const questions = questionsByCategory[category] || [];
           const isCompleted = completedCategories.has(category);
           const hasQuestions = questions.length > 0;
 
           return (
-            <div key={category} className={`mitre-category ${isCompleted ? 'completed' : ''}`}>
+            <div
+              key={`category-${category}-${categoryIndex}`}
+              className={`mitre-category ${isCompleted ? 'completed' : ''}`}
+            >
               <div className='category-header'>
                 <h3 className='category-title'>
                   {category}
@@ -296,7 +308,11 @@ export const MitreCVSSRubric: React.FC<MitreCVSSRubricProps> = ({ onVectorChange
               </div>
 
               {hasQuestions ? (
-                <div className='category-questions'>{questions.map(renderQuestion)}</div>
+                <div className='category-questions'>
+                  {questions.map((question, questionIndex) =>
+                    renderQuestion(question, categoryIndex, questionIndex)
+                  )}
+                </div>
               ) : (
                 <div className='category-questions'>
                   <p style={{ padding: '20px', color: '#999', fontStyle: 'italic' }}>
