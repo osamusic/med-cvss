@@ -59,6 +59,43 @@ const IntegratedCVSSCalculator: React.FC = () => {
     return requiredMetrics.every((metric) => vector[metric as keyof CVSSVector]);
   };
 
+  // Quick selection presets for common medical device scenarios
+  const quickPresets = [
+    {
+      name: 'Critical Network Attack',
+      description: 'Remote network exploitation with high impact',
+      vector: { AV: 'N', AC: 'L', PR: 'N', UI: 'N', S: 'C', C: 'H', I: 'H', A: 'H' },
+    },
+    {
+      name: 'Local Admin Compromise',
+      description: 'Local access with admin privileges needed',
+      vector: { AV: 'L', AC: 'L', PR: 'H', UI: 'N', S: 'U', C: 'H', I: 'H', A: 'H' },
+    },
+    {
+      name: 'Adjacent Network Attack',
+      description: 'WiFi/Bluetooth proximity-based attack',
+      vector: { AV: 'A', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'L', A: 'L' },
+    },
+    {
+      name: 'Physical Access Attack',
+      description: 'Physical device access required',
+      vector: { AV: 'P', AC: 'L', PR: 'N', UI: 'N', S: 'U', C: 'H', I: 'H', A: 'N' },
+    },
+    {
+      name: 'Social Engineering',
+      description: 'User interaction required attack',
+      vector: { AV: 'N', AC: 'L', PR: 'N', UI: 'R', S: 'U', C: 'L', I: 'L', A: 'N' },
+    },
+  ];
+
+  const applyQuickPreset = (preset: (typeof quickPresets)[0]) => {
+    setVector(preset.vector);
+  };
+
+  const clearAllMetrics = () => {
+    setVector({});
+  };
+
   const renderCalculator = () => (
     <div className='calculator-content'>
       <div className='metrics-section'>
@@ -157,6 +194,44 @@ const IntegratedCVSSCalculator: React.FC = () => {
           </button>
         </div>
       </header>
+
+      {viewMode === 'calculator' && (
+        <div className='quick-selection-section'>
+          <div className='quick-selection-header'>
+            <h2>Quick Metrics Selection</h2>
+            <p>Choose a common scenario to quickly populate CVSS metrics</p>
+          </div>
+
+          <div className='quick-presets'>
+            {quickPresets.map((preset, index) => (
+              <button
+                key={index}
+                className='preset-button'
+                onClick={() => applyQuickPreset(preset)}
+                title={preset.description}
+              >
+                <div className='preset-name'>{preset.name}</div>
+                <div className='preset-description'>{preset.description}</div>
+              </button>
+            ))}
+          </div>
+
+          <div className='quick-actions'>
+            <button className='clear-all-button' onClick={clearAllMetrics}>
+              Clear All Metrics
+            </button>
+            <div className='metrics-status'>
+              {allRequiredMetricsSelected() ? (
+                <span className='status-complete'>✓ All base metrics selected</span>
+              ) : (
+                <span className='status-incomplete'>
+                  {Object.keys(vector).length}/8 base metrics selected
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className='main-content'>
         <div className='content-area'>
