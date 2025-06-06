@@ -141,10 +141,12 @@ describe('CVSS v4.0 Performance and Stress Tests', () => {
         }).toThrow();
       });
 
-      // Test null and undefined separately - these create default vectors
-      const nullCvss = new CVSS40(null as any);
-      expect(nullCvss.score).toBeGreaterThanOrEqual(0);
+      // Test null - should throw type error
+      expect(() => {
+        new CVSS40(null as any);
+      }).toThrow('Invalid input type for CVSSv4.0 constructor');
 
+      // Test undefined - becomes empty string due to default parameter, creates default vector
       const undefinedCvss = new CVSS40(undefined as any);
       expect(undefinedCvss.score).toBeGreaterThanOrEqual(0);
     });
