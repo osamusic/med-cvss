@@ -382,7 +382,7 @@ describe('CVSS v4.0 Official Calculator Compatibility', () => {
           name: 'Low Physical Attack',
           vector: 'CVSS:4.0/AV:P/AC:L/AT:N/PR:N/UI:N/VC:L/VI:L/VA:L/SC:N/SI:N/SA:N',
           expectedOfficial: 3.4,
-          expectedRange: [3.0, 5.0], // Our implementation scores higher
+          expectedRange: [2.0, 4.0], // Our implementation scores match lookup table
         },
       ];
 
