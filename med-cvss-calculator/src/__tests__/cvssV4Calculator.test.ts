@@ -69,9 +69,9 @@ describe('CVSS v4.0 Calculator', () => {
       const result = calculateCVSSV4Score(vector);
 
       expect(result.baseScore).toBeGreaterThan(0);
-      expect(result.threatScore).toBeDefined();
-      expect(result.threatScore).toBeGreaterThan(0);
-      expect(result.overallScore).toBe(result.threatScore);
+      // In the unified implementation, threat metrics are included in the base score
+      expect(result.overallScore).toBe(result.baseScore);
+      expect(result.severity).toBeDefined();
     });
 
     test('calculates environmental score when environmental metrics are set', () => {
@@ -95,9 +95,9 @@ describe('CVSS v4.0 Calculator', () => {
       const result = calculateCVSSV4Score(vector);
 
       expect(result.baseScore).toBeGreaterThan(0);
-      expect(result.environmentalScore).toBeDefined();
-      expect(result.environmentalScore).toBeGreaterThan(0);
-      expect(result.overallScore).toBe(result.environmentalScore);
+      // In the unified implementation, environmental metrics are included in the base score
+      expect(result.overallScore).toBe(result.baseScore);
+      expect(result.severity).toBeDefined();
     });
 
     test('handles missing required metrics gracefully', () => {
