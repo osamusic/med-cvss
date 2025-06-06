@@ -147,9 +147,23 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
           'Automated medical device processes, background network services, scheduled medical data transfers',
       },
       {
+        value: 'P',
+        guidance:
+          'Successful exploitation requires limited user interaction, performed during normal operation.',
+        medicalExample:
+          'Patient routine device usage, normal clinical workflow actions, standard medical device operations that trigger vulnerability',
+      },
+      {
+        value: 'A',
+        guidance:
+          'Successful exploitation requires deliberate user interaction beyond normal operation.',
+        medicalExample:
+          'Clinical staff opening malicious files, patients interacting with specific compromised interfaces, medical personnel performing non-standard device procedures',
+      },
+      {
         value: 'R',
         guidance:
-          'Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited.',
+          'Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited (v3.1 compatibility).',
         medicalExample:
           'Clinical staff opening malicious files, patients interacting with compromised interfaces, medical personnel connecting infected devices',
       },
@@ -293,7 +307,7 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
   E: {
     general: {
       description:
-        'Exploit Code Maturity measures the likelihood of the vulnerability being attacked, based on the current state of exploit techniques and code availability.',
+        'Exploit Maturity measures the likelihood of the vulnerability being attacked, based on the current state of exploit techniques and code availability (renamed from Exploit Code Maturity in v4.0).',
       medicalDeviceContext:
         'Consider the availability of medical device exploits, regulatory reporting requirements, and healthcare-specific attack tools.',
       examples: [
@@ -306,35 +320,42 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
     options: [
       {
         value: 'X',
-        guidance: 'The Exploit Code Maturity is not defined or is not applicable.',
+        guidance: 'The Exploit Maturity is not defined or is not applicable.',
         medicalExample:
           'No specific exploit assessment available, default scoring for medical device vulnerability assessments',
       },
       {
         value: 'U',
         guidance:
-          'No exploit code is available, or an exploit is theoretical with no proof of concept available.',
+          'No reliable exploit exists or the vulnerability has not been reported publicly.',
         medicalExample:
           'Theoretical medical device vulnerability, unpublished research findings, internal security assessments only',
       },
       {
         value: 'P',
         guidance:
-          'Proof-of-concept exploit code is available, or an attack demonstration is not practical for most systems.',
+          'Proof-of-concept exploit code is available or an attack demonstration is practical for most systems.',
         medicalExample:
           'Medical device security research publications, controlled lab demonstrations, healthcare conference presentations',
       },
       {
+        value: 'A',
+        guidance:
+          'Attacks have been reported against this vulnerability in the wild.',
+        medicalExample:
+          'Documented attacks on medical devices in clinical environments, healthcare security incidents, active exploitation in healthcare facilities',
+      },
+      {
         value: 'F',
         guidance:
-          'Functional exploit code is available that works in most situations where the vulnerability exists.',
+          'Functional exploit code is available that works in most situations where the vulnerability exists (v3.1 compatibility).',
         medicalExample:
           'Working medical device exploits in circulation, healthcare-specific attack tools, documented successful attacks',
       },
       {
         value: 'H',
         guidance:
-          'Functional autonomous code exists, or no exploit is required and details are widely available.',
+          'Functional autonomous code exists, or no exploit is required and details are widely available (v3.1 compatibility).',
         medicalExample:
           'Automated medical device attack tools, widely known healthcare vulnerabilities, active exploitation in healthcare facilities',
       },
@@ -791,6 +812,686 @@ export const medicalDeviceGuidance: CVSSMetricGuidance = {
         guidance: 'There is total loss of availability in subsequent systems.',
         medicalExample:
           'Hospital-wide system failures, emergency equipment unavailable, complete healthcare network outage, critical care system shutdown',
+      },
+    ],
+  },
+  // CVSS v4.0 Supplemental Metrics (Optional)
+  S: {
+    general: {
+      description:
+        'Safety describes the potential for physical harm or threats to human life or safety resulting from exploitation of the vulnerability.',
+      medicalDeviceContext:
+        'Consider potential patient safety risks, physical harm to patients or healthcare workers, and life-threatening consequences from medical device compromise.',
+      examples: [
+        'Patient life support system failures',
+        'Medical device malfunctions affecting patient safety',
+        'Surgical equipment compromises during procedures',
+        'Emergency medical equipment unavailability',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Safety metric is not defined or is not applicable.',
+        medicalExample:
+          'Default supplemental scoring, no specific safety assessment for this vulnerability',
+      },
+      {
+        value: 'N',
+        guidance:
+          'The vulnerability consequences meet IEC 61508 definition of "negligible" safety impact.',
+        medicalExample:
+          'Administrative system compromise with no patient care impact, non-critical device telemetry failure, training equipment malfunction',
+      },
+      {
+        value: 'P',
+        guidance:
+          'The vulnerability consequences meet IEC 61508 definitions of "marginal," "critical," or "catastrophic" safety impact.',
+        medicalExample:
+          'Life support system compromise, critical patient monitoring failure, surgical device malfunction during procedures, emergency equipment unavailability',
+      },
+    ],
+  },
+  AU: {
+    general: {
+      description:
+        'Automatable captures whether attackers can reliably automate all four steps of the attack kill chain for this vulnerability.',
+      medicalDeviceContext:
+        'Consider whether medical device vulnerabilities can be exploited through automated scripts across multiple healthcare facilities.',
+      examples: [
+        'Automated scanning of medical device networks',
+        'Script-based exploitation of device vulnerabilities',
+        'Worm propagation through medical systems',
+        'Automated credential harvesting from devices',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Automatable metric is not defined or is not applicable.',
+        medicalExample:
+          'Default supplemental scoring, no automation assessment available for this medical device vulnerability',
+      },
+      {
+        value: 'N',
+        guidance:
+          'Attackers cannot reliably automate all four steps of the kill chain (reconnaissance, weaponization, delivery, exploitation).',
+        medicalExample:
+          'Requires physical access to medical devices, manual clinical workflow manipulation, device-specific manual configuration, healthcare staff social engineering',
+      },
+      {
+        value: 'Y',
+        guidance:
+          'Attackers can reliably automate all four steps of the kill chain across multiple targets.',
+        medicalExample:
+          'Network-based medical device scanning and exploitation, automated credential attacks on healthcare systems, scripted malware deployment across hospital networks',
+      },
+    ],
+  },
+  R: {
+    general: {
+      description:
+        'Recovery describes the resilience of a system to recover services in terms of performance and availability after an attack.',
+      medicalDeviceContext:
+        'Consider medical device recovery capabilities, clinical workflow restoration, and patient care continuity after security incidents.',
+      examples: [
+        'Medical device automatic restart capabilities',
+        'Clinical workflow backup procedures',
+        'Manual device recovery procedures',
+        'Permanent medical equipment damage',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Recovery metric is not defined or is not applicable.',
+        medicalExample:
+          'Default supplemental scoring, no recovery assessment available for this medical system',
+      },
+      {
+        value: 'A',
+        guidance:
+          'The system automatically recovers services after an attack with minimal or no administrator intervention.',
+        medicalExample:
+          'Medical devices with automatic restart and self-healing capabilities, redundant medical systems with failover, automatic clinical workflow restoration',
+      },
+      {
+        value: 'U',
+        guidance:
+          'Manual user intervention is required to recover the system after an attack.',
+        medicalExample:
+          'Manual medical device restart procedures, clinical staff intervention required, device reconfiguration needed, manual patient data recovery',
+      },
+      {
+        value: 'I',
+        guidance:
+          'The system cannot be recovered after an attack, requiring replacement or permanent loss of functionality.',
+        medicalExample:
+          'Permanent medical device damage, irreversible patient data loss, destroyed medical equipment requiring replacement, corrupted device firmware',
+      },
+    ],
+  },
+  V: {
+    general: {
+      description:
+        'Value Density describes the resources that attackers will gain control over with a single exploitation event.',
+      medicalDeviceContext:
+        'Consider the concentration of medical resources, patient data, and healthcare infrastructure accessible through the vulnerable system.',
+      examples: [
+        'Centralized patient database systems',
+        'Hospital-wide medical device networks',
+        'Individual medical device resources',
+        'Healthcare data concentration levels',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Value Density metric is not defined or is not applicable.',
+        medicalExample:
+          'Default supplemental scoring, no value density assessment for this medical system',
+      },
+      {
+        value: 'D',
+        guidance:
+          'The system has limited resources, with diffuse value distribution.',
+        medicalExample:
+          'Individual medical devices with limited data, single-patient monitoring systems, isolated diagnostic equipment, standalone medical workstations',
+      },
+      {
+        value: 'C',
+        guidance:
+          'The system is rich in resources, with concentrated high-value targets.',
+        medicalExample:
+          'Hospital-wide EHR systems, centralized medical device management platforms, comprehensive patient databases, critical healthcare infrastructure hubs',
+      },
+    ],
+  },
+  RE: {
+    general: {
+      description:
+        'Vulnerability Response Effort describes how difficult it is for consumers to provide an initial response to the vulnerability impact.',
+      medicalDeviceContext:
+        'Consider healthcare facility capabilities, clinical workflow disruption, and regulatory requirements for responding to medical device vulnerabilities.',
+      examples: [
+        'Medical device patching complexity',
+        'Clinical workflow adjustment requirements',
+        'Regulatory compliance considerations',
+        'Healthcare facility technical capabilities',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Vulnerability Response Effort metric is not defined or is not applicable.',
+        medicalExample:
+          'Default supplemental scoring, no response effort assessment for this medical vulnerability',
+      },
+      {
+        value: 'L',
+        guidance:
+          'The effort required to respond to the vulnerability is low with minimal service impact.',
+        medicalExample:
+          'Simple device configuration changes, minor clinical workflow adjustments, standard IT patching procedures, minimal staff training required',
+      },
+      {
+        value: 'M',
+        guidance:
+          'The effort required to respond involves moderate complexity with some service impact.',
+        medicalExample:
+          'Coordinated device updates during maintenance windows, clinical staff retraining, temporary procedure modifications, moderate healthcare IT resources',
+      },
+      {
+        value: 'H',
+        guidance:
+          'The effort required to respond is significant with potentially extended service impact.',
+        medicalExample:
+          'Complex medical device replacement, extensive clinical workflow redesign, prolonged service outages, significant healthcare facility resources required',
+      },
+    ],
+  },
+  U: {
+    general: {
+      description:
+        'Provider Urgency is a pass-through metric allowing vendors to provide supplemental severity ratings for vulnerability remediation urgency.',
+      medicalDeviceContext:
+        'Consider manufacturer recommendations, FDA alerts, clinical urgency, and patient safety priorities for medical device vulnerability remediation.',
+      examples: [
+        'Manufacturer security advisories',
+        'FDA safety communications urgency levels',
+        'Clinical priority assessments',
+        'Patient safety risk classifications',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The Provider Urgency metric is not defined or is not applicable.',
+        medicalExample:
+          'Default supplemental scoring, no manufacturer urgency classification provided',
+      },
+      {
+        value: 'Clear',
+        guidance:
+          'Informational only with no specific urgency for remediation.',
+        medicalExample:
+          'General medical device security awareness, non-critical informational updates, routine security notifications, educational advisories',
+      },
+      {
+        value: 'Green',
+        guidance:
+          'Reduced urgency for remediation with standard timelines.',
+        medicalExample:
+          'Non-critical medical device updates, routine maintenance window patches, low-risk security improvements, standard clinical scheduling',
+      },
+      {
+        value: 'Amber',
+        guidance:
+          'Moderate urgency requiring timely but not emergency response.',
+        medicalExample:
+          'Important medical device security updates, clinical workflow considerations, coordinated maintenance scheduling, elevated priority patches',
+      },
+      {
+        value: 'Red',
+        guidance:
+          'Highest urgency requiring immediate attention and emergency response.',
+        medicalExample:
+          'Critical patient safety vulnerabilities, immediate medical device shutdown required, emergency clinical protocol activation, urgent FDA safety alerts',
+      },
+    ],
+  },
+  // CVSS v4.0 Environmental Metrics - Modified Base Metrics
+  MAV: {
+    general: {
+      description:
+        'Modified Attack Vector allows customization of the Attack Vector metric based on specific environmental conditions.',
+      medicalDeviceContext:
+        'Adjust attack vector assessment based on healthcare facility network architecture, medical device deployment, and clinical environment security controls.',
+      examples: [
+        'Healthcare network segmentation effects',
+        'Medical device isolation measures',
+        'Clinical environment access controls',
+        'Hospital security architecture modifications',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The environmental impact is not defined, use original Attack Vector value.',
+        medicalExample:
+          'Default environmental scoring, no specific network modifications in this healthcare facility',
+      },
+      {
+        value: 'N',
+        guidance: 'Network access is maintained or expanded in the target environment.',
+        medicalExample:
+          'Medical devices directly connected to internet, hospital network with external connectivity, telemedicine platform access',
+      },
+      {
+        value: 'A',
+        guidance: 'Adjacent network access is required in the target environment.',
+        medicalExample:
+          'Medical devices on isolated network segments, WiFi-enabled devices in clinical areas, Bluetooth medical sensors',
+      },
+      {
+        value: 'L',
+        guidance: 'Local access is required in the target environment.',
+        medicalExample:
+          'Medical devices requiring direct connection, bedside terminal access, local diagnostic equipment',
+      },
+      {
+        value: 'P',
+        guidance: 'Physical access is required in the target environment.',
+        medicalExample:
+          'Physically secured medical devices, devices in locked clinical areas, implantable devices requiring physical contact',
+      },
+    ],
+  },
+  MAC: {
+    general: {
+      description:
+        'Modified Attack Complexity allows customization based on environmental security controls and deployment conditions.',
+      medicalDeviceContext:
+        'Adjust complexity assessment based on healthcare facility security measures, clinical workflow protections, and medical device hardening.',
+      examples: [
+        'Additional medical device authentication',
+        'Clinical workflow security controls',
+        'Healthcare facility access restrictions',
+        'Medical device hardening measures',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The environmental impact is not defined, use original Attack Complexity value.',
+        medicalExample:
+          'Default environmental scoring, no specific security modifications in this healthcare environment',
+      },
+      {
+        value: 'L',
+        guidance: 'Attack complexity remains low in the target environment.',
+        medicalExample:
+          'Standard medical device configurations, default healthcare settings, minimal additional security controls',
+      },
+      {
+        value: 'H',
+        guidance: 'Attack complexity is increased by environmental security controls.',
+        medicalExample:
+          'Enhanced medical device authentication, additional clinical access controls, specialized healthcare security measures',
+      },
+    ],
+  },
+  MAT: {
+    general: {
+      description:
+        'Modified Attack Requirements allows customization based on environmental deployment conditions that affect attack prerequisites.',
+      medicalDeviceContext:
+        'Adjust attack requirements based on specific clinical workflows, medical device configurations, and healthcare operational conditions.',
+      examples: [
+        'Clinical workflow modifications',
+        'Medical device operational modes',
+        'Healthcare procedure requirements',
+        'Patient care environment conditions',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The environmental impact is not defined, use original Attack Requirements value.',
+        medicalExample:
+          'Default environmental scoring, no specific workflow modifications in this clinical environment',
+      },
+      {
+        value: 'N',
+        guidance: 'No additional attack requirements exist in the target environment.',
+        medicalExample:
+          'Standard clinical operations, typical medical device deployment, routine healthcare procedures',
+      },
+      {
+        value: 'P',
+        guidance: 'Additional attack requirements are present in the target environment.',
+        medicalExample:
+          'Specialized clinical procedures required, medical device maintenance modes, specific patient care protocols, enhanced healthcare workflows',
+      },
+    ],
+  },
+  MPR: {
+    general: {
+      description:
+        'Modified Privileges Required allows customization based on environmental access controls and user privilege systems.',
+      medicalDeviceContext:
+        'Adjust privilege requirements based on healthcare facility access controls, clinical role assignments, and medical device user management.',
+      examples: [
+        'Clinical role-based access controls',
+        'Medical device user authentication',
+        'Healthcare facility privilege systems',
+        'Patient care access restrictions',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The environmental impact is not defined, use original Privileges Required value.',
+        medicalExample:
+          'Default environmental scoring, no specific privilege modifications in this healthcare facility',
+      },
+      {
+        value: 'N',
+        guidance: 'No privileges are required in the target environment.',
+        medicalExample:
+          'Open access medical systems, public healthcare interfaces, unauthenticated medical devices',
+      },
+      {
+        value: 'L',
+        guidance: 'Low-level privileges are required in the target environment.',
+        medicalExample:
+          'Basic clinical user accounts, standard patient access, limited medical device permissions',
+      },
+      {
+        value: 'H',
+        guidance: 'High-level privileges are required in the target environment.',
+        medicalExample:
+          'Administrative healthcare access, biomedical engineering privileges, critical system permissions, clinical supervisor rights',
+      },
+    ],
+  },
+  MUI: {
+    general: {
+      description:
+        'Modified User Interaction allows customization based on environmental user behavior and interaction patterns.',
+      medicalDeviceContext:
+        'Adjust user interaction requirements based on clinical workflows, healthcare staff behavior, and patient interaction patterns.',
+      examples: [
+        'Clinical staff training levels',
+        'Healthcare workflow automation',
+        'Patient interaction requirements',
+        'Medical device operation patterns',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The environmental impact is not defined, use original User Interaction value.',
+        medicalExample:
+          'Default environmental scoring, no specific interaction modifications in this clinical environment',
+      },
+      {
+        value: 'N',
+        guidance: 'No user interaction is required in the target environment.',
+        medicalExample:
+          'Automated medical processes, background healthcare services, unattended medical device operations',
+      },
+      {
+        value: 'P',
+        guidance: 'Passive user interaction is required in the target environment.',
+        medicalExample:
+          'Routine clinical operations, standard patient care procedures, normal medical device usage',
+      },
+      {
+        value: 'A',
+        guidance: 'Active user interaction is required in the target environment.',
+        medicalExample:
+          'Deliberate clinical staff actions, specific patient interactions, non-standard medical device procedures',
+      },
+    ],
+  },
+  MVC: {
+    general: {
+      description:
+        'Modified Vulnerable System Confidentiality Impact allows customization based on environmental data sensitivity and protection measures.',
+      medicalDeviceContext:
+        'Adjust confidentiality impact based on specific patient data stored on the device, healthcare data classifications, and clinical information sensitivity.',
+      examples: [
+        'Patient data sensitivity levels',
+        'Medical device data storage',
+        'Clinical information classifications',
+        'Healthcare privacy requirements',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The environmental impact is not defined, use original Vulnerable System Confidentiality value.',
+        medicalExample:
+          'Default environmental scoring, no specific confidentiality modifications for this medical device',
+      },
+      {
+        value: 'N',
+        guidance: 'No confidentiality impact to the vulnerable system in this environment.',
+        medicalExample:
+          'Medical devices with no patient data, anonymized telemetry only, public clinical information',
+      },
+      {
+        value: 'L',
+        guidance: 'Low confidentiality impact to the vulnerable system in this environment.',
+        medicalExample:
+          'Limited patient identifiers, non-sensitive clinical data, device usage patterns',
+      },
+      {
+        value: 'H',
+        guidance: 'High confidentiality impact to the vulnerable system in this environment.',
+        medicalExample:
+          'Comprehensive patient medical records, sensitive diagnostic data, protected health information on device',
+      },
+    ],
+  },
+  MVI: {
+    general: {
+      description:
+        'Modified Vulnerable System Integrity Impact allows customization based on environmental data integrity requirements and protection measures.',
+      medicalDeviceContext:
+        'Adjust integrity impact based on critical medical data on the device, clinical decision support requirements, and patient safety dependencies.',
+      examples: [
+        'Critical medical data integrity',
+        'Clinical decision support accuracy',
+        'Medical device calibration data',
+        'Patient safety-critical parameters',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The environmental impact is not defined, use original Vulnerable System Integrity value.',
+        medicalExample:
+          'Default environmental scoring, no specific integrity modifications for this medical device',
+      },
+      {
+        value: 'N',
+        guidance: 'No integrity impact to the vulnerable system in this environment.',
+        medicalExample:
+          'Read-only medical devices, non-modifiable device data, display-only clinical information',
+      },
+      {
+        value: 'L',
+        guidance: 'Low integrity impact to the vulnerable system in this environment.',
+        medicalExample:
+          'Non-critical device settings, minor configuration parameters, non-essential medical data',
+      },
+      {
+        value: 'H',
+        guidance: 'High integrity impact to the vulnerable system in this environment.',
+        medicalExample:
+          'Critical treatment parameters, life-support settings, surgical device controls, medication dosage data',
+      },
+    ],
+  },
+  MVA: {
+    general: {
+      description:
+        'Modified Vulnerable System Availability Impact allows customization based on environmental availability requirements and redundancy measures.',
+      medicalDeviceContext:
+        'Adjust availability impact based on medical device criticality, patient care dependencies, emergency use requirements, and backup systems.',
+      examples: [
+        'Life-critical medical devices',
+        'Emergency medical equipment',
+        'Patient monitoring systems',
+        'Backup medical device availability',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The environmental impact is not defined, use original Vulnerable System Availability value.',
+        medicalExample:
+          'Default environmental scoring, no specific availability modifications for this medical device',
+      },
+      {
+        value: 'N',
+        guidance: 'No availability impact to the vulnerable system in this environment.',
+        medicalExample:
+          'Non-critical medical devices, redundant systems available, backup medical equipment present',
+      },
+      {
+        value: 'L',
+        guidance: 'Low availability impact to the vulnerable system in this environment.',
+        medicalExample:
+          'Non-essential medical devices, delayed medical procedures acceptable, routine clinical equipment',
+      },
+      {
+        value: 'H',
+        guidance: 'High availability impact to the vulnerable system in this environment.',
+        medicalExample:
+          'Life-support systems, emergency medical equipment, critical patient monitoring, no backup available',
+      },
+    ],
+  },
+  MSC: {
+    general: {
+      description:
+        'Modified Subsequent System Confidentiality Impact allows customization based on environmental network architecture and data flow patterns.',
+      medicalDeviceContext:
+        'Adjust subsequent system confidentiality impact based on healthcare network connectivity, medical system integration, and data sharing patterns.',
+      examples: [
+        'Hospital network connectivity',
+        'Medical system integration',
+        'Healthcare data sharing',
+        'Clinical network architecture',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The environmental impact is not defined, use original Subsequent System Confidentiality value.',
+        medicalExample:
+          'Default environmental scoring, no specific network modifications in this healthcare environment',
+      },
+      {
+        value: 'N',
+        guidance: 'No confidentiality impact to subsequent systems in this environment.',
+        medicalExample:
+          'Isolated medical devices, air-gapped clinical networks, no connected healthcare systems',
+      },
+      {
+        value: 'L',
+        guidance: 'Low confidentiality impact to subsequent systems in this environment.',
+        medicalExample:
+          'Limited network connectivity, segmented healthcare systems, restricted data sharing',
+      },
+      {
+        value: 'H',
+        guidance: 'High confidentiality impact to subsequent systems in this environment.',
+        medicalExample:
+          'Extensive healthcare network access, integrated medical systems, widespread data connectivity',
+      },
+    ],
+  },
+  MSI: {
+    general: {
+      description:
+        'Modified Subsequent System Integrity Impact allows customization based on environmental system interdependencies and data consistency requirements.',
+      medicalDeviceContext:
+        'Adjust subsequent system integrity impact based on medical system interdependencies, clinical data consistency requirements, and healthcare workflow integration.',
+      examples: [
+        'Medical system interdependencies',
+        'Clinical data consistency',
+        'Healthcare workflow integration',
+        'Cross-system data integrity',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The environmental impact is not defined, use original Subsequent System Integrity value.',
+        medicalExample:
+          'Default environmental scoring, no specific integration modifications in this healthcare environment',
+      },
+      {
+        value: 'N',
+        guidance: 'No integrity impact to subsequent systems in this environment.',
+        medicalExample:
+          'Standalone medical devices, isolated clinical systems, no data sharing dependencies',
+      },
+      {
+        value: 'L',
+        guidance: 'Low integrity impact to subsequent systems in this environment.',
+        medicalExample:
+          'Limited system integration, non-critical data sharing, isolated clinical workflows',
+      },
+      {
+        value: 'H',
+        guidance: 'High integrity impact to subsequent systems in this environment.',
+        medicalExample:
+          'Critical system interdependencies, essential data consistency requirements, integrated clinical workflows',
+      },
+    ],
+  },
+  MSA: {
+    general: {
+      description:
+        'Modified Subsequent System Availability Impact allows customization based on environmental system dependencies and operational redundancy.',
+      medicalDeviceContext:
+        'Adjust subsequent system availability impact based on healthcare system dependencies, clinical operation redundancy, and medical service continuity requirements.',
+      examples: [
+        'Healthcare system dependencies',
+        'Clinical operation redundancy',
+        'Medical service continuity',
+        'Emergency backup systems',
+      ],
+    },
+    options: [
+      {
+        value: 'X',
+        guidance: 'The environmental impact is not defined, use original Subsequent System Availability value.',
+        medicalExample:
+          'Default environmental scoring, no specific dependency modifications in this healthcare environment',
+      },
+      {
+        value: 'N',
+        guidance: 'No availability impact to subsequent systems in this environment.',
+        medicalExample:
+          'Independent medical devices, redundant healthcare systems, backup clinical operations available',
+      },
+      {
+        value: 'L',
+        guidance: 'Low availability impact to subsequent systems in this environment.',
+        medicalExample:
+          'Limited system dependencies, partial redundancy available, non-critical healthcare operations',
+      },
+      {
+        value: 'H',
+        guidance: 'High availability impact to subsequent systems in this environment.',
+        medicalExample:
+          'Critical system dependencies, no redundancy available, essential healthcare operations at risk',
       },
     ],
   },
