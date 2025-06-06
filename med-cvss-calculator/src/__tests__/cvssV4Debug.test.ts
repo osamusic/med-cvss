@@ -7,35 +7,71 @@ describe('CVSS v4.0 Equivalence Classes Debug', () => {
       {
         name: 'Critical Network Attack',
         vector: {
-          AV: 'N', AC: 'L', AT: 'N', PR: 'N', UI: 'N',
-          VC: 'H', VI: 'H', VA: 'H', SC: 'H', SI: 'H', SA: 'H'
+          AV: 'N',
+          AC: 'L',
+          AT: 'N',
+          PR: 'N',
+          UI: 'N',
+          VC: 'H',
+          VI: 'H',
+          VA: 'H',
+          SC: 'H',
+          SI: 'H',
+          SA: 'H',
         } as CVSSV4Vector,
-        expectedScore: 10.0
+        expectedScore: 10.0,
       },
       {
         name: 'High Adjacent Attack',
         vector: {
-          AV: 'A', AC: 'L', AT: 'N', PR: 'N', UI: 'N',
-          VC: 'H', VI: 'H', VA: 'H', SC: 'N', SI: 'N', SA: 'N'
+          AV: 'A',
+          AC: 'L',
+          AT: 'N',
+          PR: 'N',
+          UI: 'N',
+          VC: 'H',
+          VI: 'H',
+          VA: 'H',
+          SC: 'N',
+          SI: 'N',
+          SA: 'N',
         } as CVSSV4Vector,
-        expectedScore: 8.8
+        expectedScore: 8.8,
       },
       {
         name: 'Medium Local Attack',
         vector: {
-          AV: 'L', AC: 'L', AT: 'N', PR: 'L', UI: 'N',
-          VC: 'H', VI: 'L', VA: 'L', SC: 'N', SI: 'N', SA: 'N'
+          AV: 'L',
+          AC: 'L',
+          AT: 'N',
+          PR: 'L',
+          UI: 'N',
+          VC: 'H',
+          VI: 'L',
+          VA: 'L',
+          SC: 'N',
+          SI: 'N',
+          SA: 'N',
         } as CVSSV4Vector,
-        expectedScore: 6.0
+        expectedScore: 6.0,
       },
       {
         name: 'Low Physical Attack',
         vector: {
-          AV: 'P', AC: 'L', AT: 'N', PR: 'N', UI: 'N',
-          VC: 'L', VI: 'L', VA: 'L', SC: 'N', SI: 'N', SA: 'N'
+          AV: 'P',
+          AC: 'L',
+          AT: 'N',
+          PR: 'N',
+          UI: 'N',
+          VC: 'L',
+          VI: 'L',
+          VA: 'L',
+          SC: 'N',
+          SI: 'N',
+          SA: 'N',
         } as CVSSV4Vector,
-        expectedScore: 3.4
-      }
+        expectedScore: 3.4,
+      },
     ];
 
     testCases.forEach(({ name, vector, expectedScore }) => {
