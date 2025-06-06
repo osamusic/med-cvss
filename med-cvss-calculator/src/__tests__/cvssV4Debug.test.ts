@@ -1,4 +1,5 @@
-import { calculateEquivalenceClasses, calculateCVSSV4Score } from '../utils/cvssV4Official';
+import { CVSS40 } from '../utils/cvssV4FullImplementation';
+import { calculateCVSSV4Score, generateV4VectorString } from '../utils/cvssV4Calculator';
 import { CVSSV4Vector } from '../types/cvss';
 
 describe('CVSS v4.0 Equivalence Classes Debug', () => {
@@ -75,20 +76,36 @@ describe('CVSS v4.0 Equivalence Classes Debug', () => {
     ];
 
     testCases.forEach(({ name, vector, expectedScore }) => {
-      const eq = calculateEquivalenceClasses(vector);
+      const vectorString = generateV4VectorString(vector);
+      const cvss = new CVSS40(vectorString);
       const calculatedScore = calculateCVSSV4Score(vector);
+      const eq = cvss.vector.equivalentClasses;
+
+      // eslint-disable-next-line no-console
       console.log(`${name}:`);
-      console.log(`  Vector: ${JSON.stringify(vector)}`);
+      // eslint-disable-next-line no-console
+      console.log(`  Vector: ${vectorString}`);
+      // eslint-disable-next-line no-console
       console.log(`  Equivalence Classes: ${eq}`);
+      // eslint-disable-next-line no-console
       console.log(`  Expected Score: ${expectedScore}`);
-      console.log(`  Calculated Score: ${calculatedScore}`);
+      // eslint-disable-next-line no-console
+      console.log(`  Calculated Score: ${calculatedScore.baseScore}`);
+      // eslint-disable-next-line no-console
       console.log('  EQ Breakdown:');
+      // eslint-disable-next-line no-console
       console.log(`    EQ1 (AV/PR/UI): ${eq[0]}`);
+      // eslint-disable-next-line no-console
       console.log(`    EQ2 (AC/AT): ${eq[1]}`);
+      // eslint-disable-next-line no-console
       console.log(`    EQ3 (VC/VI/VA): ${eq[2]}`);
+      // eslint-disable-next-line no-console
       console.log(`    EQ4 (SC/SI/SA): ${eq[3]}`);
+      // eslint-disable-next-line no-console
       console.log(`    EQ5 (E): ${eq[4]}`);
+      // eslint-disable-next-line no-console
       console.log(`    EQ6 (CR/IR/AR): ${eq[5]}`);
+      // eslint-disable-next-line no-console
       console.log('');
     });
   });
