@@ -267,6 +267,15 @@ const IntegratedCVSSCalculator: React.FC = () => {
     });
   };
 
+  const collapseAllMetrics = () => {
+    const allMetricKeys = getCurrentMetrics().flatMap((group) => Object.keys(group.metrics));
+    setCollapsedIndividualMetrics(new Set(allMetricKeys));
+  };
+
+  const expandAllMetrics = () => {
+    setCollapsedIndividualMetrics(new Set());
+  };
+
   const getCurrentMetrics = () => (version === '3.1' ? cvssMetrics : cvssV4Metrics);
   const getCurrentDescriptions = () =>
     version === '3.1' ? metricDescriptions : cvssV4MetricDescriptions;
@@ -476,6 +485,12 @@ const IntegratedCVSSCalculator: React.FC = () => {
           <div className='quick-actions'>
             <button className='clear-all-button' onClick={clearAllMetrics}>
               Clear All Metrics
+            </button>
+            <button className='collapse-all-button' onClick={collapseAllMetrics}>
+              Collapse All Metrics
+            </button>
+            <button className='expand-all-button' onClick={expandAllMetrics}>
+              Expand All Metrics
             </button>
             <div className='metrics-status'>
               {allRequiredMetricsSelected() ? (
