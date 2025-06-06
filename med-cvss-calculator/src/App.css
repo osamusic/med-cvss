@@ -17,6 +17,16 @@
   font-weight: 600;
 }
 
+.disclaimer {
+  background-color: rgba(255, 193, 7, 0.2);
+  border: 1px solid rgba(255, 193, 7, 0.4);
+  border-radius: 4px;
+  padding: 8px 16px;
+  margin: 10px 0;
+  font-size: 14px;
+  color: #f8f9fa;
+}
+
 .nav-tabs {
   display: flex;
   gap: 0;
