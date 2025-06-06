@@ -1,8 +1,10 @@
 import { CVSSV4Vector, CVSSScore } from '../types/cvss';
 import { cvssV4Metrics } from '../data/cvssV4Metrics';
+import { calculateCVSSV4Score as calculateOfficialV4Score } from './cvssV4Official';
 
 export function calculateCVSSV4Score(vector: CVSSV4Vector): CVSSScore {
-  const baseScore = calculateV4BaseScore(vector);
+  // Use the official CVSS v4.0 algorithm for base score calculation
+  const baseScore = calculateOfficialV4Score(vector);
   const threatScore = calculateV4ThreatScore(baseScore, vector);
   const environmentalScore = calculateV4EnvironmentalScore(baseScore, vector);
 
@@ -58,44 +60,11 @@ function getV4MetricScore(metricKey: string, value: string): number {
   return 0;
 }
 
-function calculateV4BaseScore(vector: CVSSV4Vector): number {
-  // Exploitability metrics
-  const AV = getV4MetricScore('AV', vector.AV || 'N');
-  const AC = getV4MetricScore('AC', vector.AC || 'L');
-  const AT = getV4MetricScore('AT', vector.AT || 'N');
-  const PR = getV4MetricScore('PR', vector.PR || 'N');
-  const UI = getV4MetricScore('UI', vector.UI || 'N');
-
-  // Vulnerable System Impact
-  const VC = getV4MetricScore('VC', vector.VC || 'N');
-  const VI = getV4MetricScore('VI', vector.VI || 'N');
-  const VA = getV4MetricScore('VA', vector.VA || 'N');
-
-  // Subsequent System Impact
-  const SC = getV4MetricScore('SC', vector.SC || 'N');
-  const SI = getV4MetricScore('SI', vector.SI || 'N');
-  const SA = getV4MetricScore('SA', vector.SA || 'N');
-
-  // Simplified scoring algorithm
-  // Note: CVSS v4.0 uses a complex MacroVector-based scoring system
-  // This is a placeholder implementation that should be replaced with the official algorithm
-
-  const exploitability = AV * AC * AT * PR * UI;
-
-  const vulnerableSystemImpact = 1 - (1 - VC) * (1 - VI) * (1 - VA);
-  const subsequentSystemImpact = 1 - (1 - SC) * (1 - SI) * (1 - SA);
-
-  const maxImpact = Math.max(vulnerableSystemImpact, subsequentSystemImpact);
-
-  if (maxImpact <= 0) {
-    return 0;
-  }
-
-  // Simplified formula - the actual CVSS v4.0 algorithm is much more complex
-  const score = Math.min(maxImpact * 6.42 + exploitability * 8.22, 10);
-
-  return roundUp(score);
-}
+// Legacy scoring function - replaced by MacroVector algorithm
+// function calculateV4BaseScore(vector: CVSSV4Vector): number {
+//   // This was a simplified implementation
+//   // Now using the official MacroVector algorithm in calculateV4BaseScoreMacroVector
+// }
 
 function calculateV4ThreatScore(baseScore: number, vector: CVSSV4Vector): number {
   const E = getV4MetricScore('E', vector.E || 'X');
