@@ -176,6 +176,18 @@ export function calculateUniversalCVSSScore(
     // Add default values for mandatory v4.0 metrics not present in v3.1
     if (!v4Vector.AT) v4Vector.AT = 'N'; // Attack Requirements - default to None
 
+    // Ensure all mandatory base metrics have values (use safe defaults)
+    if (!v4Vector.AV) v4Vector.AV = 'N'; // Attack Vector - default to Network
+    if (!v4Vector.AC) v4Vector.AC = 'L'; // Attack Complexity - default to Low
+    if (!v4Vector.PR) v4Vector.PR = 'N'; // Privileges Required - default to None
+    if (!v4Vector.UI) v4Vector.UI = 'N'; // User Interaction - default to None
+    if (!v4Vector.VC) v4Vector.VC = 'N'; // Vulnerable Confidentiality - default to None
+    if (!v4Vector.VI) v4Vector.VI = 'N'; // Vulnerable Integrity - default to None
+    if (!v4Vector.VA) v4Vector.VA = 'N'; // Vulnerable Availability - default to None
+    if (!v4Vector.SC) v4Vector.SC = 'N'; // Subsequent Confidentiality - default to None
+    if (!v4Vector.SI) v4Vector.SI = 'N'; // Subsequent Integrity - default to None
+    if (!v4Vector.SA) v4Vector.SA = 'N'; // Subsequent Availability - default to None
+
     return calculateCVSSV4Score(v4Vector);
   } else {
     return calculateCVSSScore(vector as CVSSVector);
@@ -215,6 +227,18 @@ export function generateUniversalVectorString(
 
     // Add default values for mandatory v4.0 metrics not present in v3.1
     if (!v4Vector.AT) v4Vector.AT = 'N'; // Attack Requirements - default to None
+
+    // Ensure all mandatory base metrics have values (use safe defaults)
+    if (!v4Vector.AV) v4Vector.AV = 'N'; // Attack Vector - default to Network
+    if (!v4Vector.AC) v4Vector.AC = 'L'; // Attack Complexity - default to Low
+    if (!v4Vector.PR) v4Vector.PR = 'N'; // Privileges Required - default to None
+    if (!v4Vector.UI) v4Vector.UI = 'N'; // User Interaction - default to None
+    if (!v4Vector.VC) v4Vector.VC = 'N'; // Vulnerable Confidentiality - default to None
+    if (!v4Vector.VI) v4Vector.VI = 'N'; // Vulnerable Integrity - default to None
+    if (!v4Vector.VA) v4Vector.VA = 'N'; // Vulnerable Availability - default to None
+    if (!v4Vector.SC) v4Vector.SC = 'N'; // Subsequent Confidentiality - default to None
+    if (!v4Vector.SI) v4Vector.SI = 'N'; // Subsequent Integrity - default to None
+    if (!v4Vector.SA) v4Vector.SA = 'N'; // Subsequent Availability - default to None
 
     return generateV4VectorString(v4Vector);
   } else {
