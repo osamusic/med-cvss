@@ -7,103 +7,138 @@ import {
 } from './cvssV4Calculator';
 
 export function calculateCVSSScore(vector: CVSSVector): CVSSScore {
-  const baseScore = calculateBaseScore(vector);
-  const temporalScore = calculateTemporalScore(baseScore, vector);
+  // Get base and temporal metrics from the array structure
+  const baseMetrics =
+    cvssMetrics.find((group) => group.name === 'Base Score Metrics')?.metrics || {};
+  const temporalMetrics =
+    cvssMetrics.find((group) => group.name === 'Temporal Score Metrics')?.metrics || {};
 
-  const overallScore = temporalScore || baseScore;
-  const severity = getSeverityRating(overallScore);
+  // Base Score calculation
+  const av = baseMetrics.AV?.find((m) => m.value === (vector.AV || 'N')) || { score: 0.85 };
+  const ac = baseMetrics.AC?.find((m) => m.value === (vector.AC || 'L')) || { score: 0.77 };
+  const ui = baseMetrics.UI?.find((m) => m.value === (vector.UI || 'N')) || { score: 0.85 };
+  const s = baseMetrics.S?.find((m) => m.value === (vector.S || 'U')) || { score: 0 };
+  const c = baseMetrics.C?.find((m) => m.value === (vector.C || 'N')) || { score: 0 };
+  const i = baseMetrics.I?.find((m) => m.value === (vector.I || 'N')) || { score: 0 };
+  const a = baseMetrics.A?.find((m) => m.value === (vector.A || 'N')) || { score: 0 };
+
+  // PR score needs adjustment based on scope
+  let pr = baseMetrics.PR?.find((m) => m.value === (vector.PR || 'N')) || { score: 0.85 };
+  if (s.score === 1) {
+    // Scope Changed
+    // Adjust PR scores for changed scope
+    const prScopeChanged: { [key: string]: number } = {
+      N: 0.85,
+      L: 0.68,
+      H: 0.5,
+    };
+    pr = { ...pr, score: prScopeChanged[vector.PR || 'N'] || pr.score };
+  }
+
+  // Calculate Impact Sub Score (ISS)
+  const iss = 1 - (1 - c.score) * (1 - i.score) * (1 - a.score);
+
+  // Calculate Impact
+  let impact: number;
+  if (s.score === 1) {
+    // Scope Changed
+    impact = 7.52 * (iss - 0.029) - 3.25 * Math.pow(iss - 0.02, 15);
+  } else {
+    // Scope Unchanged
+    impact = 6.42 * iss;
+  }
+
+  // Calculate Exploitability
+  const exploitability = 8.22 * av.score * ac.score * pr.score * ui.score;
+
+  // Calculate Base Score
+  let baseScore: number;
+  if (impact <= 0) {
+    baseScore = 0;
+  } else if (s.score === 1) {
+    // Scope Changed
+    baseScore = Math.min(1.08 * (impact + exploitability), 10);
+  } else {
+    // Scope Unchanged
+    baseScore = Math.min(impact + exploitability, 10);
+  }
+
+  // Round UP to one decimal place (CVSS v3.1 specification)
+  baseScore = Math.ceil(baseScore * 10) / 10;
+
+  // Temporal Score calculation
+  let temporalScore = baseScore;
+  if (vector.E || vector.RL || vector.RC) {
+    const e = temporalMetrics.E?.find((m) => m.value === (vector.E || 'X')) || { score: 1 };
+    const rl = temporalMetrics.RL?.find((m) => m.value === (vector.RL || 'X')) || { score: 1 };
+    const rc = temporalMetrics.RC?.find((m) => m.value === (vector.RC || 'X')) || { score: 1 };
+
+    temporalScore = baseScore * e.score * rl.score * rc.score;
+    temporalScore = Math.ceil(temporalScore * 10) / 10;
+  }
+
+  // Determine severity
+  const severity = getSeverity(baseScore);
 
   return {
     baseScore,
     temporalScore,
-    overallScore,
+    overallScore: temporalScore,
     severity,
   };
 }
 
-function getMetricScore(metricKey: string, value: string): number {
-  for (const group of cvssMetrics) {
-    if (group.metrics[metricKey]) {
-      const metric = group.metrics[metricKey].find((m) => m.value === value);
-      if (metric) return metric.score;
-    }
-  }
-  return 0;
-}
-
-function calculateBaseScore(vector: CVSSVector): number {
-  const AV = getMetricScore('AV', vector.AV || 'N');
-  const AC = getMetricScore('AC', vector.AC || 'L');
-  const PR = getMetricScore('PR', vector.PR || 'N');
-  const UI = getMetricScore('UI', vector.UI || 'N');
-  const S = vector.S || 'U';
-  const C = getMetricScore('C', vector.C || 'N');
-  const I = getMetricScore('I', vector.I || 'N');
-  const A = getMetricScore('A', vector.A || 'N');
-
-  // Adjust PR based on Scope
-  const adjustedPR = S === 'C' ? (PR === 0.62 ? 0.68 : PR === 0.27 ? 0.5 : PR) : PR;
-
-  const exploitability = 8.22 * AV * AC * adjustedPR * UI;
-
-  const impactSubScore = 1 - (1 - C) * (1 - I) * (1 - A);
-
-  let impact: number;
-  if (S === 'U') {
-    impact = 6.42 * impactSubScore;
-  } else {
-    impact = 7.52 * (impactSubScore - 0.029) - 3.25 * Math.pow(impactSubScore - 0.02, 15);
-  }
-
-  if (impact <= 0) {
-    return 0;
-  }
-
-  let score: number;
-  if (S === 'U') {
-    score = Math.min(impact + exploitability, 10);
-  } else {
-    score = Math.min(1.08 * (impact + exploitability), 10);
-  }
-
-  return roundUp(score);
-}
-
-function calculateTemporalScore(baseScore: number, vector: CVSSVector): number {
-  const E = getMetricScore('E', vector.E || 'X');
-  const RL = getMetricScore('RL', vector.RL || 'X');
-  const RC = getMetricScore('RC', vector.RC || 'X');
-
-  if (!vector.E && !vector.RL && !vector.RC) {
-    return 0;
-  }
-
-  const temporalScore = baseScore * E * RL * RC;
-  return roundUp(temporalScore);
-}
-
-function roundUp(value: number): number {
-  return Math.ceil(value * 10) / 10;
-}
-
-function getSeverityRating(score: number): string {
-  if (score === 0) return 'None';
-  if (score <= 3.9) return 'Low';
-  if (score <= 6.9) return 'Medium';
-  if (score <= 8.9) return 'High';
-  return 'Critical';
+function getSeverity(score: number): string {
+  if (score === 0.0) return 'None';
+  if (score >= 0.1 && score <= 3.9) return 'Low';
+  if (score >= 4.0 && score <= 6.9) return 'Medium';
+  if (score >= 7.0 && score <= 8.9) return 'High';
+  if (score >= 9.0 && score <= 10.0) return 'Critical';
+  return 'None';
 }
 
 export function generateVectorString(vector: CVSSVector): string {
   const parts: string[] = ['CVSS:3.1'];
 
-  Object.entries(vector).forEach(([key, value]) => {
-    if (value && value !== 'X') {
-      parts.push(`${key}:${value}`);
+  // Base metrics (always included if present)
+  const baseOrder = ['AV', 'AC', 'PR', 'UI', 'S', 'C', 'I', 'A'];
+  baseOrder.forEach((key) => {
+    if (vector[key as keyof CVSSVector]) {
+      parts.push(`${key}:${vector[key as keyof CVSSVector]}`);
+    }
+  });
+
+  // Temporal metrics (optional)
+  const temporalOrder = ['E', 'RL', 'RC'];
+  temporalOrder.forEach((key) => {
+    if (vector[key as keyof CVSSVector] && vector[key as keyof CVSSVector] !== 'X') {
+      parts.push(`${key}:${vector[key as keyof CVSSVector]}`);
     }
   });
 
   return parts.join('/');
+}
+
+export function parseVectorString(vectorString: string): {
+  vector: CVSSVector | CVSSV4Vector;
+  version: CVSSVersion;
+} {
+  if (vectorString.startsWith('CVSS:4.0/')) {
+    return { vector: parseV4VectorString(vectorString), version: '4.0' };
+  }
+
+  const vector: CVSSVector = {};
+  const parts = vectorString.split('/');
+
+  // Skip the first part (CVSS:3.1)
+  for (let i = 1; i < parts.length; i++) {
+    const [key, value] = parts[i].split(':');
+    if (key && value) {
+      (vector as any)[key] = value;
+    }
+  }
+
+  return { vector, version: '3.1' };
 }
 
 // Universal functions that work with both CVSS versions
@@ -116,11 +151,30 @@ export function calculateUniversalCVSSScore(
     const v4Vector: CVSSV4Vector = {};
     const v31SpecificMetrics = ['S', 'RL', 'RC']; // Scope, Remediation Level, Report Confidence
 
+    // Map v3.1 metrics to v4.0 equivalents where possible
     Object.entries(vector).forEach(([key, value]) => {
       if (!v31SpecificMetrics.includes(key)) {
-        (v4Vector as any)[key] = value;
+        if (key === 'C' || key === 'I' || key === 'A') {
+          // In v4.0, CIA impacts are split between Vulnerable and Subsequent systems
+          // For conversion, we'll set both VC/SC, VI/SI, VA/SA to the same values
+          if (key === 'C') {
+            (v4Vector as any)['VC'] = value;
+            (v4Vector as any)['SC'] = value;
+          } else if (key === 'I') {
+            (v4Vector as any)['VI'] = value;
+            (v4Vector as any)['SI'] = value;
+          } else if (key === 'A') {
+            (v4Vector as any)['VA'] = value;
+            (v4Vector as any)['SA'] = value;
+          }
+        } else {
+          (v4Vector as any)[key] = value;
+        }
       }
     });
+
+    // Add default values for mandatory v4.0 metrics not present in v3.1
+    if (!v4Vector.AT) v4Vector.AT = 'N'; // Attack Requirements - default to None
 
     return calculateCVSSV4Score(v4Vector);
   } else {
@@ -137,11 +191,30 @@ export function generateUniversalVectorString(
     const v4Vector: CVSSV4Vector = {};
     const v31SpecificMetrics = ['S', 'RL', 'RC']; // Scope, Remediation Level, Report Confidence
 
+    // Map v3.1 metrics to v4.0 equivalents where possible
     Object.entries(vector).forEach(([key, value]) => {
       if (!v31SpecificMetrics.includes(key)) {
-        (v4Vector as any)[key] = value;
+        if (key === 'C' || key === 'I' || key === 'A') {
+          // In v4.0, CIA impacts are split between Vulnerable and Subsequent systems
+          // For conversion, we'll set both VC/SC, VI/SI, VA/SA to the same values
+          if (key === 'C') {
+            (v4Vector as any)['VC'] = value;
+            (v4Vector as any)['SC'] = value;
+          } else if (key === 'I') {
+            (v4Vector as any)['VI'] = value;
+            (v4Vector as any)['SI'] = value;
+          } else if (key === 'A') {
+            (v4Vector as any)['VA'] = value;
+            (v4Vector as any)['SA'] = value;
+          }
+        } else {
+          (v4Vector as any)[key] = value;
+        }
       }
     });
+
+    // Add default values for mandatory v4.0 metrics not present in v3.1
+    if (!v4Vector.AT) v4Vector.AT = 'N'; // Attack Requirements - default to None
 
     return generateV4VectorString(v4Vector);
   } else {
@@ -149,47 +222,9 @@ export function generateUniversalVectorString(
   }
 }
 
-export function parseVectorString(vectorString: string): {
+export function parseUniversalVectorString(vectorString: string): {
   vector: CVSSVector | CVSSV4Vector;
   version: CVSSVersion;
 } {
-  if (vectorString.startsWith('CVSS:4.0/')) {
-    return {
-      vector: parseV4VectorString(vectorString),
-      version: '4.0',
-    };
-  } else if (vectorString.startsWith('CVSS:3.1/')) {
-    return {
-      vector: parseV31VectorString(vectorString),
-      version: '3.1',
-    };
-  } else {
-    // Default to 3.1 for backward compatibility
-    return {
-      vector: parseV31VectorString(vectorString),
-      version: '3.1',
-    };
-  }
-}
-
-function parseV31VectorString(vectorString: string): CVSSVector {
-  const vector: CVSSVector = {};
-
-  const parts = vectorString.replace('CVSS:3.1/', '').split('/');
-
-  parts.forEach((part) => {
-    const [key, value] = part.split(':');
-    if (key && value) {
-      (vector as any)[key] = value;
-    }
-  });
-
-  return vector;
-}
-
-export function detectCVSSVersion(vectorString: string): CVSSVersion {
-  if (vectorString.startsWith('CVSS:4.0')) {
-    return '4.0';
-  }
-  return '3.1'; // Default to 3.1
+  return parseVectorString(vectorString);
 }

@@ -54,7 +54,7 @@ describe('CVSS Calculator Tests', () => {
 
       const result = calculateCVSSScore(vector);
 
-      expect(result.baseScore).toBeCloseTo(1.6, 1);
+      expect(result.baseScore).toBe(1.6);
       expect(result.severity).toBe('Low');
     });
 
@@ -217,7 +217,7 @@ describe('CVSS Calculator Tests', () => {
 
       const result = calculateCVSSScore(vector);
 
-      expect(result.baseScore).toBeCloseTo(9.1, 1);
+      expect(result.baseScore).toBe(9.1);
       expect(result.severity).toBe('Critical');
     });
   });
