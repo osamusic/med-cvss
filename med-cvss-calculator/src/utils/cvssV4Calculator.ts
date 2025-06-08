@@ -19,8 +19,49 @@ export function calculateCVSSV4Score(vector: CVSSV4Vector): CVSSScore {
 export function generateV4VectorString(vector: CVSSV4Vector): string {
   const parts: string[] = ['CVSS:4.0'];
 
-  // Base metrics (required)
-  Object.entries(vector).forEach(([key, value]) => {
+  // Define the correct order for CVSS v4.0 metrics
+  const metricOrder = [
+    // Base metrics (mandatory)
+    'AV',
+    'AC',
+    'AT',
+    'PR',
+    'UI',
+    'VC',
+    'VI',
+    'VA',
+    'SC',
+    'SI',
+    'SA',
+    // Threat metrics
+    'E',
+    // Environmental metrics
+    'CR',
+    'IR',
+    'AR',
+    'MAV',
+    'MAC',
+    'MAT',
+    'MPR',
+    'MUI',
+    'MVC',
+    'MVI',
+    'MVA',
+    'MSC',
+    'MSI',
+    'MSA',
+    // Supplemental metrics
+    'S',
+    'AU',
+    'R',
+    'V',
+    'RE',
+    'U',
+  ];
+
+  // Add metrics in the correct order
+  metricOrder.forEach((key) => {
+    const value = vector[key as keyof CVSSV4Vector];
     if (value && value !== 'X') {
       parts.push(`${key}:${value}`);
     }
