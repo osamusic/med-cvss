@@ -27,7 +27,7 @@ export function calculateCVSSScore(vector: CVSSVector): CVSSScore {
   if (s.score === 1) {
     // Scope Changed
     // Adjust PR scores for changed scope
-    const prScopeChanged = {
+    const prScopeChanged: { [key: string]: number } = {
       N: 0.85,
       L: 0.68,
       H: 0.5,
@@ -139,19 +139,6 @@ export function parseVectorString(vectorString: string): {
   }
 
   return { vector, version: '3.1' };
-}
-
-// Function to generate vector string from any vector object
-function generateVectorStringFromObject(vector: any, version: CVSSVersion): string {
-  const parts: string[] = [`CVSS:${version}`];
-
-  Object.entries(vector).forEach(([key, value]) => {
-    if (value && value !== 'X') {
-      parts.push(`${key}:${value}`);
-    }
-  });
-
-  return parts.join('/');
 }
 
 // Universal functions that work with both CVSS versions
