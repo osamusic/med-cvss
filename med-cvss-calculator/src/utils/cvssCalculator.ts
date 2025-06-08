@@ -1,21 +1,42 @@
 import { CVSSVector, CVSSScore, CVSSV4Vector, CVSSVersion } from '../types/cvss';
 import { cvssMetrics } from '../data/cvssMetrics';
-import { calculateCVSSV4Score, generateV4VectorString, parseV4VectorString } from './cvssV4Calculator';
+import {
+  calculateCVSSV4Score,
+  generateV4VectorString,
+  parseV4VectorString,
+} from './cvssV4Calculator';
 
 export function calculateCVSSScore(vector: CVSSVector): CVSSScore {
+  // Get base and temporal metrics from the array structure
+  const baseMetrics =
+    cvssMetrics.find((group) => group.name === 'Base Score Metrics')?.metrics || {};
+  const temporalMetrics =
+    cvssMetrics.find((group) => group.name === 'Temporal Score Metrics')?.metrics || {};
+
   // Base Score calculation
-  const av = cvssMetrics.base.attackVector[vector.AV || 'N'];
-  const ac = cvssMetrics.base.attackComplexity[vector.AC || 'L'];
-  const pr = cvssMetrics.base.privilegesRequired[vector.PR || 'N'];
-  const ui = cvssMetrics.base.userInteraction[vector.UI || 'N'];
-  const s = cvssMetrics.base.scope[vector.S || 'U'];
-  const c = cvssMetrics.base.confidentialityImpact[vector.C || 'N'];
-  const i = cvssMetrics.base.integrityImpact[vector.I || 'N'];
-  const a = cvssMetrics.base.availabilityImpact[vector.A || 'N'];
+  const av = baseMetrics.AV?.find((m) => m.value === (vector.AV || 'N')) || { score: 0.85 };
+  const ac = baseMetrics.AC?.find((m) => m.value === (vector.AC || 'L')) || { score: 0.77 };
+  const ui = baseMetrics.UI?.find((m) => m.value === (vector.UI || 'N')) || { score: 0.85 };
+  const s = baseMetrics.S?.find((m) => m.value === (vector.S || 'U')) || { score: 0 };
+  const c = baseMetrics.C?.find((m) => m.value === (vector.C || 'N')) || { score: 0 };
+  const i = baseMetrics.I?.find((m) => m.value === (vector.I || 'N')) || { score: 0 };
+  const a = baseMetrics.A?.find((m) => m.value === (vector.A || 'N')) || { score: 0 };
+
+  // PR score needs adjustment based on scope
+  let pr = baseMetrics.PR?.find((m) => m.value === (vector.PR || 'N')) || { score: 0.85 };
+  if (s.score === 1) {
+    // Scope Changed
+    // Adjust PR scores for changed scope
+    const prScopeChanged = {
+      N: 0.85,
+      L: 0.68,
+      H: 0.5,
+    };
+    pr = { ...pr, score: prScopeChanged[vector.PR || 'N'] || pr.score };
+  }
 
   // Calculate Impact Sub Score (ISS)
-  const iss =
-    1 - (1 - c.score) * (1 - i.score) * (1 - a.score);
+  const iss = 1 - (1 - c.score) * (1 - i.score) * (1 - a.score);
 
   // Calculate Impact
   let impact: number;
@@ -28,8 +49,7 @@ export function calculateCVSSScore(vector: CVSSVector): CVSSScore {
   }
 
   // Calculate Exploitability
-  const exploitability =
-    8.22 * av.score * ac.score * pr.score * ui.score;
+  const exploitability = 8.22 * av.score * ac.score * pr.score * ui.score;
 
   // Calculate Base Score
   let baseScore: number;
@@ -43,18 +63,18 @@ export function calculateCVSSScore(vector: CVSSVector): CVSSScore {
     baseScore = Math.min(impact + exploitability, 10);
   }
 
-  // Round to one decimal place
-  baseScore = Math.round(baseScore * 10) / 10;
+  // Round UP to one decimal place (CVSS v3.1 specification)
+  baseScore = Math.ceil(baseScore * 10) / 10;
 
   // Temporal Score calculation
   let temporalScore = baseScore;
   if (vector.E || vector.RL || vector.RC) {
-    const e = cvssMetrics.temporal.exploitCodeMaturity[vector.E || 'X'];
-    const rl = cvssMetrics.temporal.remediationLevel[vector.RL || 'X'];
-    const rc = cvssMetrics.temporal.reportConfidence[vector.RC || 'X'];
+    const e = temporalMetrics.E?.find((m) => m.value === (vector.E || 'X')) || { score: 1 };
+    const rl = temporalMetrics.RL?.find((m) => m.value === (vector.RL || 'X')) || { score: 1 };
+    const rc = temporalMetrics.RC?.find((m) => m.value === (vector.RC || 'X')) || { score: 1 };
 
     temporalScore = baseScore * e.score * rl.score * rc.score;
-    temporalScore = Math.round(temporalScore * 10) / 10;
+    temporalScore = Math.ceil(temporalScore * 10) / 10;
   }
 
   // Determine severity
