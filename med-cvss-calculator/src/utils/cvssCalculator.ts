@@ -167,6 +167,22 @@ export function calculateUniversalCVSSScore(
             (v4Vector as any)['VA'] = value;
             (v4Vector as any)['SA'] = value;
           }
+        } else if (key === 'UI') {
+          // Map v3.1 UI values to v4.0 equivalents
+          // v3.1: N (None), R (Required)
+          // v4.0: N (None), P (Passive), A (Active)
+          // Mapping: N->N, R->A (Required maps to Active)
+          (v4Vector as any)[key] = value === 'R' ? 'A' : value;
+        } else if (key === 'E') {
+          // Map v3.1 E values to v4.0 equivalents where needed
+          // v3.1: X, U (Unproven), P, F (Functional), H (High)
+          // v4.0: X, U (Unreported), P, A (Attacked)
+          // Mapping: F->A, H->A, others stay the same
+          if (value === 'F' || value === 'H') {
+            (v4Vector as any)[key] = 'A';
+          } else {
+            (v4Vector as any)[key] = value;
+          }
         } else {
           (v4Vector as any)[key] = value;
         }
@@ -218,6 +234,22 @@ export function generateUniversalVectorString(
           } else if (key === 'A') {
             (v4Vector as any)['VA'] = value;
             (v4Vector as any)['SA'] = value;
+          }
+        } else if (key === 'UI') {
+          // Map v3.1 UI values to v4.0 equivalents
+          // v3.1: N (None), R (Required)
+          // v4.0: N (None), P (Passive), A (Active)
+          // Mapping: N->N, R->A (Required maps to Active)
+          (v4Vector as any)[key] = value === 'R' ? 'A' : value;
+        } else if (key === 'E') {
+          // Map v3.1 E values to v4.0 equivalents where needed
+          // v3.1: X, U (Unproven), P, F (Functional), H (High)
+          // v4.0: X, U (Unreported), P, A (Attacked)
+          // Mapping: F->A, H->A, others stay the same
+          if (value === 'F' || value === 'H') {
+            (v4Vector as any)[key] = 'A';
+          } else {
+            (v4Vector as any)[key] = value;
           }
         } else {
           (v4Vector as any)[key] = value;
