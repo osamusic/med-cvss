@@ -112,7 +112,17 @@ export function calculateUniversalCVSSScore(
   version: CVSSVersion
 ): CVSSScore {
   if (version === '4.0') {
-    return calculateCVSSV4Score(vector as CVSSV4Vector);
+    // Filter out v3.1 specific metrics that are not valid in v4.0
+    const v4Vector: CVSSV4Vector = {};
+    const v31SpecificMetrics = ['S', 'RL', 'RC']; // Scope, Remediation Level, Report Confidence
+
+    Object.entries(vector).forEach(([key, value]) => {
+      if (!v31SpecificMetrics.includes(key)) {
+        (v4Vector as any)[key] = value;
+      }
+    });
+
+    return calculateCVSSV4Score(v4Vector);
   } else {
     return calculateCVSSScore(vector as CVSSVector);
   }
@@ -123,7 +133,17 @@ export function generateUniversalVectorString(
   version: CVSSVersion
 ): string {
   if (version === '4.0') {
-    return generateV4VectorString(vector as CVSSV4Vector);
+    // Filter out v3.1 specific metrics that are not valid in v4.0
+    const v4Vector: CVSSV4Vector = {};
+    const v31SpecificMetrics = ['S', 'RL', 'RC']; // Scope, Remediation Level, Report Confidence
+
+    Object.entries(vector).forEach(([key, value]) => {
+      if (!v31SpecificMetrics.includes(key)) {
+        (v4Vector as any)[key] = value;
+      }
+    });
+
+    return generateV4VectorString(v4Vector);
   } else {
     return generateVectorString(vector as CVSSVector);
   }
