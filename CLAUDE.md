@@ -37,6 +37,9 @@ docker-compose --profile dev up dev       # Development with hot reload (port 30
 # Single test execution
 npm test -- --testNamePattern="specific test name"
 npm test -- --testPathPattern="filename pattern"
+
+# Deployment
+npm run vercel-build    # Vercel-optimized build (CI=false npm run build)
 ```
 
 ## Architecture Overview
@@ -145,12 +148,53 @@ The application integrates with the [med-mcp-threat server](https://github.com/o
 **Environment Variables:**
 ```bash
 REACT_APP_MCP_ENABLED=true
+REACT_APP_MCP_THREAT_SERVER=threat-extraction  # For Claude Desktop mode
+REACT_APP_MCP_SERVER_URL=https://your-mcp-server.vercel.app  # For HTTP API mode
+```
+
+**MCP Server Configuration:**
+MCPサーバーは2つの方法で設定可能です：
+
+**Option 1: Claude Desktop (ローカル)**
+1. **Claude Desktop設定** (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "threat-extraction": {
+      "command": "node",
+      "args": ["/path/to/med-mcp-threat/index.js"],
+      "env": {
+        "PORT": "3001"
+      }
+    }
+  }
+}
+```
+
+2. **環境変数設定** (`.env.local`):
+```bash
 REACT_APP_MCP_THREAT_SERVER=threat-extraction
+# REACT_APP_MCP_SERVER_URL は設定しない（Claude Desktopモード）
+```
+
+**Option 2: HTTP API (Vercel等にデプロイ)**
+1. **MCPサーバーをVercel等にデプロイ**
+2. **環境変数設定** (`.env.local`):
+```bash
+REACT_APP_MCP_SERVER_URL=https://your-mcp-server.vercel.app
+# REACT_APP_MCP_THREAT_SERVER は不要（HTTP APIモード）
+```
+
+**HTTP API Endpoints:**
+```
+GET  /health                     # ヘルスチェック
+POST /api/extract-cvss           # 単一脅威分析
+POST /api/extract-cvss-batch     # バッチ脅威分析
 ```
 
 **Requirements:**
-- Claude Desktop with MCP support
-- med-mcp-threat server configured
+- Option 1: Claude Desktop with MCP support + med-mcp-threat server configured locally
+- Option 2: med-mcp-threat server deployed as HTTP API (Vercel, etc.)
 - User authentication (protected route)
 
 ## Important Implementation Details
@@ -176,6 +220,22 @@ REACT_APP_MCP_THREAT_SERVER=threat-extraction
 - Medical device guidance data drives UI help text
 - Real-time CVSS calculation on metric selection
 - Comprehensive test coverage for calculation algorithms
+
+**Deployment Configuration:**
+- Vercel deployment with root directory set to `med-cvss-calculator`
+- Node.js 18 specified in `.nvmrc` for consistent builds
+- `CI=false` in vercel-build to prevent warnings as errors
+- `.env.production` configures production environment settings
+
+## Environment Configuration
+
+**Local Development:**
+- Copy `.env.example` to `.env.local` and configure Firebase credentials
+- MCP integration requires Claude Desktop with med-mcp-threat server
+
+**Production Deployment:**
+- `.env.production` sets `CI=false` and `GENERATE_SOURCEMAP=false`
+- Vercel automatically uses environment variables from dashboard
 
 ## Firebase Integration (Optional)
 
