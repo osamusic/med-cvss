@@ -24,7 +24,7 @@ interface BatchResult {
   };
 }
 
-const ThreatAnalysis: React.FC = () => {
+const ThreatAnalysis = React.memo(() => {
   const navigate = useNavigate();
   const [threatDescription, setThreatDescription] = useState('');
   const [batchDescriptions, setBatchDescriptions] = useState<string[]>(['']);
@@ -45,25 +45,40 @@ const ThreatAnalysis: React.FC = () => {
       'Bluetooth接続を介して心臓ペースメーカーの設定を不正に変更できる脆弱性が発見された。',
   };
 
-  // Initialize MCP client on component mount
+  // Initialize MCP client on component mount with proper cleanup
   useEffect(() => {
-    const initializeMCP = async () => {
-      const available = isMCPAvailable();
-      setMcpAvailable(available);
+    let cancelled = false;
 
-      if (available) {
+    const initializeMCP = async () => {
+      if (cancelled) return;
+
+      const available = isMCPAvailable();
+      if (!cancelled) {
+        setMcpAvailable(available);
+      }
+
+      if (available && !cancelled) {
         try {
           const connected = await initializeMCPClient();
-          setMcpConnected(connected);
+          if (!cancelled) {
+            setMcpConnected(connected);
+          }
         } catch (error) {
           // eslint-disable-next-line no-console
           console.warn('MCP initialization failed:', error);
-          setMcpConnected(false);
+          if (!cancelled) {
+            setMcpConnected(false);
+          }
         }
       }
     };
 
     initializeMCP();
+
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const extractCVSS = async () => {
@@ -267,7 +282,7 @@ const ThreatAnalysis: React.FC = () => {
           <div className='input-section'>
             <h2>脅威の説明（複数）</h2>
             {batchDescriptions.map((desc, index) => (
-              <div key={index} className='batch-input-row'>
+              <div key={`batch-threat-${index}-${desc.slice(0, 10)}`} className='batch-input-row'>
                 <textarea
                   value={desc}
                   onChange={(e) => updateBatchDescription(index, e.target.value)}
@@ -324,7 +339,10 @@ const ThreatAnalysis: React.FC = () => {
 
               <div className='batch-results'>
                 {batchResults.results.map((res, index) => (
-                  <div key={index} className='result-card compact'>
+                  <div
+                    key={`result-${index}-${res.base_score}-${res.severity}`}
+                    className='result-card compact'
+                  >
                     <div className='result-header'>
                       <h4>脅威 {index + 1}</h4>
                       <div className='score-badge'>
@@ -360,6 +378,8 @@ const ThreatAnalysis: React.FC = () => {
       </div>
     </div>
   );
-};
+});
+
+ThreatAnalysis.displayName = 'ThreatAnalysis';
 
 export default ThreatAnalysis;

@@ -13,7 +13,7 @@ import './IntegratedCVSSCalculator.css';
 
 type ViewMode = 'calculator' | 'rubric';
 
-const IntegratedCVSSCalculator: React.FC = () => {
+const IntegratedCVSSCalculator = React.memo(() => {
   const location = useLocation();
   const prefilledMetrics = (location.state as any)?.prefilledMetrics as CVSSVector | undefined;
 
@@ -35,9 +35,13 @@ const IntegratedCVSSCalculator: React.FC = () => {
   );
 
   useEffect(() => {
+    // Batch score and vector string calculation to prevent multiple renders
     const calculatedScore = calculateUniversalCVSSScore(vector, version);
+    const calculatedVectorString = generateUniversalVectorString(vector, version);
+
+    // Use React's automatic batching for state updates
     setScore(calculatedScore);
-    setVectorString(generateUniversalVectorString(vector, version));
+    setVectorString(calculatedVectorString);
   }, [vector, version]);
 
   useEffect(() => {
@@ -393,7 +397,11 @@ const IntegratedCVSSCalculator: React.FC = () => {
                               <h4>Examples</h4>
                               <ul>
                                 {guidance.general.examples.map((example, index) => (
-                                  <li key={index}>{example}</li>
+                                  <li
+                                    key={`example-${metricKey}-${index}-${example.slice(0, 20).replace(/\s+/g, '-')}`}
+                                  >
+                                    {example}
+                                  </li>
                                 ))}
                               </ul>
                             </div>
@@ -488,7 +496,7 @@ const IntegratedCVSSCalculator: React.FC = () => {
           <div className='quick-presets'>
             {getQuickPresets().map((preset, index) => (
               <button
-                key={index}
+                key={`preset-${preset.name.replace(/\s+/g, '-').toLowerCase()}-${index}`}
                 className='preset-button'
                 onClick={() => applyQuickPreset(preset)}
                 title={preset.description}
@@ -601,6 +609,8 @@ const IntegratedCVSSCalculator: React.FC = () => {
       </div>
     </div>
   );
-};
+});
+
+IntegratedCVSSCalculator.displayName = 'IntegratedCVSSCalculator';
 
 export default IntegratedCVSSCalculator;

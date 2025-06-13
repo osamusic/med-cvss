@@ -6,6 +6,7 @@ import Navigation from './components/Navigation';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 import './App.css';
 
 function App() {
@@ -15,15 +16,31 @@ function App() {
 
       <main className='app-content'>
         <Routes>
-          <Route path='/' element={<IntegratedCVSSCalculator />} />
+          <Route
+            path='/'
+            element={
+              <ErrorBoundary>
+                <IntegratedCVSSCalculator />
+              </ErrorBoundary>
+            }
+          />
           <Route path='/login' element={<Login />} />
           <Route path='/signup' element={<Signup />} />
-          <Route path='/calculator' element={<IntegratedCVSSCalculator />} />
+          <Route
+            path='/calculator'
+            element={
+              <ErrorBoundary>
+                <IntegratedCVSSCalculator />
+              </ErrorBoundary>
+            }
+          />
           <Route
             path='/threat-analysis'
             element={
               <ProtectedRoute>
-                <ThreatAnalysis />
+                <ErrorBoundary>
+                  <ThreatAnalysis />
+                </ErrorBoundary>
               </ProtectedRoute>
             }
           />
@@ -31,7 +48,9 @@ function App() {
             path='/comparison'
             element={
               <ProtectedRoute>
-                <CVSSComparison />
+                <ErrorBoundary>
+                  <CVSSComparison />
+                </ErrorBoundary>
               </ProtectedRoute>
             }
           />

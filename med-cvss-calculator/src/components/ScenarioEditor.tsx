@@ -192,7 +192,10 @@ const ScenarioEditor: React.FC<ScenarioEditorProps> = ({ isOpen, scenario, onSav
           <div className='form-section'>
             <h3>Remediation Actions</h3>
             {remediationActions.map((action, index) => (
-              <div key={index} className='action-input'>
+              <div
+                key={`edit-action-${index}-${action.slice(0, 10).replace(/\s+/g, '-')}`}
+                className='action-input'
+              >
                 <input
                   type='text'
                   value={action}

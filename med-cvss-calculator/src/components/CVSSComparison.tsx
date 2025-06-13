@@ -15,7 +15,7 @@ interface CVSSComparisonProps {
   initialVector?: CVSSVector;
 }
 
-const CVSSComparisonComponent: React.FC<CVSSComparisonProps> = ({ initialVector }) => {
+const CVSSComparisonComponent = React.memo<CVSSComparisonProps>(({ initialVector }) => {
   const scenarioManager = useCustomScenarios();
   const [beforeVector, setBeforeVector] = useState<CVSSVector>(initialVector || {});
   const [afterVector, setAfterVector] = useState<CVSSVector>({});
@@ -158,7 +158,10 @@ const CVSSComparisonComponent: React.FC<CVSSComparisonProps> = ({ initialVector 
 
         <div className='scenario-list'>
           {scenarioManager.scenarios.map((scenario, index) => (
-            <div key={index} className='scenario-item'>
+            <div
+              key={`scenario-${index}-${scenario.title.replace(/\s+/g, '-').toLowerCase()}`}
+              className='scenario-item'
+            >
               <button
                 onClick={() => loadScenario(scenario)}
                 className={`scenario-load-button ${selectedScenario === scenario.title ? 'selected' : ''}`}
@@ -224,7 +227,10 @@ const CVSSComparisonComponent: React.FC<CVSSComparisonProps> = ({ initialVector 
       <div className='remediation-actions'>
         <h4>Remediation Actions</h4>
         {remediationActions.map((action, index) => (
-          <div key={index} className='action-input'>
+          <div
+            key={`remediation-action-${index}-${action.slice(0, 10).replace(/\s+/g, '-')}`}
+            className='action-input'
+          >
             <input
               type='text'
               value={action}
@@ -305,7 +311,7 @@ const CVSSComparisonComponent: React.FC<CVSSComparisonProps> = ({ initialVector 
                 </thead>
                 <tbody>
                   {comparison.metricChanges.map((change, index) => (
-                    <tr key={index}>
+                    <tr key={`metric-change-${change.metric}-${index}`}>
                       <td>{change.metric}</td>
                       <td>
                         {change.beforeLabel} ({change.before})
@@ -374,6 +380,8 @@ const CVSSComparisonComponent: React.FC<CVSSComparisonProps> = ({ initialVector 
       />
     </div>
   );
-};
+});
+
+CVSSComparisonComponent.displayName = 'CVSSComparisonComponent';
 
 export default CVSSComparisonComponent;
