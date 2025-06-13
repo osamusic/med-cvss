@@ -1,25 +1,5 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "med-cvss-calculator/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "buildCommand": "cd med-cvss-calculator && npm install && npm run build",
-  "installCommand": "cd med-cvss-calculator && npm install",
-  "framework": "create-react-app",
-  "outputDirectory": "med-cvss-calculator/build"
+  "buildCommand": "cd med-cvss-calculator && npm install --legacy-peer-deps && npm run build",
+  "outputDirectory": "med-cvss-calculator/build",
+  "installCommand": "cd med-cvss-calculator && npm install --legacy-peer-deps"
 }
