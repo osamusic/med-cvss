@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { CVSSVector, CVSSScore, CVSSV4Vector, CVSSVersion } from '../types/cvss';
 import { cvssMetrics, metricDescriptions } from '../data/cvssMetrics';
 import { cvssV4Metrics, cvssV4MetricDescriptions } from '../data/cvssV4Metrics';
@@ -13,9 +14,12 @@ import './IntegratedCVSSCalculator.css';
 type ViewMode = 'calculator' | 'rubric';
 
 const IntegratedCVSSCalculator: React.FC = () => {
+  const location = useLocation();
+  const prefilledMetrics = (location.state as any)?.prefilledMetrics as CVSSVector | undefined;
+
   const [viewMode, setViewMode] = useState<ViewMode>('calculator');
   const [version, setVersion] = useState<CVSSVersion>('3.1');
-  const [vector, setVector] = useState<CVSSVector | CVSSV4Vector>({});
+  const [vector, setVector] = useState<CVSSVector | CVSSV4Vector>(prefilledMetrics || {});
   const [score, setScore] = useState<CVSSScore>({
     baseScore: 0,
     temporalScore: 0,
@@ -48,6 +52,19 @@ const IntegratedCVSSCalculator: React.FC = () => {
       setViewMode('calculator');
     }
   }, [version, viewMode]);
+
+  // Handle prefilled metrics from navigation
+  useEffect(() => {
+    if (prefilledMetrics) {
+      setVector(prefilledMetrics);
+      // Expand base metrics section if metrics are prefilled
+      setCollapsedMetrics((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete('Base Score Metrics');
+        return newSet;
+      });
+    }
+  }, [prefilledMetrics]);
 
   const handleMetricChange = (metric: string, value: string) => {
     setVector((prev) => ({

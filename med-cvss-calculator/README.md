@@ -5,6 +5,7 @@ A React TypeScript application that implements both CVSS v3.1 and v4.0 vulnerabi
 ## ✨ Features
 
 - **CVSS v3.1 & v4.0 Calculator**: Full implementation of both CVSS specifications
+- **AI Threat Assessment**: Automated CVSS scoring from Japanese threat descriptions using MCP
 - **Before/After Comparison**: Evaluate risk reduction after implementing remediation measures
 - **Medical Device Scenarios**: Pre-built scenarios for healthcare environments
 - **Custom Scenarios**: Create, edit, and manage your own remediation scenarios
@@ -25,7 +26,8 @@ Designed specifically for healthcare environments with:
 ### Prerequisites
 
 - Node.js 16+ and npm
-- Firebase project (optional, for cloud storage)
+- Firebase project (optional, for cloud storage and authentication)
+- Claude Desktop with MCP support (optional, for AI threat assessment)
 
 ### Installation
 
@@ -40,10 +42,11 @@ Designed specifically for healthcare environments with:
    npm start
    ```
 
-4. **For Firebase Cloud Storage**:
+4. **For Full Features (Firebase + MCP)**:
    - Follow the [Firebase Setup Guide](./FIREBASE_SETUP.md)
    - Copy `.env.example` to `.env.local`
    - Add your Firebase configuration
+   - Set up [med-mcp-threat server](https://github.com/osamusic/med-mcp-threat) in Claude Desktop
    - Start the application:
      ```bash
      npm start
@@ -97,23 +100,26 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 ## 🏗️ Architecture
 
 ### Component Structure
-- **CVSSCalculator**: Technical CVSS metric selection interface with real-time calculation
+- **IntegratedCVSSCalculator**: Technical CVSS metric selection interface with real-time calculation
+- **ThreatAnalysis**: AI-powered threat assessment from Japanese descriptions (MCP)
 - **CVSSComparison**: Before/after evaluation with custom scenario management
 - **ScenarioEditor**: Modal interface for creating and editing scenarios
 - **Authentication**: Firebase Auth integration for secure user sessions
 
 ### Data Flow
-1. Questionnaire collects user responses and maps to CVSS metrics
-2. Navigation state passes selected values to calculator
-3. Calculator performs real-time CVSS v3.1 calculations
-4. Results display score, severity rating, and vector string
-5. Custom scenarios are stored locally or in Firebase Firestore
+1. **Manual Assessment**: Questionnaire collects user responses and maps to CVSS metrics
+2. **AI Assessment**: Japanese threat descriptions are analyzed via MCP to extract CVSS metrics
+3. Navigation state passes selected values to calculator
+4. Calculator performs real-time CVSS v3.1/v4.0 calculations
+5. Results display score, severity rating, and vector string
+6. Custom scenarios are stored locally or in Firebase Firestore
 
 ### Key Technologies
-- **React 18** with TypeScript
+- **React 19** with TypeScript
 - **Firebase**: Authentication and Firestore database
-- **CVSS v3.1**: Full specification implementation
-- **CSS Modules**: Component-scoped styling
+- **MCP (Model Context Protocol)**: AI threat analysis integration
+- **CVSS v3.1 & v4.0**: Full specification implementation
+- **Component-scoped CSS**: Modular styling approach
 
 ## 🔧 Configuration
 
@@ -131,7 +137,59 @@ const scenarioManager = useCustomScenarios('firebase', user?.uid);
 
 ### Environment Variables
 
-See `.env.example` for all available configuration options.
+Create a `.env.local` file by copying `.env.example` and configure the following variables:
+
+#### Firebase Configuration (Required for authentication and cloud storage)
+```bash
+# Firebase project settings from Firebase Console > Project Settings > General
+REACT_APP_FIREBASE_API_KEY=your_api_key_here
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+
+# Optional: Development settings
+REACT_APP_USE_FIREBASE_EMULATOR=false
+REACT_APP_FIREBASE_DEBUG=false
+```
+
+#### Storage Configuration
+```bash
+# Choose storage backend: 'localStorage' or 'firebase'
+REACT_APP_DEFAULT_STORAGE_TYPE=localStorage
+```
+
+#### MCP Threat Analysis Configuration
+```bash
+# Enable MCP threat extraction features
+REACT_APP_MCP_ENABLED=true
+# MCP server name for threat extraction
+REACT_APP_MCP_THREAT_SERVER=threat-extraction
+```
+
+**Note**: MCP features require Claude Desktop with the [med-mcp-threat server](https://github.com/osamusic/med-mcp-threat) configured.
+
+## 🤖 AI Threat Assessment (MCP)
+
+The application integrates with the [med-mcp-threat server](https://github.com/osamusic/med-mcp-threat) to provide AI-powered CVSS scoring from Japanese threat descriptions.
+
+### Features
+- **Japanese Language Support**: Optimized for Japanese medical device threat descriptions
+- **Automatic CVSS Extraction**: AI analysis extracts CVSS v3.1 metrics from threat text
+- **Batch Processing**: Analyze multiple threats simultaneously
+- **Medical Device Focus**: Specialized for healthcare device vulnerabilities
+
+### Requirements
+1. **Claude Desktop**: Install and configure Claude Desktop
+2. **MCP Server**: Set up the [med-mcp-threat server](https://github.com/osamusic/med-mcp-threat)
+3. **Authentication**: Sign in to access the AI Threat Assessment feature
+
+### Usage
+1. Navigate to "AI Threat Assessment (Japanese only)" after signing in
+2. Enter Japanese threat descriptions (samples provided)
+3. AI extracts CVSS metrics and calculates scores automatically
+4. Review results and navigate to detailed CVSS calculator if needed
 
 ## 📊 CVSS Implementation
 

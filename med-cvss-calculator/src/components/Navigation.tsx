@@ -27,9 +27,26 @@ const Navigation: React.FC = () => {
 
       <div className='nav-content'>
         <div className='nav-tabs'>
-          <Link to='/' className={location.pathname === '/' ? 'active' : ''}>
+          <Link
+            to='/'
+            className={
+              location.pathname === '/' || location.pathname === '/calculator' ? 'active' : ''
+            }
+          >
             CVSS Calculator
           </Link>
+          {currentUser ? (
+            <Link
+              to='/threat-analysis'
+              className={location.pathname === '/threat-analysis' ? 'active' : ''}
+            >
+              AI Threat Assessment (Japanese only)
+            </Link>
+          ) : (
+            <Link to='/login' className='login-link'>
+              AI Threat Assessment (Japanese only - Sign In Required)
+            </Link>
+          )}
           {currentUser ? (
             <Link to='/comparison' className={location.pathname === '/comparison' ? 'active' : ''}>
               Before/After Comparison
