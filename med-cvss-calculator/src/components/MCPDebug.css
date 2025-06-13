@@ -1,0 +1,81 @@
+.mcp-debug {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  font-family: monospace;
+}
+
+.mcp-debug h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.mcp-debug table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.mcp-debug td {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.mcp-debug td:first-child {
+  width: 40%;
+  color: #666;
+}
+
+.status-connected {
+  color: #22c55e;
+  font-weight: bold;
+}
+
+.status-error {
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 0.9em;
+}
+
+.test-button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.test-button:hover {
+  background-color: #2563eb;
+}
+
+.test-button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.debug-tips {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.debug-tips h4 {
+  margin-top: 0;
+  color: #666;
+}
+
+.debug-tips p {
+  margin: 5px 0;
+  color: #ef4444;
+  font-size: 0.9em;
+}

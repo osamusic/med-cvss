@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CVSSVector } from '../types/cvss';
 import { mcpThreatClient, initializeMCPClient, isMCPAvailable } from '../services/mcpClient';
+import { MCPDebug } from './MCPDebug';
 import './ThreatAnalysis.css';
 
 interface ThreatExtractionResult {
@@ -35,6 +36,7 @@ const ThreatAnalysis = React.memo(() => {
   const [mode, setMode] = useState<'single' | 'batch'>('single');
   const [mcpAvailable, setMcpAvailable] = useState(false);
   const [mcpConnected, setMcpConnected] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
 
   // Sample threat descriptions for users to try
   const sampleThreats = {
@@ -169,6 +171,13 @@ const ThreatAnalysis = React.memo(() => {
               {mcpConnected && mcpAvailable ? 'MCP接続済み' : 'MCP未接続'}
             </span>
           </div>
+          <button 
+            onClick={() => setShowDebug(!showDebug)} 
+            className='debug-toggle'
+            style={{ marginLeft: '10px', fontSize: '12px', padding: '2px 8px' }}
+          >
+            {showDebug ? 'デバッグを隠す' : 'デバッグ情報'}
+          </button>
         </div>
         {!mcpAvailable && (
           <p className='mcp-note'>
@@ -176,6 +185,7 @@ const ThreatAnalysis = React.memo(() => {
             DesktopやMCP対応環境で実行すると、med-mcp-threatサーバーを利用した実際のAI脅威分析機能が利用できます。
           </p>
         )}
+        {showDebug && <MCPDebug />}
       </div>
 
       <div className='mode-selector'>
