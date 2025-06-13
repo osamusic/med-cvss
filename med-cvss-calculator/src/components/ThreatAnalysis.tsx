@@ -171,8 +171,8 @@ const ThreatAnalysis = React.memo(() => {
               {mcpConnected && mcpAvailable ? 'MCP接続済み' : 'MCP未接続'}
             </span>
           </div>
-          <button 
-            onClick={() => setShowDebug(!showDebug)} 
+          <button
+            onClick={() => setShowDebug(!showDebug)}
             className='debug-toggle'
             style={{ marginLeft: '10px', fontSize: '12px', padding: '2px 8px' }}
           >

@@ -24,7 +24,7 @@ export async function testMCPAuthentication(email: string, password: string, ser
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${idToken}`,
+        Authorization: `Bearer ${idToken}`,
       },
       body: JSON.stringify({
         threat_description: 'テスト脅威: 医療機器のBluetooth通信が暗号化されていない',

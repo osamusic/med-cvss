@@ -25,30 +25,29 @@ export const MCPDebug: React.FC = () => {
         const serverUrl = process.env.REACT_APP_MCP_SERVER_URL || '';
         const serverName = process.env.REACT_APP_MCP_THREAT_SERVER || 'threat-extraction';
         const mode = serverUrl ? 'HTTP API' : 'Claude Desktop';
-        
+
         const currentUser = auth.currentUser;
-        const isAuthenticated = !!currentUser;
+        const isAuthenticated = Boolean(currentUser);
         const userEmail = currentUser?.email || null;
         let hasToken = false;
-        
+
         if (currentUser) {
           try {
             const token = await currentUser.getIdToken();
-            hasToken = !!token;
+            hasToken = Boolean(token);
           } catch (err) {
             console.error('Failed to get token:', err);
           }
         }
 
         // Check window.use_mcp_tool availability
-        const mcpAvailable = mode === 'Claude Desktop' 
-          ? typeof (window as any).use_mcp_tool === 'function'
-          : true; // For HTTP API, we check via connection
+        const mcpAvailable =
+          mode === 'Claude Desktop' ? typeof (window as any).use_mcp_tool === 'function' : true; // For HTTP API, we check via connection
 
         // Try to connect
         let connectionStatus = 'Not connected';
         let error = null;
-        
+
         try {
           const connected = await mcpThreatClient.connect();
           connectionStatus = connected ? 'Connected' : 'Failed to connect';
@@ -84,12 +83,16 @@ export const MCPDebug: React.FC = () => {
       // Disconnect and reconnect
       mcpThreatClient.disconnect();
       const connected = await mcpThreatClient.connect();
-      
-      setDebugInfo(prev => prev ? {
-        ...prev,
-        connectionStatus: connected ? 'Connected' : 'Failed to connect',
-        error: connected ? null : 'Connection failed',
-      } : null);
+
+      setDebugInfo((prev) =>
+        prev
+          ? {
+              ...prev,
+              connectionStatus: connected ? 'Connected' : 'Failed to connect',
+              error: connected ? null : 'Connection failed',
+            }
+          : null
+      );
 
       if (connected && debugInfo?.mode === 'HTTP API') {
         // Test authentication with a simple request
@@ -111,70 +114,90 @@ export const MCPDebug: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="mcp-debug">Loading debug info...</div>;
+    return <div className='mcp-debug'>Loading debug info...</div>;
   }
 
   if (!debugInfo) {
-    return <div className="mcp-debug">Failed to load debug info</div>;
+    return <div className='mcp-debug'>Failed to load debug info</div>;
   }
 
   return (
-    <div className="mcp-debug">
+    <div className='mcp-debug'>
       <h3>MCP Connection Debug Info</h3>
       <table>
         <tbody>
           <tr>
-            <td><strong>Mode:</strong></td>
+            <td>
+              <strong>Mode:</strong>
+            </td>
             <td>{debugInfo.mode}</td>
           </tr>
           {debugInfo.mode === 'HTTP API' && (
             <tr>
-              <td><strong>Server URL:</strong></td>
+              <td>
+                <strong>Server URL:</strong>
+              </td>
               <td>{debugInfo.serverUrl || 'Not set'}</td>
             </tr>
           )}
           {debugInfo.mode === 'Claude Desktop' && (
             <tr>
-              <td><strong>Server Name:</strong></td>
+              <td>
+                <strong>Server Name:</strong>
+              </td>
               <td>{debugInfo.serverName}</td>
             </tr>
           )}
           <tr>
-            <td><strong>Authentication:</strong></td>
+            <td>
+              <strong>Authentication:</strong>
+            </td>
             <td>{debugInfo.isAuthenticated ? `Yes (${debugInfo.userEmail})` : 'No'}</td>
           </tr>
           {debugInfo.isAuthenticated && (
             <tr>
-              <td><strong>Has Token:</strong></td>
+              <td>
+                <strong>Has Token:</strong>
+              </td>
               <td>{debugInfo.hasToken ? 'Yes' : 'No'}</td>
             </tr>
           )}
           {debugInfo.mode === 'Claude Desktop' && (
             <tr>
-              <td><strong>MCP Function:</strong></td>
+              <td>
+                <strong>MCP Function:</strong>
+              </td>
               <td>{debugInfo.mcpAvailable ? 'Available' : 'Not available'}</td>
             </tr>
           )}
           <tr>
-            <td><strong>Connection Status:</strong></td>
-            <td className={debugInfo.connectionStatus === 'Connected' ? 'status-connected' : 'status-error'}>
+            <td>
+              <strong>Connection Status:</strong>
+            </td>
+            <td
+              className={
+                debugInfo.connectionStatus === 'Connected' ? 'status-connected' : 'status-error'
+              }
+            >
               {debugInfo.connectionStatus}
             </td>
           </tr>
           {debugInfo.error && (
             <tr>
-              <td><strong>Error:</strong></td>
-              <td className="error-message">{debugInfo.error}</td>
+              <td>
+                <strong>Error:</strong>
+              </td>
+              <td className='error-message'>{debugInfo.error}</td>
             </tr>
           )}
         </tbody>
       </table>
-      
-      <button onClick={testConnection} disabled={isLoading} className="test-button">
+
+      <button onClick={testConnection} disabled={isLoading} className='test-button'>
         {isLoading ? 'Testing...' : 'Test Connection'}
       </button>
 
-      <div className="debug-tips">
+      <div className='debug-tips'>
         <h4>Troubleshooting Tips:</h4>
         {debugInfo.mode === 'HTTP API' && !debugInfo.serverUrl && (
           <p>• Set REACT_APP_MCP_SERVER_URL in .env.local</p>
@@ -182,12 +205,8 @@ export const MCPDebug: React.FC = () => {
         {debugInfo.mode === 'Claude Desktop' && !debugInfo.mcpAvailable && (
           <p>• Ensure Claude Desktop is running with MCP support</p>
         )}
-        {!debugInfo.isAuthenticated && (
-          <p>• Log in to use MCP features</p>
-        )}
-        {debugInfo.error?.includes('CORS') && (
-          <p>• Check CORS settings on your MCP server</p>
-        )}
+        {!debugInfo.isAuthenticated && <p>• Log in to use MCP features</p>}
+        {debugInfo.error?.includes('CORS') && <p>• Check CORS settings on your MCP server</p>}
       </div>
     </div>
   );
