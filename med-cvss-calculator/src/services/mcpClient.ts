@@ -25,16 +25,16 @@ export interface MCPBatchResult {
  * This service communicates with the med-mcp-threat server via the MCP protocol
  */
 class MCPThreatExtractionClient {
-  private serverName = 'threat-extraction';
+  private serverName = process.env.REACT_APP_MCP_THREAT_SERVER || 'threat-extraction';
+  private serverUrl = process.env.REACT_APP_MCP_SERVER_URL || '';
   private isConnected = false;
+  private useHttpApi = Boolean(process.env.REACT_APP_MCP_SERVER_URL);
 
   /**
    * Initialize connection to MCP server
    */
   async connect(): Promise<boolean> {
     try {
-      // In a real implementation, this would establish a connection to the MCP server
-      // For now, we'll simulate checking if the MCP tools are available
       const mcpAvailable = await this.checkMCPAvailability();
       this.isConnected = mcpAvailable;
       return mcpAvailable;
@@ -50,9 +50,25 @@ class MCPThreatExtractionClient {
    * Check if MCP tools are available
    */
   private async checkMCPAvailability(): Promise<boolean> {
-    // Check if we're running in an environment that supports MCP
-    // This could be Claude Desktop or another MCP-enabled client
-    return typeof (window as any).use_mcp_tool === 'function';
+    if (this.useHttpApi) {
+      // Check HTTP API availability
+      try {
+        const response = await fetch(`${this.serverUrl}/`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        return response.ok;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('HTTP API health check failed:', error);
+        return false;
+      }
+    } else {
+      // Check if we're running in Claude Desktop environment
+      return typeof (window as any).use_mcp_tool === 'function';
+    }
   }
 
   /**
@@ -64,13 +80,32 @@ class MCPThreatExtractionClient {
     }
 
     try {
-      // Use the MCP tool to extract CVSS metrics
-      const result = await (window as any).use_mcp_tool(this.serverName, 'extract_cvss', {
-        threat_description: threatDescription,
-      });
+      if (this.useHttpApi) {
+        // Use HTTP API for threat extraction
+        const response = await fetch(`${this.serverUrl}/extract_cvss`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            threat_description: threatDescription,
+          }),
+        });
 
-      // Transform the result to match our interface
-      return this.transformMCPResult(result, threatDescription);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return this.transformMCPResult(result, threatDescription);
+      } else {
+        // Use Claude Desktop MCP tool
+        const result = await (window as any).use_mcp_tool(this.serverName, 'extract_cvss', {
+          threat_description: threatDescription,
+        });
+
+        return this.transformMCPResult(result, threatDescription);
+      }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('MCP extraction error:', error);
@@ -87,13 +122,32 @@ class MCPThreatExtractionClient {
     }
 
     try {
-      // Use the MCP tool for batch processing
-      const result = await (window as any).use_mcp_tool(this.serverName, 'extract_cvss_batch', {
-        threat_descriptions: threatDescriptions,
-      });
+      if (this.useHttpApi) {
+        // Use HTTP API for batch processing
+        const response = await fetch(`${this.serverUrl}/extract_cvss_batch`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            threat_descriptions: threatDescriptions,
+          }),
+        });
 
-      // Transform the batch result
-      return this.transformMCPBatchResult(result);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return this.transformMCPBatchResult(result);
+      } else {
+        // Use Claude Desktop MCP tool for batch processing
+        const result = await (window as any).use_mcp_tool(this.serverName, 'extract_cvss_batch', {
+          threat_descriptions: threatDescriptions,
+        });
+
+        return this.transformMCPBatchResult(result);
+      }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('MCP batch extraction error:', error);
@@ -177,7 +231,16 @@ export const mcpThreatClient = new MCPThreatExtractionClient();
  * Helper function to check if MCP is available in the current environment
  */
 export const isMCPAvailable = (): boolean => {
-  return typeof (window as any).use_mcp_tool === 'function';
+  const serverUrl = process.env.REACT_APP_MCP_SERVER_URL;
+
+  if (serverUrl) {
+    // For HTTP API mode, we assume it's available if URL is configured
+    // Actual availability check happens in connect()
+    return true;
+  } else {
+    // For Claude Desktop mode, check for use_mcp_tool function
+    return typeof (window as any).use_mcp_tool === 'function';
+  }
 };
 
 /**
