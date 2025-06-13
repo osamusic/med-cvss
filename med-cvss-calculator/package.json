@@ -33,7 +33,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "type-check": "tsc --noEmit --skipLibCheck",
     "quality": "npm run type-check && npm run lint && npm run format:check && npm run test:coverage",
-    "prepare": "npm run quality"
+    "vercel-build": "npm run build"
   },
   "eslintConfig": {
     "extends": [
