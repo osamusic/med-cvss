@@ -9,6 +9,7 @@ interface DebugInfo {
   serverName: string;
   isAuthenticated: boolean;
   userEmail: string | null;
+  userId: string | null;
   hasToken: boolean;
   mcpAvailable: boolean;
   connectionStatus: string;
@@ -29,6 +30,7 @@ export const MCPDebug: React.FC = () => {
         const currentUser = auth.currentUser;
         const isAuthenticated = Boolean(currentUser);
         const userEmail = currentUser?.email || null;
+        const userId = currentUser?.uid || null;
         let hasToken = false;
 
         if (currentUser) {
@@ -62,6 +64,7 @@ export const MCPDebug: React.FC = () => {
           serverName,
           isAuthenticated,
           userEmail,
+          userId,
           hasToken,
           mcpAvailable,
           connectionStatus,
@@ -155,12 +158,20 @@ export const MCPDebug: React.FC = () => {
             <td>{debugInfo.isAuthenticated ? `Yes (${debugInfo.userEmail})` : 'No'}</td>
           </tr>
           {debugInfo.isAuthenticated && (
-            <tr>
-              <td>
-                <strong>Has Token:</strong>
-              </td>
-              <td>{debugInfo.hasToken ? 'Yes' : 'No'}</td>
-            </tr>
+            <>
+              <tr>
+                <td>
+                  <strong>User ID:</strong>
+                </td>
+                <td>{debugInfo.userId || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Has Token:</strong>
+                </td>
+                <td>{debugInfo.hasToken ? 'Yes' : 'No'}</td>
+              </tr>
+            </>
           )}
           {debugInfo.mode === 'Claude Desktop' && (
             <tr>

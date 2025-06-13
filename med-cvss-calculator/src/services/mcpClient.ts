@@ -8,6 +8,7 @@ export interface MCPThreatExtractionResult {
   severity: string;
   extracted_features: string[];
   decision_logic: string;
+  user?: string; // Firebase UID
 }
 
 export interface MCPBatchResult {
@@ -19,6 +20,7 @@ export interface MCPBatchResult {
     Low: number;
     None: number;
   };
+  user?: string; // Firebase UID
 }
 
 /**
@@ -122,6 +124,13 @@ class MCPThreatExtractionClient {
         }
 
         const result = await response.json();
+
+        // デバッグ: レスポンスにユーザーIDが含まれているか確認
+        if (result.user) {
+          // eslint-disable-next-line no-console
+          console.log('MCP Response includes user ID:', result.user);
+        }
+
         return this.transformMCPResult(result, threatDescription);
       } else {
         // Use Claude Desktop MCP tool
@@ -171,6 +180,13 @@ class MCPThreatExtractionClient {
         }
 
         const result = await response.json();
+
+        // デバッグ: レスポンスにユーザーIDが含まれているか確認
+        if (result.user) {
+          // eslint-disable-next-line no-console
+          console.log('MCP Batch Response includes user ID:', result.user);
+        }
+
         return this.transformMCPBatchResult(result);
       } else {
         // Use Claude Desktop MCP tool for batch processing
@@ -210,6 +226,7 @@ class MCPThreatExtractionClient {
       severity: mcpResult.severity || 'None',
       extracted_features: mcpResult.extracted_features || [],
       decision_logic: mcpResult.decision_logic || 'MCP extraction completed',
+      user: mcpResult.user, // Firebase UIDを保持
     };
   }
 
@@ -238,6 +255,7 @@ class MCPThreatExtractionClient {
     return {
       results,
       statistics,
+      user: mcpResult.user, // Firebase UIDを保持
     };
   }
 
