@@ -37,6 +37,17 @@ docker-compose --profile dev up dev       # Development with hot reload (port 30
 # Single test execution
 npm test -- --testNamePattern="specific test name"
 npm test -- --testPathPattern="filename pattern"
+
+# Deployment
+npm run vercel-build    # Vercel-optimized build (CI=false npm run build)
+
+# MCP API Testing (for HTTP API mode)
+# Test MCP server compatibility - replace YOUR_SERVER_URL with actual URL
+npx ts-node -e "
+import { MCPAPITester } from './src/utils/mcpApiTest';
+const tester = new MCPAPITester('YOUR_SERVER_URL');
+tester.runAllTests().then(console.log);
+"
 ```
 
 ## Architecture Overview
@@ -217,6 +228,31 @@ POST /extract_cvss_batch         # バッチ脅威分析
 - Medical device guidance data drives UI help text
 - Real-time CVSS calculation on metric selection
 - Comprehensive test coverage for calculation algorithms
+
+**Deployment Configuration:**
+- Vercel deployment with root directory set to `med-cvss-calculator`
+- Node.js 18 specified in `.nvmrc` for consistent builds
+- `CI=false` in vercel-build to prevent warnings as errors
+- `.env.production` configures production environment settings
+- Empty `vercel.json` allows Vercel auto-detection when root directory is configured
+
+**MCP API Testing:**
+- `mcpApiTest.ts`: Utilities for testing HTTP API compatibility with med-mcp-threat server
+- `MCPAPITester` class provides comprehensive endpoint testing
+- Response format validation for single and batch operations
+- Automatic mode detection between Claude Desktop and HTTP API modes
+
+## Environment Configuration
+
+**Local Development:**
+- Copy `.env.example` to `.env.local` and configure Firebase credentials
+- MCP integration requires either Claude Desktop with med-mcp-threat server OR HTTP API URL
+- Use `REACT_APP_MCP_SERVER_URL` for HTTP API mode, leave empty for Claude Desktop mode
+
+**Production Deployment:**
+- `.env.production` sets `CI=false` and `GENERATE_SOURCEMAP=false`
+- Vercel automatically uses environment variables from dashboard
+- Configure `REACT_APP_MCP_SERVER_URL` in Vercel dashboard for HTTP API mode
 
 ## Firebase Integration (Optional)
 
