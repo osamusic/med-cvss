@@ -1,4 +1,5 @@
 import { CVSSVector } from '../types/cvss';
+import { auth } from './firebase';
 
 export interface MCPThreatExtractionResult {
   threat_description: string;
@@ -47,6 +48,23 @@ class MCPThreatExtractionClient {
   }
 
   /**
+   * Get Firebase ID token for authentication
+   */
+  private async getAuthToken(): Promise<string | null> {
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        return await currentUser.getIdToken();
+      }
+      return null;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn('Failed to get Firebase ID token:', error);
+      return null;
+    }
+  }
+
+  /**
    * Check if MCP tools are available
    */
   private async checkMCPAvailability(): Promise<boolean> {
@@ -82,11 +100,18 @@ class MCPThreatExtractionClient {
     try {
       if (this.useHttpApi) {
         // Use HTTP API for threat extraction
+        const token = await this.getAuthToken();
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        };
+
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(`${this.serverUrl}/extract_cvss`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
           body: JSON.stringify({
             threat_description: threatDescription,
           }),
@@ -124,11 +149,18 @@ class MCPThreatExtractionClient {
     try {
       if (this.useHttpApi) {
         // Use HTTP API for batch processing
+        const token = await this.getAuthToken();
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        };
+
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(`${this.serverUrl}/extract_cvss_batch`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
           body: JSON.stringify({
             threat_descriptions: threatDescriptions,
           }),
