@@ -53,7 +53,7 @@ class MCPThreatExtractionClient {
     if (this.useHttpApi) {
       // Check HTTP API availability
       try {
-        const response = await fetch(`${this.serverUrl}/health`, {
+        const response = await fetch(`${this.serverUrl}/`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ class MCPThreatExtractionClient {
     try {
       if (this.useHttpApi) {
         // Use HTTP API for threat extraction
-        const response = await fetch(`${this.serverUrl}/api/extract-cvss`, {
+        const response = await fetch(`${this.serverUrl}/extract_cvss`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ class MCPThreatExtractionClient {
     try {
       if (this.useHttpApi) {
         // Use HTTP API for batch processing
-        const response = await fetch(`${this.serverUrl}/api/extract-cvss-batch`, {
+        const response = await fetch(`${this.serverUrl}/extract_cvss_batch`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

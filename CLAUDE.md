@@ -184,9 +184,9 @@ REACT_APP_MCP_SERVER_URL=https://your-mcp-server.vercel.app
 
 **HTTP API Endpoints:**
 ```
-GET  /health                     # ヘルスチェック
-POST /api/extract-cvss           # 単一脅威分析
-POST /api/extract-cvss-batch     # バッチ脅威分析
+GET  /                           # ヘルスチェック
+POST /extract_cvss               # 単一脅威分析
+POST /extract_cvss_batch         # バッチ脅威分析
 ```
 
 **Requirements:**
