@@ -28,7 +28,7 @@ class MCPThreatExtractionClient {
   private serverName = process.env.REACT_APP_MCP_THREAT_SERVER || 'threat-extraction';
   private serverUrl = process.env.REACT_APP_MCP_SERVER_URL || '';
   private isConnected = false;
-  private useHttpApi = !!process.env.REACT_APP_MCP_SERVER_URL;
+  private useHttpApi = Boolean(process.env.REACT_APP_MCP_SERVER_URL);
 
   /**
    * Initialize connection to MCP server
@@ -232,7 +232,7 @@ export const mcpThreatClient = new MCPThreatExtractionClient();
  */
 export const isMCPAvailable = (): boolean => {
   const serverUrl = process.env.REACT_APP_MCP_SERVER_URL;
-  
+
   if (serverUrl) {
     // For HTTP API mode, we assume it's available if URL is configured
     // Actual availability check happens in connect()
