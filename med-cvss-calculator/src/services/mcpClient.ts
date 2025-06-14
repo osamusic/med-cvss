@@ -219,13 +219,66 @@ class MCPThreatExtractionClient {
       });
     }
 
+    // Handle extracted_features which can be an object or array
+    let extractedFeatures: string[] = [];
+    
+    if (Array.isArray(mcpResult.extracted_features)) {
+      extractedFeatures = mcpResult.extracted_features;
+    } else if (mcpResult.extracted_features && typeof mcpResult.extracted_features === 'object') {
+      // Convert object to human-readable feature list
+      const features = mcpResult.extracted_features;
+      
+      if (features.attack_vector) {
+        extractedFeatures.push(`攻撃ベクトル: ${features.attack_vector}`);
+      }
+      if (features.device_type) {
+        extractedFeatures.push(`デバイスタイプ: ${features.device_type}`);
+      }
+      if (features.attack_type) {
+        extractedFeatures.push(`攻撃タイプ: ${features.attack_type}`);
+      }
+      if (features.requires_authentication !== undefined) {
+        extractedFeatures.push(`認証要求: ${features.requires_authentication ? '必要' : '不要'}`);
+      }
+      if (features.requires_user_interaction !== undefined) {
+        extractedFeatures.push(`ユーザー操作: ${features.requires_user_interaction ? '必要' : '不要'}`);
+      }
+      if (features.asset_category) {
+        extractedFeatures.push(`資産カテゴリ: ${features.asset_category}`);
+      }
+      if (features.data_type && Array.isArray(features.data_type)) {
+        extractedFeatures.push(`データタイプ: ${features.data_type.join(', ')}`);
+      }
+      if (features.impact_type && Array.isArray(features.impact_type)) {
+        extractedFeatures.push(`影響タイプ: ${features.impact_type.join(', ')}`);
+      }
+    }
+
+    // Handle decision_logic from logic_tree_paths if present
+    let decisionLogic = mcpResult.decision_logic || 'MCP extraction completed';
+    
+    if (mcpResult.logic_tree_paths && typeof mcpResult.logic_tree_paths === 'object') {
+      const paths = mcpResult.logic_tree_paths;
+      const logicSummary: string[] = [];
+      
+      Object.entries(paths).forEach(([metric, info]: [string, any]) => {
+        if (info && info.result) {
+          logicSummary.push(`${metric}: ${info.result} - ${info.reasoning || ''}`);
+        }
+      });
+      
+      if (logicSummary.length > 0) {
+        decisionLogic = logicSummary.join('\n');
+      }
+    }
+
     return {
       threat_description: threatDescription,
       cvss_metrics: cvssMetrics,
-      base_score: mcpResult.base_score || 0,
-      severity: mcpResult.severity || 'None',
-      extracted_features: mcpResult.extracted_features || [],
-      decision_logic: mcpResult.decision_logic || 'MCP extraction completed',
+      base_score: mcpResult.base_score || mcpResult.cvss_metrics?.base_score || 0,
+      severity: mcpResult.severity || mcpResult.cvss_metrics?.severity || 'None',
+      extracted_features: extractedFeatures,
+      decision_logic: decisionLogic,
       user: mcpResult.user, // Firebase UIDを保持
     };
   }
