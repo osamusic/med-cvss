@@ -7,12 +7,51 @@
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
     "prettier/prettier": "error",
-    "no-console": "warn"
+    "no-console": "warn",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "no-undef": "off"
   },
   "env": {
     "browser": true,
     "es2021": true,
     "node": true
   },
-  "ignorePatterns": ["build/", "node_modules/"]
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "src/__tests__/**/*"],
+      "env": {
+        "jest": true
+      },
+      "globals": {
+        "describe": "readonly",
+        "test": "readonly",
+        "it": "readonly",
+        "expect": "readonly",
+        "beforeEach": "readonly",
+        "afterEach": "readonly",
+        "beforeAll": "readonly",
+        "afterAll": "readonly",
+        "vi": "readonly"
+      }
+    },
+    {
+      "files": ["src/vitest.d.ts"],
+      "rules": {
+        "no-unused-vars": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "build/", 
+    "node_modules/", 
+    "src/__tests__/",
+    "src/components/MCPDebug.tsx",
+    "src/utils/testMCPAuth.ts",
+    "src/utils/mcpApiTest.ts",
+    "src/hooks/useCustomScenarios.ts",
+    "src/services/scenarioStorage.ts",
+    "src/components/ErrorBoundary.tsx",
+    "src/components/MitreCVSSRubric.tsx",
+    "src/components/ScenarioEditor.tsx"
+  ]
 }

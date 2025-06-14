@@ -112,7 +112,7 @@ class MCPThreatExtractionClient {
       if (this.useHttpApi) {
         // Use HTTP API for threat extraction
         const token = await this.getAuthToken();
-        const headers: HeadersInit = {
+        const headers: Record<string, string> = {
           'Content-Type': 'application/json',
         };
 
@@ -162,7 +162,7 @@ class MCPThreatExtractionClient {
       if (this.useHttpApi) {
         // Use HTTP API for batch processing
         const token = await this.getAuthToken();
-        const headers: HeadersInit = {
+        const headers: Record<string, string> = {
           'Content-Type': 'application/json',
         };
 

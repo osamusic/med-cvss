@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import {
   User,
   signInWithEmailAndPassword,
@@ -9,7 +9,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
-import { auth } from '../services/firebase';
+import { auth, isFirebaseConfigured } from '../services/firebase';
 
 // Use mock authentication in development mode
 const isDevelopmentMode = process.env.NODE_ENV === 'development';
@@ -17,10 +17,10 @@ const isDevelopmentMode = process.env.NODE_ENV === 'development';
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
-  signin: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
+  signin: (_email: string, _password: string) => Promise<void>;
+  signup: (_email: string, _password: string) => Promise<void>;
   signout: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
+  resetPassword: (_email: string) => Promise<void>;
   signinWithGoogle: () => Promise<void>;
 }
 
@@ -54,6 +54,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setCurrentUser(mockUser);
       return;
     }
+    if (!isFirebaseConfigured) {
+      throw new Error('Firebase is not configured. Please set up Firebase authentication.');
+    }
     await signInWithEmailAndPassword(auth, email, password);
   }
 
@@ -69,11 +72,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setCurrentUser(mockUser);
       return;
     }
+    if (!isFirebaseConfigured) {
+      throw new Error('Firebase is not configured. Please set up Firebase authentication.');
+    }
     await createUserWithEmailAndPassword(auth, email, password);
   }
 
   async function signout(): Promise<void> {
     if (isDevelopmentMode) {
+      setCurrentUser(null);
+      return;
+    }
+    if (!isFirebaseConfigured) {
       setCurrentUser(null);
       return;
     }
@@ -84,6 +94,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (isDevelopmentMode) {
       // Mock password reset for development
       return;
+    }
+    if (!isFirebaseConfigured) {
+      throw new Error('Firebase is not configured. Please set up Firebase authentication.');
     }
     await sendPasswordResetEmail(auth, email);
   }
@@ -99,6 +112,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } as User;
       setCurrentUser(mockUser);
       return;
+    }
+    if (!isFirebaseConfigured) {
+      throw new Error('Firebase is not configured. Please set up Firebase authentication.');
     }
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
@@ -118,7 +134,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return () => {}; // Return empty cleanup function
     }
 
-    // Only use Firebase auth in production or when Firebase is configured
+    // Check if Firebase is configured
+    if (!isFirebaseConfigured) {
+      // Firebase not configured, no authentication required
+      setCurrentUser(null);
+      setLoading(false);
+      return () => {};
+    }
+
+    // Use Firebase auth when configured
     try {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         setCurrentUser(user);
@@ -127,14 +151,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return unsubscribe;
     } catch (error) {
       console.error('Firebase auth error:', error);
-      // Fallback to mock user if Firebase auth fails
-      const mockUser = {
-        uid: 'fallback-user-123',
-        email: 'fallback@example.com',
-        displayName: 'Fallback User',
-        emailVerified: true,
-      } as User;
-      setCurrentUser(mockUser);
+      // If Firebase fails, set to no authentication
+      setCurrentUser(null);
       setLoading(false);
       return () => {};
     }

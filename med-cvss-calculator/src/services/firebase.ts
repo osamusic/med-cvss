@@ -31,6 +31,6 @@ if (isFirebaseConfigured) {
   auth = { name: 'mock-auth' };
 }
 
-export { db, auth };
+export { db, auth, isFirebaseConfigured };
 
 export default app;
