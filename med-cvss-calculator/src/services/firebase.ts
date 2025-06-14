@@ -2,8 +2,10 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
+// Check if Firebase is configured
+const isFirebaseConfigured = Boolean(process.env.REACT_APP_FIREBASE_API_KEY);
+
 // Firebase configuration
-// These values should be replaced with your actual Firebase project configuration
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY || 'demo-api-key',
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || 'medical-cvss-demo.firebaseapp.com',
@@ -13,11 +15,22 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_FIREBASE_APP_ID || 'demo-app-id',
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase only if configured
+let app: any = null;
+let db: any = null;
+let auth: any = null;
 
-// Initialize Firebase services
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+if (isFirebaseConfigured) {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
+} else {
+  // Mock objects for development mode
+  app = { name: 'mock-app' };
+  db = { name: 'mock-firestore' };
+  auth = { name: 'mock-auth' };
+}
+
+export { db, auth };
 
 export default app;

@@ -54,8 +54,17 @@ class MCPThreatExtractionClient {
    */
   private async getAuthToken(): Promise<string | null> {
     try {
+      // Check if we're in development mode without Firebase
+      const isDevelopmentMode =
+        process.env.NODE_ENV === 'development' && !process.env.REACT_APP_FIREBASE_API_KEY;
+
+      if (isDevelopmentMode) {
+        // Return a mock token for development
+        return 'dev-mock-token-123';
+      }
+
       const currentUser = auth.currentUser;
-      if (currentUser) {
+      if (currentUser && typeof currentUser.getIdToken === 'function') {
         return await currentUser.getIdToken();
       }
       return null;
