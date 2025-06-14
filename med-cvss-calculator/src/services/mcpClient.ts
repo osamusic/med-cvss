@@ -221,13 +221,13 @@ class MCPThreatExtractionClient {
 
     // Handle extracted_features which can be an object or array
     let extractedFeatures: string[] = [];
-    
+
     if (Array.isArray(mcpResult.extracted_features)) {
       extractedFeatures = mcpResult.extracted_features;
     } else if (mcpResult.extracted_features && typeof mcpResult.extracted_features === 'object') {
       // Convert object to human-readable feature list
       const features = mcpResult.extracted_features;
-      
+
       if (features.attack_vector) {
         extractedFeatures.push(`攻撃ベクトル: ${features.attack_vector}`);
       }
@@ -241,7 +241,9 @@ class MCPThreatExtractionClient {
         extractedFeatures.push(`認証要求: ${features.requires_authentication ? '必要' : '不要'}`);
       }
       if (features.requires_user_interaction !== undefined) {
-        extractedFeatures.push(`ユーザー操作: ${features.requires_user_interaction ? '必要' : '不要'}`);
+        extractedFeatures.push(
+          `ユーザー操作: ${features.requires_user_interaction ? '必要' : '不要'}`
+        );
       }
       if (features.asset_category) {
         extractedFeatures.push(`資産カテゴリ: ${features.asset_category}`);
@@ -256,17 +258,17 @@ class MCPThreatExtractionClient {
 
     // Handle decision_logic from logic_tree_paths if present
     let decisionLogic = mcpResult.decision_logic || 'MCP extraction completed';
-    
+
     if (mcpResult.logic_tree_paths && typeof mcpResult.logic_tree_paths === 'object') {
       const paths = mcpResult.logic_tree_paths;
       const logicSummary: string[] = [];
-      
+
       Object.entries(paths).forEach(([metric, info]: [string, any]) => {
         if (info && info.result) {
           logicSummary.push(`${metric}: ${info.result} - ${info.reasoning || ''}`);
         }
       });
-      
+
       if (logicSummary.length > 0) {
         decisionLogic = logicSummary.join('\n');
       }
