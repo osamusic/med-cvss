@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-The `med-cvss` repository contains a **Medical Device CVSS Calculator** - a React TypeScript application that implements both CVSS v3.1 and v4.0 vulnerability scoring systems for medical device security assessment. The application provides both a guided questionnaire interface for non-technical users and a technical calculator interface for cybersecurity professionals.
+The `med-cvss` repository contains **MedScore.ai** - a next-generation AI-powered medical device CVSS security assessment platform. This React TypeScript application implements both CVSS v3.1 and v4.0 vulnerability scoring systems for medical device security assessment. The application provides multiple assessment modes: AI-powered threat intelligence analysis, guided questionnaire interface for non-technical users, and a technical calculator interface for cybersecurity professionals.
 
 ## Development Commands
 
@@ -62,17 +62,19 @@ tester.runAllTests().then(console.log);
 
 **Component Architecture:**
 - **IntegratedCVSSCalculator**: Main CVSS calculator with support for both v3.1 and v4.0
-- **ThreatAnalysis**: AI-powered threat assessment from Japanese descriptions (MCP)
-- **MitreCVSSRubric**: MITRE medical device decision tree implementation
+- **ThreatAnalysis**: AI-powered threat intelligence analysis with animated loading states and metric mapping
+- **MitreCVSSRubric**: MITRE medical device security assessment framework
 - **Authentication Components**: Login, Signup, ProtectedRoute, Navigation with Firebase Auth
+- **Navigation**: MedScore.ai branding with custom SVG logos and cyberpunk theme
 
 **Data Flow:**
 1. **Manual Assessment**: User selects CVSS version (v3.1 or v4.0) and metrics through UI components
-2. **AI Assessment**: Japanese threat descriptions are analyzed via MCP to extract CVSS metrics
-3. Real-time calculation using version-specific algorithms (`cvssCalculator.ts` for v3.1, `cvssV4Calculator.ts` for v4.0)
-4. Results display score, severity rating, and vector string for chosen version
-5. Optional persistence to localStorage or Firebase Firestore
-6. AI results automatically sync to Calculator via localStorage
+2. **AI Assessment**: Japanese threat descriptions are analyzed via MCP to extract CVSS metrics with animated loading states
+3. **Metric Mapping**: AI results are converted from descriptive format (attack_vector) to CVSS abbreviations (AV) for Calculator compatibility
+4. Real-time calculation using version-specific algorithms (`cvssCalculator.ts` for v3.1, `cvssV4Calculator.ts` for v4.0)
+5. Results display score, severity rating, and vector string for chosen version
+6. Optional persistence to localStorage or Firebase Firestore
+7. AI results automatically sync to Calculator via localStorage with bidirectional metric mapping
 
 **Key Directories:**
 - `src/components/` - React components with component-scoped CSS
@@ -175,10 +177,16 @@ REACT_APP_MCP_SERVER_URL=https://your-mcp-server.vercel.app
 
 ## Important Implementation Details
 
+**Metric Mapping and Data Flow:**
+- AI analysis returns descriptive metric names (attack_vector, attack_complexity) that must be mapped to CVSS abbreviations (AV, AC)
+- `mapThreatMetricsToCalculator()` function handles bidirectional conversion between formats
+- localStorage data persists across tab navigation but avoids overwriting user manual changes
+- Calculator only loads saved metrics when vector is empty to prevent data conflicts
+
 **Version Compatibility:**
 - CVSS v3.1 and v4.0 use different metric sets - automatic reset when switching versions
 - MITRE rubric (questionnaire mode) only available for CVSS v3.1
-- AI Threat Assessment results automatically populate Calculator metrics
+- AI Threat Assessment results automatically populate Calculator metrics with proper mapping
 
 **Authentication Flow:**
 - Development mode: Mock authentication when Firebase not configured
@@ -186,9 +194,10 @@ REACT_APP_MCP_SERVER_URL=https://your-mcp-server.vercel.app
 - ThreatAnalysis component is a protected route in production
 
 **Data Persistence:**
-- AI Threat Assessment results automatically saved to localStorage
+- AI Threat Assessment results automatically saved to localStorage with converted metric format
 - Calculator automatically loads metrics from localStorage when navigating from AI analysis
-- localStorage cleared after loading to prevent stale data
+- Persistent data allows tab navigation without losing assessment results
+- Clear assessment functionality removes both UI state and localStorage data
 - Firebase Firestore available for cloud storage when configured
 
 **Build System Migration:**
@@ -199,10 +208,11 @@ REACT_APP_MCP_SERVER_URL=https://your-mcp-server.vercel.app
 - Custom index.html at project root for Vite
 
 **UI Theme:**
-- Soft cyberpunk theme with professional medical device focus
-- CSS custom properties for consistent theming
-- Inter font for readability
-- Component-scoped CSS modules
+- Cyberpunk theme with MedScore.ai branding and professional medical device focus
+- CSS custom properties for consistent theming with neon accents and glow effects
+- Inter font for readability with custom typography for headings
+- Component-scoped CSS modules with animated loading states and visual effects
+- Custom SVG logos and icons designed for medical, AI, and security elements
 
 **Deployment Configuration:**
 - Vercel deployment with root directory set to `med-cvss-calculator`
@@ -230,3 +240,23 @@ For cloud storage and authentication:
 2. Configure `.env.local` with Firebase credentials
 3. Enable desired authentication providers (Email/Password, Google OAuth)
 4. See `FIREBASE_SETUP.md` for detailed instructions
+
+## UI and UX Guidelines
+
+**Modern Professional Appearance:**
+- Use concise, professional terminology that emphasizes AI capabilities and medical device expertise
+- Prefer "AI脅威インテリジェンス" over verbose descriptions
+- Maintain consistent cyberpunk aesthetic with neon accents and professional typography
+- Implement animated loading states for AI analysis with neural network visualizations and progress indicators
+
+**Component Development:**
+- Always prefer editing existing files over creating new ones
+- Use component-scoped CSS modules for styling
+- Implement responsive design for mobile compatibility
+- Follow established patterns for metric mapping and localStorage integration
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
