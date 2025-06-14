@@ -251,9 +251,9 @@ export const MitreCVSSRubric: React.FC<MitreCVSSRubricProps> = ({ onVectorChange
   return (
     <div className='mitre-cvss-rubric'>
       <div className='mitre-header'>
-        <h2>MITRE Medical Device CVSS Rubric</h2>
-        <p>
-          Structured assessment following MITRE's medical device cybersecurity evaluation framework
+        <h2>MITRE Medical Device Security Assessment</h2>
+        <p className='mitre-description'>
+          Expert-guided assessment framework for medical device cybersecurity evaluation
         </p>
 
         <div className='mitre-progress'>

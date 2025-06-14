@@ -246,24 +246,24 @@ const ThreatAnalysis = React.memo(() => {
 
   return (
     <div className='threat-analysis-container'>
-      <h1>脅威分析によるCVSS自動算出</h1>
+      <h1>AI脅威インテリジェンス</h1>
       <p className='description'>
-        医療機器の脅威説明文を入力すると、AIが自動的にCVSSメトリクスを抽出し、セキュリティスコアを計算します。
+        次世代AIが医療機器セキュリティ脅威を瞬時に解析し、精密なCVSSリスクスコアを算出します。
       </p>
 
       <div className='single-analysis'>
         <div className='input-section'>
-          <h2>脅威の説明</h2>
+          <h2>セキュリティ脅威の詳細</h2>
           <textarea
             value={threatDescription}
             onChange={(e) => setThreatDescription(e.target.value)}
-            placeholder='例: 外部ネットワークからAPIに未認証アクセスされ、患者データが漏洩した。'
+            placeholder='医療機器に対するセキュリティ脅威を詳しく記述してください...'
             rows={4}
             className='threat-input'
           />
 
           <div className='sample-threats'>
-            <h3>サンプル脅威:</h3>
+            <h3>脅威シナリオ例:</h3>
             <div className='sample-buttons'>
               {Object.entries(sampleThreats).map(([key, threat]) => (
                 <button
@@ -285,7 +285,7 @@ const ThreatAnalysis = React.memo(() => {
             disabled={isLoading || !threatDescription.trim() || !mcpConnected || !mcpAvailable}
             className='analyze-button'
           >
-            {isLoading ? '分析中...' : !mcpConnected ? 'MCP接続が必要' : 'CVSSを分析'}
+            {isLoading ? 'AI解析中...' : !mcpConnected ? 'AI接続が必要' : '脅威を解析'}
           </button>
         </div>
 
@@ -342,7 +342,7 @@ const ThreatAnalysis = React.memo(() => {
 
         {result && (
           <div className='result-section'>
-            <h2>分析結果</h2>
+            <h2>AI脅威解析レポート</h2>
             <div className='result-card'>
               <div className='score-display'>
                 <div className='score-value'>{result.base_score.toFixed(1)}</div>
@@ -350,7 +350,7 @@ const ThreatAnalysis = React.memo(() => {
               </div>
 
               <div className='metrics-display'>
-                <h3>抽出されたCVSSメトリクス:</h3>
+                <h3>検出されたリスク要素:</h3>
                 <ul>
                   {Object.entries(result.cvss_metrics).map(
                     ([key, value]) =>
@@ -367,7 +367,7 @@ const ThreatAnalysis = React.memo(() => {
               </div>
 
               <div className='features-display'>
-                <h3>識別された特徴:</h3>
+                <h3>脅威の特徴:</h3>
                 <ul>
                   {result.extracted_features.map((feature, index) => (
                     <li key={index}>{feature}</li>
@@ -376,13 +376,13 @@ const ThreatAnalysis = React.memo(() => {
               </div>
 
               <div className='logic-display'>
-                <h3>判定ロジック:</h3>
+                <h3>AI解析プロセス:</h3>
                 <p>{result.decision_logic}</p>
               </div>
 
               <div className='result-actions'>
                 <button onClick={navigateToCalculator} className='navigate-button'>
-                  CVSS計算機で詳細を確認
+                  詳細分析へ移動
                 </button>
                 <button onClick={clearAssessment} className='clear-assessment-button'>
                   結果をクリア
@@ -394,14 +394,12 @@ const ThreatAnalysis = React.memo(() => {
       </div>
 
       <div className='info-section'>
-        <h3>注意事項</h3>
+        <h3>利用上の注意</h3>
         <ul>
-          <li>この機能は日本語の医療機器脅威説明文に特化したAI分析を行います</li>
-          <li>
-            自動抽出されたCVSSメトリクスは推定値です。必要に応じて計算機で手動調整してください
-          </li>
-          <li>分析結果は参考情報として活用し、最終的な評価は専門知識に基づいて判断してください</li>
-          <li>複雑な脅威シナリオの場合は、CVSS計算機での詳細設定をお勧めします</li>
+          <li>日本語の医療機器セキュリティ脅威に特化したAI解析エンジンを使用</li>
+          <li>AI解析結果は推定値のため、必要に応じて詳細分析で手動調整を推奨</li>
+          <li>最終的なリスク評価は専門知識に基づく総合的判断を行ってください</li>
+          <li>複雑な脅威シナリオには詳細分析モードでの精密設定を推奨</li>
         </ul>
       </div>
 
