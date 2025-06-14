@@ -21,6 +21,7 @@ const ThreatAnalysis = React.memo(() => {
   const [result, setResult] = useState<ThreatExtractionResult | null>(null);
   const [mcpAvailable, setMcpAvailable] = useState(false);
   const [mcpConnected, setMcpConnected] = useState(false);
+  const [analysisStep, setAnalysisStep] = useState(0);
 
   // Sample threat descriptions for users to try
   const sampleThreats = {
@@ -95,14 +96,30 @@ const ThreatAnalysis = React.memo(() => {
     setIsLoading(true);
     setError(null);
     setResult(null);
+    setAnalysisStep(0);
 
     try {
       if (!mcpConnected || !mcpAvailable) {
         throw new Error('MCP接続が必要です。Claude DesktopまたはMCP対応環境で実行してください。');
       }
 
+      // Step 1: Analyzing threat document
+      setAnalysisStep(1);
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      // Step 2: Extracting CVSS metrics
+      setAnalysisStep(2);
+      await new Promise((resolve) => setTimeout(resolve, 600));
+
+      // Step 3: Calculating security score
+      setAnalysisStep(3);
+
       // Use real MCP client for threat extraction
       const mcpResult = await mcpThreatClient.extractCVSS(threatDescription);
+
+      // Brief pause to show completion
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
       setResult(mcpResult);
 
       // Save to localStorage for sync with Calculator
@@ -130,6 +147,7 @@ const ThreatAnalysis = React.memo(() => {
       setError(errorMessage);
     } finally {
       setIsLoading(false);
+      setAnalysisStep(0);
     }
   };
 
@@ -272,6 +290,55 @@ const ThreatAnalysis = React.memo(() => {
         </div>
 
         {error && <div className='error-message'>{error}</div>}
+
+        {isLoading && (
+          <div className='ai-analysis-loading'>
+            <div className='loading-header'>
+              <div className='ai-icon'>🤖</div>
+              <h2>AI脅威分析中...</h2>
+            </div>
+
+            <div className='loading-animation'>
+              <div className='neural-network'>
+                <div className='node node-1'></div>
+                <div className='node node-2'></div>
+                <div className='node node-3'></div>
+                <div className='node node-4'></div>
+                <div className='connection connection-1'></div>
+                <div className='connection connection-2'></div>
+                <div className='connection connection-3'></div>
+              </div>
+            </div>
+
+            <div className='analysis-steps'>
+              <div
+                className={`step ${analysisStep >= 1 ? 'active' : ''} ${analysisStep > 1 ? 'completed' : ''}`}
+              >
+                <div className='step-indicator'></div>
+                <span>脅威文書を解析中</span>
+              </div>
+              <div
+                className={`step ${analysisStep >= 2 ? 'active' : ''} ${analysisStep > 2 ? 'completed' : ''}`}
+              >
+                <div className='step-indicator'></div>
+                <span>CVSSメトリクスを抽出中</span>
+              </div>
+              <div className={`step ${analysisStep >= 3 ? 'active' : ''}`}>
+                <div className='step-indicator'></div>
+                <span>セキュリティスコアを計算中</span>
+              </div>
+            </div>
+
+            <div className='loading-message'>
+              <p>医療機器セキュリティのエキスパートAIが脅威を詳細分析しています...</p>
+              <div className='progress-dots'>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {result && (
           <div className='result-section'>
