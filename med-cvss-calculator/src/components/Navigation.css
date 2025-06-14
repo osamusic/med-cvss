@@ -31,92 +31,40 @@
 
 .app-navigation h1 {
   margin: 0 0 1rem 0;
-  font-size: 2rem;
-  text-transform: uppercase;
-  letter-spacing: 3px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
   background: linear-gradient(45deg, var(--cyber-accent-primary), var(--cyber-accent-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   position: relative;
   display: inline-block;
-  text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  text-shadow: 0 0 15px rgba(100, 181, 246, 0.3);
 }
 
-/* Glitch effect for title */
-.app-navigation h1::before,
-.app-navigation h1::after {
-  content: 'Medical Device CVSS Calculator';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(45deg, var(--cyber-accent-primary), var(--cyber-accent-secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.app-navigation h1::before {
-  animation: glitch-1 0.3s infinite;
-  color: var(--cyber-accent-primary);
-  z-index: -1;
-}
-
-.app-navigation h1::after {
-  animation: glitch-2 0.3s infinite;
-  color: var(--cyber-accent-secondary);
-  z-index: -2;
-}
-
-@keyframes glitch-1 {
-  0%, 100% { 
-    clip-path: inset(0 0 0 0); 
-    transform: translate(0);
-  }
-  33% { 
-    clip-path: inset(0 0 50% 0); 
-    transform: translate(-2px, -2px);
-  }
-  66% { 
-    clip-path: inset(50% 0 0 0); 
-    transform: translate(2px, 2px);
-  }
-}
-
-@keyframes glitch-2 {
-  0%, 100% { 
-    clip-path: inset(0 0 0 0); 
-    transform: translate(0);
-  }
-  33% { 
-    clip-path: inset(50% 0 0 0); 
-    transform: translate(2px, -2px);
-  }
-  66% { 
-    clip-path: inset(0 0 50% 0); 
-    transform: translate(-2px, 2px);
-  }
+/* Subtle glow effect for title */
+.app-navigation h1:hover {
+  text-shadow: 0 0 20px rgba(100, 181, 246, 0.5);
+  transition: text-shadow 0.3s ease;
 }
 
 .disclaimer {
-  background: linear-gradient(135deg, rgba(255, 183, 0, 0.1), rgba(255, 183, 0, 0.2));
+  background: linear-gradient(135deg, rgba(255, 183, 77, 0.08), rgba(255, 183, 77, 0.15));
   color: var(--cyber-warning);
   padding: 0.75rem 1rem;
-  border: 1px solid rgba(255, 183, 0, 0.3);
+  border: 1px solid rgba(255, 183, 77, 0.25);
   border-left: 3px solid var(--cyber-warning);
+  border-radius: 4px;
   margin-bottom: 1rem;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   position: relative;
-  font-family: 'Roboto Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .disclaimer::before {
   content: '⚠ ';
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin-right: 0.5rem;
 }
 
@@ -140,11 +88,11 @@
   color: var(--cyber-text-primary);
   background: var(--cyber-bg-secondary);
   border: 1px solid var(--cyber-border);
+  border-radius: 6px;
   position: relative;
   transition: all 0.3s;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-weight: 500;
   overflow: hidden;
 }
 

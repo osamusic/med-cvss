@@ -1,32 +1,36 @@
-/* Cyberpunk Theme Variables */
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;700&display=swap');
+
+/* Soft Cyberpunk Theme Variables */
 :root {
-  --cyber-bg-primary: #0a0a0f;
-  --cyber-bg-secondary: #1a1a2e;
-  --cyber-bg-tertiary: #16213e;
-  --cyber-accent-primary: #00ffff;
-  --cyber-accent-secondary: #ff006e;
-  --cyber-accent-tertiary: #ffb700;
-  --cyber-text-primary: #e0e0e0;
-  --cyber-text-secondary: #a0a0a0;
-  --cyber-border: #00ffff33;
-  --cyber-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-  --cyber-glow: 0 0 10px rgba(0, 255, 255, 0.8);
-  --cyber-error: #ff0040;
-  --cyber-success: #00ff88;
-  --cyber-warning: #ffb700;
+  --cyber-bg-primary: #1a1a24;
+  --cyber-bg-secondary: #2a2a3e;
+  --cyber-bg-tertiary: #323248;
+  --cyber-accent-primary: #64b5f6;
+  --cyber-accent-secondary: #ab47bc;
+  --cyber-accent-tertiary: #ffa726;
+  --cyber-text-primary: #f0f0f0;
+  --cyber-text-secondary: #b0b0b0;
+  --cyber-border: #64b5f644;
+  --cyber-shadow: 0 0 15px rgba(100, 181, 246, 0.3);
+  --cyber-glow: 0 0 8px rgba(100, 181, 246, 0.6);
+  --cyber-error: #f48fb1;
+  --cyber-success: #81c784;
+  --cyber-warning: #ffb74d;
 }
 
 /* Global Styles */
 body {
   background: var(--cyber-bg-primary);
   color: var(--cyber-text-primary);
-  font-family: 'Orbitron', 'Roboto Mono', monospace;
+  font-family: 'Inter', 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  line-height: 1.6;
 }
 
-/* Animated background */
+/* Soft animated background */
 body::before {
   content: '';
   position: fixed;
@@ -35,21 +39,18 @@ body::before {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 20% 50%, var(--cyber-accent-primary) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, var(--cyber-accent-secondary) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, var(--cyber-accent-tertiary) 0%, transparent 50%);
-  opacity: 0.05;
+    radial-gradient(circle at 20% 50%, var(--cyber-accent-primary) 0%, transparent 60%),
+    radial-gradient(circle at 80% 80%, var(--cyber-accent-secondary) 0%, transparent 60%),
+    radial-gradient(circle at 40% 20%, var(--cyber-accent-tertiary) 0%, transparent 60%);
+  opacity: 0.03;
   z-index: -1;
-  animation: pulse 10s ease-in-out infinite;
+  animation: pulse 15s ease-in-out infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.05; }
-  50% { opacity: 0.1; }
+  0%, 100% { opacity: 0.03; }
+  50% { opacity: 0.06; }
 }
-
-/* Import fonts */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Roboto+Mono:wght@300;400;500;700&display=swap');
 
 .App {
   min-height: 100vh;
