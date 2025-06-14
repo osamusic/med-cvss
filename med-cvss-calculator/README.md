@@ -52,50 +52,57 @@ Designed specifically for healthcare environments with:
      npm start
      ```
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is built with [Vite](https://vitejs.dev/) for fast development and optimized production builds.
 
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
+### `npm start` / `npm run dev`
 
-Runs the app in the development mode.\
+Runs the app in development mode with Vite's fast HMR (Hot Module Replacement).
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+The page will reload instantly when you make edits.
+Build errors and warnings are displayed in the browser overlay.
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner using Vitest in watch mode.
+Tests run automatically when files change for rapid feedback.
+
+### `npm run test:coverage`
+
+Runs tests with coverage reporting.
+Generates detailed coverage reports in multiple formats.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Builds the app for production using Vite.
+Optimizes the build for best performance with tree-shaking and code splitting.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Output is generated in the `build/` directory.
+Files are minified and include content hashes for optimal caching.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `npm run preview`
 
-### `npm run eject`
+Serves the production build locally for testing.
+Useful for verifying the build before deployment.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Code Quality Scripts
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- `npm run lint` - Run ESLint to check code quality
+- `npm run lint:fix` - Automatically fix ESLint issues
+- `npm run format` - Format code with Prettier
+- `npm run format:check` - Check code formatting
+- `npm run type-check` - Run TypeScript type checking
+- `npm run quality` - Run all quality checks (type-check, lint, format, tests)
 
 ## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- [Vite Documentation](https://vitejs.dev/guide/) - Learn about Vite features and configuration
+- [Vitest Documentation](https://vitest.dev/) - Testing framework documentation
+- [React Documentation](https://reactjs.org/) - Learn React
 
 ## 🏗️ Architecture
 
@@ -116,6 +123,8 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ### Key Technologies
 - **React 19** with TypeScript
+- **Vite**: Fast build tool with HMR and optimized production builds
+- **Vitest**: Fast unit testing framework with watch mode
 - **Firebase**: Authentication and Firestore database
 - **MCP (Model Context Protocol)**: AI threat analysis integration
 - **CVSS v3.1 & v4.0**: Full specification implementation
@@ -208,18 +217,31 @@ The application implements both CVSS v3.1 and v4.0 specifications:
 
 ## 🧪 Testing
 
-Run the test suite:
+Run the test suite using Vitest:
 ```bash
-npm test
+npm test                # Watch mode
+npm run test:coverage   # Coverage report
+npm run test:mitre      # MITRE-specific tests
 ```
 
 The project includes comprehensive tests for:
-- CVSS calculation algorithms
+- CVSS v3.1 and v4.0 calculation algorithms
 - Medical device scenario validation
 - Before/after comparison logic
+- MITRE decision flow implementation
 - Data import/export functionality
 
+Tests are powered by [Vitest](https://vitest.dev/) for fast execution and excellent TypeScript support.
+
 ## 🚀 Deployment
+
+The application builds to static files using Vite, making it deployable to any static hosting platform.
+
+### Vercel (Recommended)
+```bash
+npm run build
+# Deploy via Vercel dashboard or CLI
+```
 
 ### Firebase Hosting
 ```bash
@@ -228,7 +250,13 @@ firebase deploy
 ```
 
 ### Other Platforms
-The built application can be deployed to any static hosting platform (Vercel, Netlify, etc.).
+The built application can be deployed to any static hosting platform (Netlify, GitHub Pages, etc.).
+
+**Build Configuration:**
+- Output directory: `build/`
+- Build command: `npm run build`
+- Install command: `npm install`
+- Node.js version: 18+ (specified in `.nvmrc`)
 
 ## 🔒 Security
 
