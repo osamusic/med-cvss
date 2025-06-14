@@ -27,7 +27,7 @@ const Signup: React.FC = () => {
       setError('');
       setLoading(true);
       await signup(email, password);
-      navigate('/comparison');
+      navigate('/threat-analysis');
     } catch (error) {
       setError('Failed to create account. Please try again.');
       // eslint-disable-next-line no-console
@@ -41,7 +41,7 @@ const Signup: React.FC = () => {
       setError('');
       setLoading(true);
       await signinWithGoogle();
-      navigate('/comparison');
+      navigate('/threat-analysis');
     } catch (error) {
       setError('Failed to sign in with Google.');
       // eslint-disable-next-line no-console

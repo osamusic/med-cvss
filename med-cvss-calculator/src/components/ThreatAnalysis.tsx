@@ -106,8 +106,9 @@ const ThreatAnalysis = React.memo(() => {
     }
   };
 
-  const navigateToCalculator = (metrics: CVSSVector) => {
-    navigate('/calculator', { state: { prefilledMetrics: metrics } });
+  const navigateToCalculator = () => {
+    // localStorage is already set in extractCVSS, just navigate
+    navigate('/calculator');
   };
 
   return (
@@ -220,10 +221,7 @@ const ThreatAnalysis = React.memo(() => {
                 <p>{result.decision_logic}</p>
               </div>
 
-              <button
-                onClick={() => navigateToCalculator(result.cvss_metrics)}
-                className='navigate-button'
-              >
+              <button onClick={navigateToCalculator} className='navigate-button'>
                 CVSS計算機で詳細を確認
               </button>
             </div>

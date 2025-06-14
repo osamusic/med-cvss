@@ -47,15 +47,6 @@ const Navigation: React.FC = () => {
               AI Threat Assessment (Japanese only - Sign In Required)
             </Link>
           )}
-          {currentUser ? (
-            <Link to='/comparison' className={location.pathname === '/comparison' ? 'active' : ''}>
-              Before/After Comparison
-            </Link>
-          ) : (
-            <Link to='/login' className='login-link'>
-              Before/After Comparison (Sign In Required)
-            </Link>
-          )}
         </div>
 
         <div className='auth-section'>

@@ -22,7 +22,7 @@ const Login: React.FC = () => {
       setError('');
       setLoading(true);
       await signin(email, password);
-      navigate('/comparison');
+      navigate('/threat-analysis');
     } catch (error) {
       setError('Failed to sign in. Please check your credentials.');
       // eslint-disable-next-line no-console
@@ -36,7 +36,7 @@ const Login: React.FC = () => {
       setError('');
       setLoading(true);
       await signinWithGoogle();
-      navigate('/comparison');
+      navigate('/threat-analysis');
     } catch (error) {
       setError('Failed to sign in with Google.');
       // eslint-disable-next-line no-console

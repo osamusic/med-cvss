@@ -1,6 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
 import IntegratedCVSSCalculator from './components/IntegratedCVSSCalculator';
-import CVSSComparison from './components/CVSSComparison';
 import ThreatAnalysis from './components/ThreatAnalysis';
 import Navigation from './components/Navigation';
 import Login from './components/Login';
@@ -40,16 +39,6 @@ function App() {
               <ProtectedRoute>
                 <ErrorBoundary>
                   <ThreatAnalysis />
-                </ErrorBoundary>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path='/comparison'
-            element={
-              <ProtectedRoute>
-                <ErrorBoundary>
-                  <CVSSComparison />
                 </ErrorBoundary>
               </ProtectedRoute>
             }
