@@ -11,9 +11,8 @@ import {
 } from 'firebase/auth';
 import { auth } from '../services/firebase';
 
-// Check if we're in development mode without Firebase
-const isDevelopmentMode =
-  process.env.NODE_ENV === 'development' && !process.env.REACT_APP_FIREBASE_API_KEY;
+// Use mock authentication in development mode
+const isDevelopmentMode = process.env.NODE_ENV === 'development';
 
 interface AuthContextType {
   currentUser: User | null;
