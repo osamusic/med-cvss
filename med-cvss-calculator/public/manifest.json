@@ -1,25 +1,31 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "MedScore.ai",
+  "name": "MedScore.ai - Medical Device Security Assessment",
+  "description": "AI-powered CVSS security assessment platform for medical devices",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "favicon.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml",
+      "purpose": "favicon"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "src": "logo192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "logo512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#00d4ff",
+  "background_color": "#0f0f1a",
+  "categories": ["medical", "security", "productivity"],
+  "lang": "en"
 }

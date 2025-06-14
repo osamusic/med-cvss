@@ -1,6 +1,9 @@
 {
-  "name": "med-cvss-calculator",
-  "version": "0.1.0",
+  "name": "medscore-ai",
+  "version": "1.0.0",
+  "description": "MedScore.ai - AI-powered medical device CVSS security assessment and vulnerability scoring platform",
+  "keywords": ["cvss", "medical-devices", "cybersecurity", "vulnerability-assessment", "ai", "security-scoring"],
+  "author": "MedScore.ai",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",

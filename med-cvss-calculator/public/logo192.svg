@@ -1,0 +1,91 @@
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c4dff;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="secondaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c4dff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff6b6b;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="pwaGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="pwaShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="3" dy="3" stdDeviation="4" flood-color="#00d4ff" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <!-- Background circle with gradient -->
+  <circle cx="96" cy="96" r="90" fill="#0f0f1a" stroke="url(#primaryGrad)" stroke-width="3"/>
+  <circle cx="96" cy="96" r="85" fill="none" stroke="url(#primaryGrad)" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Medical cross with glow -->
+  <g filter="url(#pwaGlow)">
+    <!-- Vertical bar -->
+    <rect x="88" y="56" width="16" height="80" rx="8" fill="url(#primaryGrad)"/>
+    <!-- Horizontal bar -->
+    <rect x="56" y="88" width="80" height="16" rx="8" fill="url(#primaryGrad)"/>
+  </g>
+  
+  <!-- AI Neural network -->
+  <g filter="url(#pwaShadow)">
+    <!-- Central node -->
+    <circle cx="96" cy="96" r="6" fill="#ffd93d"/>
+    
+    <!-- Outer nodes -->
+    <circle cx="96" cy="40" r="5" fill="#00d4ff"/>
+    <circle cx="40" cy="72" r="4" fill="#7c4dff"/>
+    <circle cx="40" cy="120" r="4" fill="#7c4dff"/>
+    <circle cx="96" cy="152" r="5" fill="#00d4ff"/>
+    <circle cx="152" cy="120" r="4" fill="#7c4dff"/>
+    <circle cx="152" cy="72" r="4" fill="#7c4dff"/>
+    
+    <!-- Neural connections -->
+    <line x1="96" y1="40" x2="40" y2="72" stroke="#00d4ff" stroke-width="2" opacity="0.6"/>
+    <line x1="96" y1="40" x2="152" y2="72" stroke="#00d4ff" stroke-width="2" opacity="0.6"/>
+    <line x1="40" y1="72" x2="96" y2="96" stroke="#7c4dff" stroke-width="2" opacity="0.6"/>
+    <line x1="152" y1="72" x2="96" y2="96" stroke="#7c4dff" stroke-width="2" opacity="0.6"/>
+    <line x1="96" y1="96" x2="40" y2="120" stroke="#7c4dff" stroke-width="2" opacity="0.6"/>
+    <line x1="96" y1="96" x2="152" y2="120" stroke="#7c4dff" stroke-width="2" opacity="0.6"/>
+    <line x1="40" y1="120" x2="96" y2="152" stroke="#00d4ff" stroke-width="2" opacity="0.6"/>
+    <line x1="152" y1="120" x2="96" y2="152" stroke="#00d4ff" stroke-width="2" opacity="0.6"/>
+  </g>
+  
+  <!-- Security shield -->
+  <path d="M96 24 L120 35 L120 56 C120 76 108 92 96 99 C84 92 72 76 72 56 L72 35 Z" 
+        fill="none" 
+        stroke="url(#secondaryGrad)" 
+        stroke-width="2" 
+        opacity="0.8"/>
+  
+  <!-- Score arc -->
+  <path d="M32 96 A64 64 0 0 1 160 96" 
+        fill="none" 
+        stroke="url(#primaryGrad)" 
+        stroke-width="4" 
+        opacity="0.7"/>
+  
+  <!-- Score indicator -->
+  <circle cx="135" cy="72" r="3" fill="#ffd93d"/>
+  
+  <!-- Corner accents -->
+  <rect x="16" y="16" width="12" height="3" fill="#00d4ff" opacity="0.6"/>
+  <rect x="16" y="16" width="3" height="12" fill="#00d4ff" opacity="0.6"/>
+  
+  <rect x="164" y="16" width="12" height="3" fill="#7c4dff" opacity="0.6"/>
+  <rect x="173" y="16" width="3" height="12" fill="#7c4dff" opacity="0.6"/>
+  
+  <rect x="16" y="173" width="12" height="3" fill="#7c4dff" opacity="0.6"/>
+  <rect x="16" y="164" width="3" height="12" fill="#7c4dff" opacity="0.6"/>
+  
+  <rect x="164" y="173" width="12" height="3" fill="#00d4ff" opacity="0.6"/>
+  <rect x="173" y="164" width="3" height="12" fill="#00d4ff" opacity="0.6"/>
+</svg>

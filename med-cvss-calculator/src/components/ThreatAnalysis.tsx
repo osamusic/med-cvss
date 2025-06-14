@@ -115,34 +115,8 @@ const ThreatAnalysis = React.memo(() => {
     <div className='threat-analysis-container'>
       <h1>脅威分析によるCVSS自動算出</h1>
       <p className='description'>
-        医療機器の脅威説明文を入力すると、自動的にCVSSメトリクスを抽出し、スコアを計算します。
+        医療機器の脅威説明文を入力すると、AIが自動的にCVSSメトリクスを抽出し、セキュリティスコアを計算します。
       </p>
-
-      <div className='mcp-status'>
-        <h3>MCP接続状態</h3>
-        <div className='status-indicators'>
-          <div className={`status-item ${mcpAvailable ? 'available' : 'unavailable'}`}>
-            <span className='status-label'>MCP利用可能:</span>
-            <span className='status-value'>{mcpAvailable ? '✓' : '✗'}</span>
-          </div>
-          <div className={`status-item ${mcpConnected ? 'connected' : 'disconnected'}`}>
-            <span className='status-label'>MCP接続済み:</span>
-            <span className='status-value'>{mcpConnected ? '✓' : '✗'}</span>
-          </div>
-          <div className='status-item current-mode'>
-            <span className='status-label'>実行モード:</span>
-            <span className='status-value'>
-              {mcpConnected && mcpAvailable ? 'MCP接続済み' : 'MCP未接続'}
-            </span>
-          </div>
-        </div>
-        {!mcpAvailable && (
-          <p className='mcp-note'>
-            <strong>注意:</strong> MCP環境が検出されませんでした。 Claude
-            DesktopやMCP対応環境で実行すると、med-mcp-threatサーバーを利用した実際のAI脅威分析機能が利用できます。
-          </p>
-        )}
-      </div>
 
       <div className='single-analysis'>
         <div className='input-section'>
@@ -232,11 +206,36 @@ const ThreatAnalysis = React.memo(() => {
       <div className='info-section'>
         <h3>注意事項</h3>
         <ul>
-          <li>この機能は日本語の医療機器脅威説明文に最適化されています</li>
-          <li>MCP接続が必要です。Claude Desktopでmed-mcp-threatサーバーを設定してください</li>
-          <li>自動抽出された値は推定値であり、必要に応じて手動で調整してください</li>
-          <li>より正確な評価のためには、CVSS計算機で詳細な設定を行ってください</li>
+          <li>この機能は日本語の医療機器脅威説明文に特化したAI分析を行います</li>
+          <li>
+            自動抽出されたCVSSメトリクスは推定値です。必要に応じて計算機で手動調整してください
+          </li>
+          <li>分析結果は参考情報として活用し、最終的な評価は専門知識に基づいて判断してください</li>
+          <li>複雑な脅威シナリオの場合は、CVSS計算機での詳細設定をお勧めします</li>
         </ul>
+      </div>
+
+      {/* MCP接続状態を小さく下部に表示 */}
+      <div className='mcp-status-footer'>
+        <details className='mcp-details'>
+          <summary className='mcp-summary'>
+            AI接続状態: {mcpConnected && mcpAvailable ? '✓ 接続済み' : '⚠ 未接続'}
+          </summary>
+          <div className='status-indicators-small'>
+            <div className={`status-item-small ${mcpAvailable ? 'available' : 'unavailable'}`}>
+              MCP利用可能: {mcpAvailable ? '✓' : '✗'}
+            </div>
+            <div className={`status-item-small ${mcpConnected ? 'connected' : 'disconnected'}`}>
+              MCP接続済み: {mcpConnected ? '✓' : '✗'}
+            </div>
+            {!mcpAvailable && (
+              <p className='mcp-note-small'>
+                Claude
+                Desktopでmed-mcp-threatサーバーを設定すると、高度なAI脅威分析機能を利用できます。
+              </p>
+            )}
+          </div>
+        </details>
       </div>
     </div>
   );

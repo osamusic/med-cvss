@@ -12,7 +12,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   if (currentUser) {
-    return <Navigate to='/comparison' replace />;
+    return <Navigate to='/' replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

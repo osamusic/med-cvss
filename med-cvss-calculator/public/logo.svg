@@ -1,0 +1,94 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient definitions for cyberpunk theme -->
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c4dff;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="secondaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c4dff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff6b6b;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Glow effect filter -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Drop shadow -->
+    <filter id="dropshadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#00d4ff" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background circle with subtle glow -->
+  <circle cx="60" cy="60" r="55" fill="none" stroke="url(#primaryGradient)" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Medical cross with modern design -->
+  <g filter="url(#glow)">
+    <!-- Vertical bar of cross -->
+    <rect x="55" y="35" width="10" height="50" rx="5" fill="url(#primaryGradient)"/>
+    <!-- Horizontal bar of cross -->
+    <rect x="35" y="55" width="50" height="10" rx="5" fill="url(#primaryGradient)"/>
+  </g>
+  
+  <!-- AI Neural network nodes -->
+  <g filter="url(#dropshadow)">
+    <!-- Top node -->
+    <circle cx="60" cy="25" r="4" fill="#00d4ff"/>
+    <!-- Left nodes -->
+    <circle cx="25" cy="45" r="3" fill="#7c4dff"/>
+    <circle cx="25" cy="75" r="3" fill="#7c4dff"/>
+    <!-- Right nodes -->
+    <circle cx="95" cy="45" r="3" fill="#7c4dff"/>
+    <circle cx="95" cy="75" r="3" fill="#7c4dff"/>
+    <!-- Bottom node -->
+    <circle cx="60" cy="95" r="4" fill="#00d4ff"/>
+    
+    <!-- Neural network connections -->
+    <line x1="60" y1="25" x2="25" y2="45" stroke="#00d4ff" stroke-width="1.5" opacity="0.6"/>
+    <line x1="60" y1="25" x2="95" y2="45" stroke="#00d4ff" stroke-width="1.5" opacity="0.6"/>
+    <line x1="25" y1="45" x2="60" y2="60" stroke="#7c4dff" stroke-width="1.5" opacity="0.6"/>
+    <line x1="95" y1="45" x2="60" y2="60" stroke="#7c4dff" stroke-width="1.5" opacity="0.6"/>
+    <line x1="25" y1="75" x2="60" y2="60" stroke="#7c4dff" stroke-width="1.5" opacity="0.6"/>
+    <line x1="95" y1="75" x2="60" y2="60" stroke="#7c4dff" stroke-width="1.5" opacity="0.6"/>
+    <line x1="25" y1="75" x2="60" y2="95" stroke="#00d4ff" stroke-width="1.5" opacity="0.6"/>
+    <line x1="95" y1="75" x2="60" y2="95" stroke="#00d4ff" stroke-width="1.5" opacity="0.6"/>
+  </g>
+  
+  <!-- Security shield outline -->
+  <path d="M60 15 L75 22 L75 35 C75 48 67.5 58 60 62 C52.5 58 45 48 45 35 L45 22 Z" 
+        fill="none" 
+        stroke="url(#secondaryGradient)" 
+        stroke-width="1.5" 
+        opacity="0.8"/>
+  
+  <!-- Score meter arc -->
+  <path d="M20 60 A40 40 0 0 1 100 60" 
+        fill="none" 
+        stroke="url(#primaryGradient)" 
+        stroke-width="3" 
+        opacity="0.7"
+        filter="url(#glow)"/>
+  
+  <!-- Score indicator -->
+  <circle cx="85" cy="45" r="2" fill="#ffd93d"/>
+  
+  <!-- Corner accent elements -->
+  <rect x="10" y="10" width="8" height="2" fill="#00d4ff" opacity="0.6"/>
+  <rect x="10" y="10" width="2" height="8" fill="#00d4ff" opacity="0.6"/>
+  
+  <rect x="102" y="10" width="8" height="2" fill="#7c4dff" opacity="0.6"/>
+  <rect x="108" y="10" width="2" height="8" fill="#7c4dff" opacity="0.6"/>
+  
+  <rect x="10" y="108" width="8" height="2" fill="#7c4dff" opacity="0.6"/>
+  <rect x="10" y="102" width="2" height="8" fill="#7c4dff" opacity="0.6"/>
+  
+  <rect x="102" y="108" width="8" height="2" fill="#00d4ff" opacity="0.6"/>
+  <rect x="108" y="102" width="2" height="8" fill="#00d4ff" opacity="0.6"/>
+</svg>

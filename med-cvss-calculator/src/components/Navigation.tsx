@@ -18,7 +18,15 @@ const Navigation: React.FC = () => {
 
   return (
     <nav className='app-navigation'>
-      <h1>Medical Device CVSS Calculator</h1>
+      <div className='app-header'>
+        <div className='app-logo-title'>
+          <img src='/logo.svg' alt='MedScore.ai Logo' className='app-logo' />
+          <div className='title-section'>
+            <h1>MedScore.ai</h1>
+            <p className='app-subtitle'>Medical Device CVSS Security Assessment</p>
+          </div>
+        </div>
+      </div>
       <div className='disclaimer'>
         <strong>Disclaimer:</strong> This tool is for educational and assessment purposes only. CVSS
         scores should be used as part of a comprehensive security assessment and not as the sole
