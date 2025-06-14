@@ -21,6 +21,7 @@ const ThreatAnalysis = React.memo(() => {
   const [result, setResult] = useState<ThreatExtractionResult | null>(null);
   const [mcpAvailable, setMcpAvailable] = useState(false);
   const [mcpConnected, setMcpConnected] = useState(false);
+  const [mcpInitializing, setMcpInitializing] = useState(true);
   const [analysisStep, setAnalysisStep] = useState(0);
 
   // Sample threat descriptions for users to try
@@ -39,6 +40,12 @@ const ThreatAnalysis = React.memo(() => {
     const initializeMCP = async () => {
       if (cancelled) return;
 
+      // Show initialization loading
+      setMcpInitializing(true);
+
+      // Add small delay to show initialization animation
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
       const available = isMCPAvailable();
       if (!cancelled) {
         setMcpAvailable(available);
@@ -46,6 +53,9 @@ const ThreatAnalysis = React.memo(() => {
 
       if (available && !cancelled) {
         try {
+          // Add delay for connection animation
+          await new Promise((resolve) => setTimeout(resolve, 1200));
+
           const connected = await initializeMCPClient();
           if (!cancelled) {
             setMcpConnected(connected);
@@ -57,6 +67,11 @@ const ThreatAnalysis = React.memo(() => {
             setMcpConnected(false);
           }
         }
+      }
+
+      // Complete initialization
+      if (!cancelled) {
+        setMcpInitializing(false);
       }
     };
 
@@ -290,6 +305,51 @@ const ThreatAnalysis = React.memo(() => {
         </div>
 
         {error && <div className='error-message'>{error}</div>}
+
+        {mcpInitializing && (
+          <div className='mcp-initialization-loading'>
+            <div className='loading-header'>
+              <div className='ai-icon'>🔗</div>
+              <h2>AI システム初期化中...</h2>
+            </div>
+
+            <div className='loading-animation'>
+              <div className='connection-network'>
+                <div className='server-node'></div>
+                <div className='connection-lines'>
+                  <div className='connection-line line-1'></div>
+                  <div className='connection-line line-2'></div>
+                  <div className='connection-line line-3'></div>
+                </div>
+                <div className='client-node'></div>
+              </div>
+            </div>
+
+            <div className='initialization-steps'>
+              <div className='init-step active'>
+                <div className='step-indicator'></div>
+                <span>AIエンジン起動中</span>
+              </div>
+              <div className={`init-step ${mcpAvailable ? 'active' : ''}`}>
+                <div className='step-indicator'></div>
+                <span>接続プロトコル確立中</span>
+              </div>
+              <div className={`init-step ${mcpConnected ? 'active' : ''}`}>
+                <div className='step-indicator'></div>
+                <span>脅威解析モジュール準備中</span>
+              </div>
+            </div>
+
+            <div className='loading-message'>
+              <p>MedScore.ai の高度なAI脅威解析システムを準備しています...</p>
+              <div className='progress-dots'>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {isLoading && (
           <div className='ai-analysis-loading'>
