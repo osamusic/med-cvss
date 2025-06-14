@@ -150,7 +150,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
       return unsubscribe;
     } catch (error) {
-      console.error('Firebase auth error:', error);
+      // Firebase auth error - silently handle in development mode
       // If Firebase fails, set to no authentication
       setCurrentUser(null);
       setLoading(false);
