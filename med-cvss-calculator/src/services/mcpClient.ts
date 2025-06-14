@@ -125,12 +125,6 @@ class MCPThreatExtractionClient {
 
         const result = await response.json();
 
-        // デバッグ: レスポンスにユーザーIDが含まれているか確認
-        if (result.user) {
-          // eslint-disable-next-line no-console
-          console.log('MCP Response includes user ID:', result.user);
-        }
-
         return this.transformMCPResult(result, threatDescription);
       } else {
         // Use Claude Desktop MCP tool
@@ -180,12 +174,6 @@ class MCPThreatExtractionClient {
         }
 
         const result = await response.json();
-
-        // デバッグ: レスポンスにユーザーIDが含まれているか確認
-        if (result.user) {
-          // eslint-disable-next-line no-console
-          console.log('MCP Batch Response includes user ID:', result.user);
-        }
 
         return this.transformMCPBatchResult(result);
       } else {

@@ -57,8 +57,9 @@ const IntegratedCVSSCalculator = React.memo(() => {
     }
   }, [version, viewMode]);
 
-  // Handle prefilled metrics from navigation
+  // Handle prefilled metrics from navigation or localStorage
   useEffect(() => {
+    // First check navigation state
     if (prefilledMetrics) {
       setVector(prefilledMetrics);
       // Expand base metrics section if metrics are prefilled
@@ -67,6 +68,25 @@ const IntegratedCVSSCalculator = React.memo(() => {
         newSet.delete('Base Score Metrics');
         return newSet;
       });
+    } else {
+      // Check localStorage for metrics from ThreatAnalysis
+      const savedMetrics = localStorage.getItem('prefilledCVSSMetrics');
+      if (savedMetrics) {
+        try {
+          const parsedMetrics = JSON.parse(savedMetrics);
+          setVector(parsedMetrics);
+          // Expand base metrics section
+          setCollapsedMetrics((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete('Base Score Metrics');
+            return newSet;
+          });
+          // Clear after use to prevent stale data
+          localStorage.removeItem('prefilledCVSSMetrics');
+        } catch (error) {
+          // Silently ignore parse errors
+        }
+      }
     }
   }, [prefilledMetrics]);
 
