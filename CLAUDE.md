@@ -13,9 +13,11 @@ Navigate to the `med-cvss-calculator` directory before running these commands:
 ```bash
 cd med-cvss-calculator
 
-# Development
+# Development (Vite-powered)
 npm start              # Development server (localhost:3000)
-npm test               # Run test suite in watch mode
+npm run dev            # Alternative development command
+npm run preview        # Preview production build
+npm test               # Run test suite with Vitest
 npm run test:coverage  # Run tests with coverage report
 npm run test:mitre     # Run MITRE decision flow tests specifically
 
@@ -28,22 +30,22 @@ npm run type-check     # TypeScript type checking
 npm run quality        # Run all quality checks (type-check, lint, format, tests)
 
 # Build
-npm run build          # Production build to ./build directory
+npm run build          # Production build (TypeScript compile + Vite build)
 
 # Docker
 docker-compose up -d med-cvss-calculator  # Production (port 3000)
 docker-compose --profile dev up dev       # Development with hot reload (port 3001)
 
-# Single test execution
-npm test -- --testNamePattern="specific test name"
-npm test -- --testPathPattern="filename pattern"
+# Single test execution (Vitest)
+npm test -- --run --testNamePattern="specific test name"
+npm test -- --run --testPathPattern="filename pattern"
 
 # Deployment
-npm run vercel-build    # Vercel-optimized build (CI=false npm run build)
+npm run vercel-build   # Vercel-optimized build
 
 # MCP API Testing (for HTTP API mode)
 # Test MCP server compatibility - replace YOUR_SERVER_URL with actual URL
-npx ts-node -e "
+npx tsx -e "
 import { MCPAPITester } from './src/utils/mcpApiTest';
 const tester = new MCPAPITester('YOUR_SERVER_URL');
 tester.runAllTests().then(console.log);
@@ -52,12 +54,16 @@ tester.runAllTests().then(console.log);
 
 ## Architecture Overview
 
+**Build System:**
+- **Vite**: Modern build tool replacing Create React App for faster development
+- **TypeScript**: Strict mode enabled for type safety
+- **Vitest**: Test runner replacing Jest for better integration with Vite
+- **ESLint + Prettier**: Code quality and formatting
+
 **Component Architecture:**
 - **IntegratedCVSSCalculator**: Main CVSS calculator with support for both v3.1 and v4.0
 - **ThreatAnalysis**: AI-powered threat assessment from Japanese descriptions (MCP)
-- **CVSSComparison**: Before/after vulnerability assessment with remediation tracking
 - **MitreCVSSRubric**: MITRE medical device decision tree implementation
-- **ScenarioEditor**: Create/edit custom medical device vulnerability scenarios
 - **Authentication Components**: Login, Signup, ProtectedRoute, Navigation with Firebase Auth
 
 **Data Flow:**
@@ -66,7 +72,7 @@ tester.runAllTests().then(console.log);
 3. Real-time calculation using version-specific algorithms (`cvssCalculator.ts` for v3.1, `cvssV4Calculator.ts` for v4.0)
 4. Results display score, severity rating, and vector string for chosen version
 5. Optional persistence to localStorage or Firebase Firestore
-6. Export/import scenarios for team collaboration
+6. AI results automatically sync to Calculator via localStorage
 
 **Key Directories:**
 - `src/components/` - React components with component-scoped CSS
@@ -95,7 +101,6 @@ Key implementation files:
 - `cvssCalculator.ts`: CVSS v3.1 scoring algorithms and vector string generation
 - `cvssV4Calculator.ts`: CVSS v4.0 scoring algorithms and equivalence classes
 - `cvssV4FullImplementation.ts`: Full CVSS v4.0 implementation with official algorithm
-- `cvssComparison.ts`: Before/after comparison calculations
 - `cvssMetrics.ts`: CVSS v3.1 metric definitions with scores
 - `cvssV4Metrics.ts`: CVSS v4.0 metric definitions with scores
 - `remediationGuidance.ts`: Medical device-specific remediation recommendations
@@ -118,14 +123,14 @@ The application is specifically designed for healthcare contexts with:
 - Storage options:
   - localStorage (default): `useCustomScenarios('localStorage')`
   - Firebase Firestore: `useCustomScenarios('firebase', userId)`
-- Navigation state for passing data between components
+- AI Threat Assessment results automatically saved to localStorage and sync with Calculator
 - Firebase Authentication context for user management
 - MCP connection state for AI threat analysis
 - No external state management library (Redux, Zustand) currently used
 
 ## Testing Strategy
 
-- Jest with React Testing Library
+- Vitest with React Testing Library (migrated from Jest)
 - Coverage thresholds: 70% global, 80% for utils, 60% for data
 - Test files in `src/__tests__/` directory
 - Key test suites:
@@ -133,7 +138,6 @@ The application is specifically designed for healthcare contexts with:
   - `cvssV4Calculator.test.ts`: CVSS v4.0 algorithm validation
   - `cvssV4Debug.test.ts`: CVSS v4.0 debug and edge cases
   - `cvssV4Official.test.ts`: CVSS v4.0 official implementation validation
-  - `cvssComparison.test.ts`: Before/after logic
   - `mitre-decision-flow.test.ts`: MITRE rubric testing
   - `mitre-cia-flow.test.ts`: CIA impact assessment
 
@@ -143,116 +147,81 @@ The application integrates with the [med-mcp-threat server](https://github.com/o
 
 **Architecture:**
 - `mcpClient.ts`: MCP client service for communicating with threat extraction server
-- `ThreatAnalysis.tsx`: React component providing single and batch threat analysis
-- Connection detection via `window.use_mcp_tool` function availability
+- `ThreatAnalysis.tsx`: React component providing single threat analysis
+- Connection detection via `window.use_mcp_tool` function availability or HTTP API
 - Real-time connection status display with fallback handling
+- localStorage synchronization between AI results and Calculator
 
 **Key Features:**
 - Japanese medical device threat description processing
 - Automatic CVSS v3.1 metric extraction from natural language
-- Batch processing for multiple threats simultaneously
-- Integration with existing CVSS calculator via navigation state
+- Integration with existing CVSS calculator via localStorage sync
+- Development mode with mock authentication for local testing
 
 **Environment Variables:**
 ```bash
-REACT_APP_MCP_ENABLED=true
-REACT_APP_MCP_THREAT_SERVER=threat-extraction  # For Claude Desktop mode
-REACT_APP_MCP_SERVER_URL=https://your-mcp-server.vercel.app  # For HTTP API mode
-```
-
-**MCP Server Configuration:**
-MCPサーバーは2つの方法で設定可能です：
-
-**Option 1: Claude Desktop (ローカル)**
-1. **Claude Desktop設定** (`claude_desktop_config.json`):
-```json
-{
-  "mcpServers": {
-    "threat-extraction": {
-      "command": "node",
-      "args": ["/path/to/med-mcp-threat/index.js"],
-      "env": {
-        "PORT": "3001"
-      }
-    }
-  }
-}
-```
-
-2. **環境変数設定** (`.env.local`):
-```bash
+# For Claude Desktop mode:
 REACT_APP_MCP_THREAT_SERVER=threat-extraction
-# REACT_APP_MCP_SERVER_URL は設定しない（Claude Desktopモード）
-```
 
-**Option 2: HTTP API (Vercel等にデプロイ)**
-1. **MCPサーバーをVercel等にデプロイ**
-2. **環境変数設定** (`.env.local`):
-```bash
+# For HTTP API mode:
 REACT_APP_MCP_SERVER_URL=https://your-mcp-server.vercel.app
-# REACT_APP_MCP_THREAT_SERVER は不要（HTTP APIモード）
 ```
 
-**HTTP API Endpoints:**
-```
-GET  /                           # ヘルスチェック
-POST /extract_cvss               # 単一脅威分析
-POST /extract_cvss_batch         # バッチ脅威分析
-```
-
-**Requirements:**
-- Option 1: Claude Desktop with MCP support + med-mcp-threat server configured locally
-- Option 2: med-mcp-threat server deployed as HTTP API (Vercel, etc.)
-- User authentication (protected route)
+**Development Mode Authentication:**
+- When `REACT_APP_FIREBASE_API_KEY` is not set, the app runs in development mode
+- Mock authentication is automatically enabled
+- AI Threat Assessment is accessible without Firebase setup
+- localStorage-only storage mode
 
 ## Important Implementation Details
 
 **Version Compatibility:**
 - CVSS v3.1 and v4.0 use different metric sets - automatic reset when switching versions
 - MITRE rubric (questionnaire mode) only available for CVSS v3.1
-- Prefilled metrics from navigation state expand relevant sections automatically
+- AI Threat Assessment results automatically populate Calculator metrics
 
 **Authentication Flow:**
-- ThreatAnalysis and CVSSComparison components are protected routes
-- Firebase Auth with email/password and Google OAuth
-- Conditional navigation rendering based on authentication state
+- Development mode: Mock authentication when Firebase not configured
+- Production mode: Firebase Auth with email/password and Google OAuth
+- ThreatAnalysis component is a protected route in production
 
 **Data Persistence:**
-- Scenarios stored with version-specific data structures
-- localStorage fallback when Firebase unavailable
-- Navigation state used for cross-component data passing (calculator prefill)
+- AI Threat Assessment results automatically saved to localStorage
+- Calculator automatically loads metrics from localStorage when navigating from AI analysis
+- localStorage cleared after loading to prevent stale data
+- Firebase Firestore available for cloud storage when configured
 
-**Development Notes:**
-- React 19 with TypeScript strict mode
-- Component-scoped CSS (avoid global styles)
-- Medical device guidance data drives UI help text
-- Real-time CVSS calculation on metric selection
-- Comprehensive test coverage for calculation algorithms
+**Build System Migration:**
+- Migrated from Create React App to Vite for faster development
+- TypeScript compilation handled by Vite
+- Vitest replaces Jest for testing
+- ESLint configuration moved to standalone `.eslintrc.json`
+- Custom index.html at project root for Vite
+
+**UI Theme:**
+- Soft cyberpunk theme with professional medical device focus
+- CSS custom properties for consistent theming
+- Inter font for readability
+- Component-scoped CSS modules
 
 **Deployment Configuration:**
 - Vercel deployment with root directory set to `med-cvss-calculator`
-- Node.js 18 specified in `.nvmrc` for consistent builds
-- `CI=false` in vercel-build to prevent warnings as errors
-- `.env.production` configures production environment settings
-- Empty `vercel.json` allows Vercel auto-detection when root directory is configured
-
-**MCP API Testing:**
-- `mcpApiTest.ts`: Utilities for testing HTTP API compatibility with med-mcp-threat server
-- `MCPAPITester` class provides comprehensive endpoint testing
-- Response format validation for single and batch operations
-- Automatic mode detection between Claude Desktop and HTTP API modes
+- Vite build output to `./build` directory for compatibility
+- Environment variables configured in Vercel dashboard
+- Development and production environment files
 
 ## Environment Configuration
 
-**Local Development:**
-- Copy `.env.example` to `.env.local` and configure Firebase credentials
-- MCP integration requires either Claude Desktop with med-mcp-threat server OR HTTP API URL
-- Use `REACT_APP_MCP_SERVER_URL` for HTTP API mode, leave empty for Claude Desktop mode
+**Development Mode (.env.development):**
+- No Firebase configuration required
+- Mock authentication enabled automatically
+- localStorage-only storage
+- All features available for local development
 
 **Production Deployment:**
-- `.env.production` sets `CI=false` and `GENERATE_SOURCEMAP=false`
-- Vercel automatically uses environment variables from dashboard
-- Configure `REACT_APP_MCP_SERVER_URL` in Vercel dashboard for HTTP API mode
+- Firebase configuration required for authentication
+- Optional MCP server for AI features
+- Environment variables in deployment platform
 
 ## Firebase Integration (Optional)
 
