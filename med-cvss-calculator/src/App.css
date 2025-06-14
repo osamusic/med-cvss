@@ -38,7 +38,7 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
+  background:
     radial-gradient(circle at 20% 50%, var(--cyber-accent-primary) 0%, transparent 60%),
     radial-gradient(circle at 80% 80%, var(--cyber-accent-secondary) 0%, transparent 60%),
     radial-gradient(circle at 40% 20%, var(--cyber-accent-tertiary) 0%, transparent 60%);
@@ -48,8 +48,13 @@ body::before {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.03; }
-  50% { opacity: 0.06; }
+  0%,
+  100% {
+    opacity: 0.03;
+  }
+  50% {
+    opacity: 0.06;
+  }
 }
 
 .App {

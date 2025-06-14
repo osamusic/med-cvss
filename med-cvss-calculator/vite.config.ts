@@ -16,6 +16,10 @@ export default defineConfig({
   },
   define: {
     global: 'globalThis',
+    // Add Vitest globals for TypeScript
+    ...(process.env.NODE_ENV === 'test' ? {
+      'import.meta.vitest': 'undefined'
+    } : {})
   },
   resolve: {
     alias: {

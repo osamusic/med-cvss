@@ -74,7 +74,7 @@ describe('CVSS v4.0 Edge Cases and Error Handling', () => {
     });
 
     test('should handle updateMetric with invalid metric name', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const vector = new CVSS40Vector();
 
       vector.updateMetric('INVALID_METRIC', 'H');
@@ -100,7 +100,7 @@ describe('CVSS v4.0 Edge Cases and Error Handling', () => {
     });
 
     test('should reject vector with wrong version', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const vector = new CVSS40Vector();
 
       const isValid = vector.validateStringVector('CVSS:3.1/AV:N/AC:L');
@@ -111,7 +111,7 @@ describe('CVSS v4.0 Edge Cases and Error Handling', () => {
     });
 
     test('should reject vector with invalid metric value', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const vector = new CVSS40Vector();
 
       const isValid = vector.validateStringVector(
@@ -124,7 +124,7 @@ describe('CVSS v4.0 Edge Cases and Error Handling', () => {
     });
 
     test('should reject vector with missing mandatory metrics', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const vector = new CVSS40Vector();
 
       // This vector has fewer than 11 mandatory base metrics

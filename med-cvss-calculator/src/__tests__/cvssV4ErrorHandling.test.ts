@@ -26,7 +26,7 @@ describe('CVSS v4.0 Specific Error Handling', () => {
 
   describe('Validation Error Handling', () => {
     test('should reject vector with missing mandatory base metrics', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const vector = new CVSS40Vector();
 
       // Only provide first few metrics (missing mandatory ones)
@@ -37,7 +37,7 @@ describe('CVSS v4.0 Specific Error Handling', () => {
     });
 
     test('should handle malformed metric without colon', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const vector = new CVSS40Vector();
 
       const isValid = vector.validateStringVector(
@@ -49,7 +49,7 @@ describe('CVSS v4.0 Specific Error Handling', () => {
     });
 
     test('should handle metric with empty value', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const vector = new CVSS40Vector();
 
       const isValid = vector.validateStringVector(
@@ -61,7 +61,7 @@ describe('CVSS v4.0 Specific Error Handling', () => {
     });
 
     test('should handle metric with empty key', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const vector = new CVSS40Vector();
 
       const isValid = vector.validateStringVector(
