@@ -74,15 +74,16 @@ const IntegratedCVSSCalculator = React.memo(() => {
       if (savedMetrics) {
         try {
           const parsedMetrics = JSON.parse(savedMetrics);
-          setVector(parsedMetrics);
-          // Expand base metrics section
-          setCollapsedMetrics((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete('Base Score Metrics');
-            return newSet;
-          });
-          // Clear after use to prevent stale data
-          localStorage.removeItem('prefilledCVSSMetrics');
+          // Only load if vector is empty (preventing overwrite of user changes)
+          if (Object.keys(vector).length === 0) {
+            setVector(parsedMetrics);
+            // Expand base metrics section
+            setCollapsedMetrics((prev) => {
+              const newSet = new Set(prev);
+              newSet.delete('Base Score Metrics');
+              return newSet;
+            });
+          }
         } catch (error) {
           // Silently ignore parse errors
         }
@@ -102,6 +103,9 @@ const IntegratedCVSSCalculator = React.memo(() => {
     // Clear both old and new rubric answers
     localStorage.removeItem('cvssRubricAnswers');
     localStorage.removeItem('mitreCvssRubricAnswers');
+    // Clear ThreatAnalysis data as well
+    localStorage.removeItem('latestThreatAssessment');
+    localStorage.removeItem('prefilledCVSSMetrics');
   };
 
   const getSeverityClass = (severity: string): string => {

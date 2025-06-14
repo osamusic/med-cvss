@@ -67,6 +67,30 @@ const ThreatAnalysis = React.memo(() => {
     };
   }, []);
 
+  // Restore previous assessment results on component mount
+  useEffect(() => {
+    const savedAssessment = localStorage.getItem('latestThreatAssessment');
+    if (savedAssessment) {
+      try {
+        const assessmentData = JSON.parse(savedAssessment);
+        // Restore the result state - the metrics are already in calculator format
+        const restoredResult: ThreatExtractionResult = {
+          threat_description: assessmentData.threatDescription,
+          cvss_metrics: assessmentData.cvssMetrics, // These are already converted
+          base_score: assessmentData.baseScore,
+          severity: assessmentData.severity,
+          extracted_features: assessmentData.extractedFeatures,
+          decision_logic: assessmentData.decisionLogic,
+        };
+        setResult(restoredResult);
+        // Also restore the threat description
+        setThreatDescription(assessmentData.threatDescription);
+      } catch (error) {
+        // Silently ignore parse errors
+      }
+    }
+  }, []);
+
   const extractCVSS = async () => {
     setIsLoading(true);
     setError(null);
@@ -83,10 +107,13 @@ const ThreatAnalysis = React.memo(() => {
 
       // Save to localStorage for sync with Calculator
       if (mcpResult && mcpResult.cvss_metrics) {
+        // Convert metrics to calculator format
+        const calculatorMetrics = mapThreatMetricsToCalculator(mcpResult.cvss_metrics);
+
         const threatAssessmentData = {
           timestamp: new Date().toISOString(),
           threatDescription: mcpResult.threat_description,
-          cvssMetrics: mcpResult.cvss_metrics,
+          cvssMetrics: calculatorMetrics, // Save converted metrics
           baseScore: mcpResult.base_score,
           severity: mcpResult.severity,
           extractedFeatures: mcpResult.extracted_features,
@@ -95,7 +122,7 @@ const ThreatAnalysis = React.memo(() => {
         localStorage.setItem('latestThreatAssessment', JSON.stringify(threatAssessmentData));
 
         // Also save just the CVSS metrics for direct calculator sync
-        localStorage.setItem('prefilledCVSSMetrics', JSON.stringify(mcpResult.cvss_metrics));
+        localStorage.setItem('prefilledCVSSMetrics', JSON.stringify(calculatorMetrics));
       }
     } catch (err) {
       const errorMessage =
@@ -106,9 +133,97 @@ const ThreatAnalysis = React.memo(() => {
     }
   };
 
+  // Convert descriptive metric names to CVSS abbreviations
+  const mapThreatMetricsToCalculator = (metrics: any): CVSSVector => {
+    const mapping: { [key: string]: string } = {
+      attack_vector: 'AV',
+      attack_complexity: 'AC',
+      privileges_required: 'PR',
+      user_interaction: 'UI',
+      scope: 'S',
+      confidentiality_impact: 'C',
+      integrity_impact: 'I',
+      availability_impact: 'A',
+      // Temporal metrics
+      exploit_code_maturity: 'E',
+      remediation_level: 'RL',
+      report_confidence: 'RC',
+    };
+
+    const mappedMetrics: CVSSVector = {};
+
+    // Handle both formats - if it's already in the correct format, use as-is
+    // If it's in descriptive format, convert it
+    Object.entries(metrics).forEach(([key, value]) => {
+      if (mapping[key]) {
+        // Convert descriptive name to abbreviation
+        mappedMetrics[mapping[key] as keyof CVSSVector] = value as string;
+      } else if (['AV', 'AC', 'PR', 'UI', 'S', 'C', 'I', 'A', 'E', 'RL', 'RC'].includes(key)) {
+        // Already in correct format
+        mappedMetrics[key as keyof CVSSVector] = value as string;
+      }
+    });
+
+    return mappedMetrics;
+  };
+
+  // Convert CVSS abbreviations to readable names for display
+  const getDisplayName = (key: string): string => {
+    const displayMapping: { [key: string]: string } = {
+      AV: 'Attack Vector',
+      AC: 'Attack Complexity',
+      PR: 'Privileges Required',
+      UI: 'User Interaction',
+      S: 'Scope',
+      C: 'Confidentiality Impact',
+      I: 'Integrity Impact',
+      A: 'Availability Impact',
+      E: 'Exploit Code Maturity',
+      RL: 'Remediation Level',
+      RC: 'Report Confidence',
+      // Original descriptive names (fallback)
+      attack_vector: 'Attack Vector',
+      attack_complexity: 'Attack Complexity',
+      privileges_required: 'Privileges Required',
+      user_interaction: 'User Interaction',
+      scope: 'Scope',
+      confidentiality_impact: 'Confidentiality Impact',
+      integrity_impact: 'Integrity Impact',
+      availability_impact: 'Availability Impact',
+    };
+
+    return displayMapping[key] || key;
+  };
+
   const navigateToCalculator = () => {
-    // localStorage is already set in extractCVSS, just navigate
+    // Ensure metrics are saved to localStorage before navigation
+    if (result && result.cvss_metrics) {
+      // Convert metrics to calculator format
+      const calculatorMetrics = mapThreatMetricsToCalculator(result.cvss_metrics);
+      localStorage.setItem('prefilledCVSSMetrics', JSON.stringify(calculatorMetrics));
+
+      // Also save the full assessment data for persistence
+      const threatAssessmentData = {
+        timestamp: new Date().toISOString(),
+        threatDescription: result.threat_description,
+        cvssMetrics: calculatorMetrics, // Save the converted metrics
+        baseScore: result.base_score,
+        severity: result.severity,
+        extractedFeatures: result.extracted_features,
+        decisionLogic: result.decision_logic,
+      };
+      localStorage.setItem('latestThreatAssessment', JSON.stringify(threatAssessmentData));
+    }
     navigate('/calculator');
+  };
+
+  const clearAssessment = () => {
+    setResult(null);
+    setThreatDescription('');
+    setError(null);
+    // Clear localStorage data
+    localStorage.removeItem('latestThreatAssessment');
+    localStorage.removeItem('prefilledCVSSMetrics');
   };
 
   return (
@@ -174,7 +289,10 @@ const ThreatAnalysis = React.memo(() => {
                     ([key, value]) =>
                       key !== 'version' && (
                         <li key={key}>
-                          <strong>{key}:</strong> {value}
+                          <strong>
+                            {getDisplayName(key)} ({key}):
+                          </strong>{' '}
+                          {value}
                         </li>
                       )
                   )}
@@ -195,9 +313,14 @@ const ThreatAnalysis = React.memo(() => {
                 <p>{result.decision_logic}</p>
               </div>
 
-              <button onClick={navigateToCalculator} className='navigate-button'>
-                CVSS計算機で詳細を確認
-              </button>
+              <div className='result-actions'>
+                <button onClick={navigateToCalculator} className='navigate-button'>
+                  CVSS計算機で詳細を確認
+                </button>
+                <button onClick={clearAssessment} className='clear-assessment-button'>
+                  結果をクリア
+                </button>
+              </div>
             </div>
           </div>
         )}

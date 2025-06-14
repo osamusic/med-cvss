@@ -474,6 +474,7 @@
   margin-top: 20px;
   padding-top: 16px;
   border-top: 1px solid var(--cyber-border-solid);
+  flex-wrap: wrap;
 }
 
 .action-button {
@@ -501,6 +502,45 @@
 
 .action-button.primary:hover {
   box-shadow: var(--cyber-glow);
+}
+
+.navigate-button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--cyber-accent-primary), var(--cyber-accent-secondary));
+  color: var(--cyber-text-primary);
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 200px;
+}
+
+.navigate-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--cyber-glow);
+}
+
+.clear-assessment-button {
+  padding: 12px 24px;
+  background: var(--cyber-bg-tertiary);
+  color: var(--cyber-text-secondary);
+  border: 1px solid var(--cyber-border);
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.clear-assessment-button:hover {
+  background: var(--cyber-bg-hover);
+  border-color: var(--cyber-error);
+  color: var(--cyber-error);
+  transform: translateY(-1px);
 }
 
 .error-message {
