@@ -21,6 +21,7 @@ export default defineConfig({
       'import.meta.vitest': 'undefined'
     } : {})
   },
+  envPrefix: ['VITE_', 'REACT_APP_'],
   resolve: {
     alias: {
       '@': '/src'
