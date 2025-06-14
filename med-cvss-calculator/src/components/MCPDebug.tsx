@@ -23,8 +23,8 @@ export const MCPDebug: React.FC = () => {
   useEffect(() => {
     const checkMCPStatus = async () => {
       try {
-        const serverUrl = process.env.REACT_APP_MCP_SERVER_URL || '';
-        const serverName = process.env.REACT_APP_MCP_THREAT_SERVER || 'threat-extraction';
+        const serverUrl = import.meta.env.REACT_APP_MCP_SERVER_URL || '';
+        const serverName = import.meta.env.REACT_APP_MCP_THREAT_SERVER || 'threat-extraction';
         const mode = serverUrl ? 'HTTP API' : 'Claude Desktop';
 
         const currentUser = auth.currentUser;

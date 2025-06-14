@@ -13,6 +13,11 @@ interface ImportMetaEnv {
   readonly REACT_APP_FIREBASE_STORAGE_BUCKET: string
   readonly REACT_APP_FIREBASE_MESSAGING_SENDER_ID: string
   readonly REACT_APP_FIREBASE_APP_ID: string
+  readonly REACT_APP_MCP_ENABLED: string
+  readonly REACT_APP_MCP_THREAT_SERVER: string
+  readonly REACT_APP_MCP_SERVER_URL: string
+  readonly REACT_APP_DEFAULT_STORAGE_TYPE: string
+  readonly MODE: string
 }
 
 interface ImportMeta {

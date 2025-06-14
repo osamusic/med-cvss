@@ -12,7 +12,7 @@ import {
 import { auth, isFirebaseConfigured } from '../services/firebase';
 
 // Use mock authentication in development mode
-const isDevelopmentMode = process.env.NODE_ENV === 'development';
+const isDevelopmentMode = import.meta.env.MODE === 'development';
 
 interface AuthContextType {
   currentUser: User | null;

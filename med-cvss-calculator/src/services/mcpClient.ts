@@ -28,10 +28,10 @@ export interface MCPBatchResult {
  * This service communicates with the med-mcp-threat server via the MCP protocol
  */
 class MCPThreatExtractionClient {
-  private serverName = process.env.REACT_APP_MCP_THREAT_SERVER || 'threat-extraction';
-  private serverUrl = process.env.REACT_APP_MCP_SERVER_URL || '';
+  private serverName = import.meta.env.REACT_APP_MCP_THREAT_SERVER || 'threat-extraction';
+  private serverUrl = import.meta.env.REACT_APP_MCP_SERVER_URL || '';
   private isConnected = false;
-  private useHttpApi = Boolean(process.env.REACT_APP_MCP_SERVER_URL);
+  private useHttpApi = Boolean(import.meta.env.REACT_APP_MCP_SERVER_URL);
 
   /**
    * Initialize connection to MCP server
@@ -56,7 +56,7 @@ class MCPThreatExtractionClient {
     try {
       // Check if we're in development mode without Firebase
       const isDevelopmentMode =
-        process.env.NODE_ENV === 'development' && !process.env.REACT_APP_FIREBASE_API_KEY;
+        import.meta.env.MODE === 'development' && !import.meta.env.REACT_APP_FIREBASE_API_KEY;
 
       if (isDevelopmentMode) {
         // Return a mock token for development
@@ -333,7 +333,7 @@ export const mcpThreatClient = new MCPThreatExtractionClient();
  * Helper function to check if MCP is available in the current environment
  */
 export const isMCPAvailable = (): boolean => {
-  const serverUrl = process.env.REACT_APP_MCP_SERVER_URL;
+  const serverUrl = import.meta.env.REACT_APP_MCP_SERVER_URL;
 
   if (serverUrl) {
     // For HTTP API mode, we assume it's available if URL is configured

@@ -56,7 +56,7 @@ class ErrorBoundary extends Component<Props, State> {
             <h2>Something went wrong</h2>
             <p>An error occurred while rendering this component.</p>
 
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.MODE === 'development' && this.state.error && (
               <details className='error-details'>
                 <summary>Error Details (Development Mode)</summary>
                 <pre className='error-stack'>
